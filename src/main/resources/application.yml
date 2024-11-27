@@ -1,1 +1,25 @@
-spring.application.name=multi-project
+spring:
+  profiles:
+    default: local
+  application:
+    name: multi-board
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  datasource:
+    url: jdbc:h2:mem:multi-board
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    open-in-view: false
+    properties:
+      hibernate.hibernate.format_sql: true
+      hibernate.hibernate.show_sql: true
+
