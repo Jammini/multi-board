@@ -1,7 +1,5 @@
 package study.multiproject.api.service.post;
 
-import static study.multiproject.domain.post.PostEditor.PostEditorBuilder;
-
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -46,7 +44,7 @@ public class PostService {
     @Transactional
     public Long edit(Long id, PostEditServiceRequest request) {
         Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
-        PostEditorBuilder editorBuilder = post.toEditor();
+        PostEditor.PostEditorBuilder editorBuilder = post.toEditor();
         PostEditor postEditor = editorBuilder
                                     .title(request.getTitle())
                                     .content(request.getContent())
