@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum ErrorCode {
+public enum ResponseCode {
     // Common
     OK(200, "C001", "요청에 성공하였습니다."),
 

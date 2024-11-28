@@ -25,7 +25,7 @@ public class Post {
     private String content;
 
     @Builder
-    public Post(String title, String content) {
+    protected Post(String title, String content) {
         this.title = title;
         this.content = content;
     }

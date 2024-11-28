@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
-import study.multiproject.api.error.exception.ErrorCode;
+import study.multiproject.api.error.exception.ResponseCode;
 
 @Getter
 @NoArgsConstructor
@@ -24,7 +24,7 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> success(T data) {
         return ApiResponse.<T>builder()
                    .status(HttpStatus.OK)
-                   .message(ErrorCode.OK.getMessage())
+                   .message(ResponseCode.OK.getMessage())
                    .data(data)
                    .build();
     }
