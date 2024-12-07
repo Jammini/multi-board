@@ -32,12 +32,27 @@ onMounted(() => {
 
 <template>
   <h2>{{post.title}}</h2>
-  <div></div>
+  <div class="sub">
+    <div class="regDate">2024-12-07</div>
+  </div>
   <div>{{post.content}}</div>
   <div></div>
-  <el-button type="warning" @click="moveToEdit()">수정</el-button>
+  <div class="d-flex justify-content-end">
+    <el-button type="warning" @click="moveToEdit()">수정</el-button>
+  </div>
 </template>
 
 <style scoped>
+
+.sub {
+  margin-top: 4px;
+  font-size: 0.8rem;
+}
+
+.content {
+  margin-top: 8px;
+  white-space: break-spaces;
+  line-height: 1.5;
+}
 
 </style>
