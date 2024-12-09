@@ -2,11 +2,14 @@ package study.multiproject.api.service.post;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import study.multiproject.api.service.post.exception.PostNotFoundException;
 import study.multiproject.api.service.post.request.PostCreateServiceRequest;
 import study.multiproject.api.service.post.request.PostEditServiceRequest;
+import study.multiproject.api.service.post.request.PostPageSearchServiceRequest;
+import study.multiproject.api.service.post.response.PagingResponse;
 import study.multiproject.api.service.post.response.PostResponse;
 import study.multiproject.domain.post.Post;
 import study.multiproject.domain.post.PostEditor;
@@ -39,6 +42,13 @@ public class PostService {
         return postRepository.findAll().stream()
                    .map(PostResponse::new)
                    .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public PagingResponse<PostResponse> getPageList(PostPageSearchServiceRequest request) {
+        Page<Post> postPage = postRepository.findByTitleContaining(request.getKeyword(),
+            request.getPageable());
+        return new PagingResponse<>(postPage, PostResponse.class);
     }
 
     @Transactional
