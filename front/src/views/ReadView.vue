@@ -3,7 +3,7 @@
 import {onMounted, ref} from "vue";
 import axios from "axios";
 import {ElButton} from "element-plus";
-import router from "@/router";
+import {useRoute, useRouter} from "vue-router";
 
 const props = defineProps({
   postId: {
@@ -18,9 +18,17 @@ const post = ref({
   content: "",
 })
 
-const moveToEdit = function () {
+const route = useRoute();
+const router = useRouter();
+
+const moveToEdit = () =>{
   router.push({name: "edit", params: {postId: props.postId}});
 }
+
+const moveToHome = () => {
+  router.push({ name: "home", query: { ...route.query } });
+};
+
 
 onMounted(() => {
   axios.get(`/api/posts/${props.postId}`).then((response) => {
@@ -38,7 +46,8 @@ onMounted(() => {
   <div>{{post.content}}</div>
   <div></div>
   <div class="d-flex justify-content-end">
-    <el-button type="warning" @click="moveToEdit()">수정</el-button>
+    <el-button type="primary" @click="moveToHome">목록으로</el-button>
+    <el-button type="warning" @click="moveToEdit">수정</el-button>
   </div>
 </template>
 
