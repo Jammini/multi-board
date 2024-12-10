@@ -23,3 +23,8 @@ spring:
       hibernate.hibernate.format_sql: true
       hibernate.hibernate.show_sql: true
 
+  data:
+    web:
+      pageable:
+        default-page-size: 3
+        max-page-size: 1000

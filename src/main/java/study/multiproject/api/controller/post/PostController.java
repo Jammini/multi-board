@@ -1,7 +1,6 @@
 package study.multiproject.api.controller.post;
 
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,7 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 import study.multiproject.api.common.ApiResponse;
 import study.multiproject.api.controller.post.request.PostCreateRequest;
 import study.multiproject.api.controller.post.request.PostEditRequest;
+import study.multiproject.api.controller.post.request.PostPageSearchRequest;
 import study.multiproject.api.service.post.PostService;
+import study.multiproject.api.service.post.response.PagingResponse;
 import study.multiproject.api.service.post.response.PostResponse;
 
 @Slf4j
@@ -35,8 +36,8 @@ public class PostController {
     }
 
     @GetMapping("/posts")
-    public ApiResponse<List<PostResponse>> getList() {
-        return ApiResponse.success(postService.getList());
+    public ApiResponse<PagingResponse<PostResponse>> getPageList(@Valid PostPageSearchRequest request) {
+        return ApiResponse.success(postService.getPageList(request.toServiceRequest()));
     }
 
     @PatchMapping("/posts/{postId}")

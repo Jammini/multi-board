@@ -95,13 +95,35 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("게시글 여러개를 조회한다.")
+    @DisplayName("게시글 여러개를 조회한다")
     void readAll() throws Exception {
         // expected
-        mockMvc.perform(get("/posts")
+        mockMvc.perform(get("/posts?page=1&size=3&sort=id,desc")
                             .contentType(APPLICATION_JSON))
             .andDo(print())
             .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("게시글 조회시 page 값이 0보다 작으면 예외가 발생한다.")
+    void readAllCheckPage() throws Exception {
+        // expected
+        mockMvc.perform(get("/posts?page=0&size=3&sort=id,desc")
+                            .contentType(APPLICATION_JSON))
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("페이지 번호가 잘못되었습니다."));
+    }
+
+    @Test
+    @DisplayName("게시글 조회시 size 값이 0보다 작으면 예외가 발생한다.")
+    void readAllCheckSize() throws Exception {
+        // expected
+        mockMvc.perform(get("/posts?page=1&size=0&sort=id,desc")
+                            .contentType(APPLICATION_JSON))
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("사이즈 번호가 잘못되었습니다."));
     }
 
     @Test
