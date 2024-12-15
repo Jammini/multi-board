@@ -61,9 +61,9 @@ class PostServiceTest {
         PostResponse result = postService.get(post.getId());
 
         // then
-        assertThat(post.getId()).isEqualTo(result.getId());
-        assertThat(post.getTitle()).isEqualTo(result.getTitle());
-        assertThat(post.getContent()).isEqualTo(result.getContent());
+        assertThat(post.getId()).isEqualTo(result.id());
+        assertThat(post.getTitle()).isEqualTo(result.title());
+        assertThat(post.getContent()).isEqualTo(result.content());
     }
 
     @Test
@@ -106,9 +106,9 @@ class PostServiceTest {
         PagingResponse<PostResponse> result = postService.getPageList(request);
 
         // then
-        assertThat(10).isEqualTo(result.getSize());
-        assertThat("잼미니 제목 30").isEqualTo(result.getItems().get(0).getTitle());
-        assertThat("잼미니 제목 21").isEqualTo(result.getItems().get(9).getTitle());
+        assertThat(10).isEqualTo(result.size());
+        assertThat("잼미니 제목 30").isEqualTo(result.items().get(0).title());
+        assertThat("잼미니 제목 21").isEqualTo(result.items().get(9).title());
     }
 
     @Test

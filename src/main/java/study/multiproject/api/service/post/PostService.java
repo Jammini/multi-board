@@ -30,11 +30,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostResponse get(Long id) {
         Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
-        return PostResponse.builder()
-                   .id(post.getId())
-                   .title(post.getTitle())
-                   .content(post.getContent())
-                   .build();
+        return new PostResponse(post);
     }
 
     @Transactional(readOnly = true)
