@@ -36,10 +36,7 @@ class PostControllerTest {
     @DisplayName("신규 게시글을 작성한다.")
     void createPost() throws Exception {
         // given
-        PostCreateRequest request = PostCreateRequest.builder()
-                                        .title("잼미니")
-                                        .content("잼미니는 잼잼이다.")
-                                        .build();
+        PostCreateRequest request = new PostCreateRequest("잼미니", "잼미니는 잼잼이다.");
         postService.write(request.toServiceRequest());
 
         // expected
@@ -54,9 +51,7 @@ class PostControllerTest {
     @DisplayName("게시글 등록시 title 값은 필수이다.")
     void createPostCheckTitle() throws Exception {
         // given
-        PostCreateRequest request = PostCreateRequest.builder()
-                                        .content("잼미니는 잼잼이다.")
-                                        .build();
+        PostCreateRequest request = new PostCreateRequest(null, "잼미니는 잼잼이다.");
 
         // expected
         mockMvc.perform(post("/posts")
@@ -71,9 +66,7 @@ class PostControllerTest {
     @DisplayName("게시글 등록시 Content 값은 필수이다.")
     void createPostCheckContent() throws Exception {
         // given
-        PostCreateRequest request = PostCreateRequest.builder()
-                                        .title("잼미니")
-                                        .build();
+        PostCreateRequest request = new PostCreateRequest("잼미니", null);
 
         // expected
         mockMvc.perform(post("/posts")
@@ -130,10 +123,7 @@ class PostControllerTest {
     @DisplayName("게시글 제목을 수정힌다.")
     void update() throws Exception {
         // given
-        PostEditRequest request = PostEditRequest.builder()
-                                      .title("제목 수정합니다.")
-                                      .content("내용입니다.")
-                                      .build();
+        PostEditRequest request = new PostEditRequest("제목 수정합니다.", "내용입니다.");
 
         // expected
         mockMvc.perform(patch("/posts/{postId}", 1L)
@@ -147,9 +137,7 @@ class PostControllerTest {
     @DisplayName("게시글 등록시 Title 값은 필수이다.")
     void updatePostCheckTitle() throws Exception {
         // given
-        PostEditRequest request = PostEditRequest.builder()
-                                      .content("잼미니는 잼잼이다.")
-                                      .build();
+        PostEditRequest request = new PostEditRequest(null, "잼미니는 잼잼이다.");
 
         // expected
         mockMvc.perform(post("/posts")
@@ -164,9 +152,7 @@ class PostControllerTest {
     @DisplayName("게시글 등록시 Content 값은 필수이다.")
     void updatePostCheckContent() throws Exception {
         // given
-        PostEditRequest request = PostEditRequest.builder()
-                                      .title("잼미니")
-                                      .build();
+        PostEditRequest request = new PostEditRequest("잼미니", null);
 
         // expected
         mockMvc.perform(post("/posts")

@@ -35,10 +35,8 @@ class PostServiceTest {
     @DisplayName("신규 게시글을 작성하면 아이디를 반환한다.")
     void createPost() {
         // given
-        PostCreateServiceRequest request = PostCreateServiceRequest.builder()
-                                               .title("잼미니")
-                                               .content("반포자이 살고싶다.")
-                                               .build();
+        PostCreateServiceRequest request = new PostCreateServiceRequest("잼미니", "반포자이 살고싶다.");
+
         // when
         Long postId = postService.write(request);
 
@@ -101,11 +99,8 @@ class PostServiceTest {
                                .toList();
         postRepository.saveAll(posts);
 
-        PostPageSearchServiceRequest request = PostPageSearchServiceRequest.builder()
-                                                   .pageable(PageRequest.of(0, 10,
-                                                       Sort.by("id").descending()))
-                                                   .keyword("")
-                                                   .build();
+        PostPageSearchServiceRequest request = new PostPageSearchServiceRequest(
+            PageRequest.of(0, 10, Sort.by("id").descending()), "");
 
         // when
         PagingResponse<PostResponse> result = postService.getPageList(request);
@@ -126,10 +121,7 @@ class PostServiceTest {
                         .build();
         postRepository.save(post);
 
-        PostEditServiceRequest request = PostEditServiceRequest.builder()
-                                             .title("김정민")
-                                             .content("판교 자이")
-                                             .build();
+        PostEditServiceRequest request = new PostEditServiceRequest("김정민", "판교 자이");
 
         // when
         Long postId = postService.edit(post.getId(), request);
@@ -137,8 +129,8 @@ class PostServiceTest {
         // then
         Post result = postRepository.findById(postId).get();
 
-        assertThat(result.getTitle()).isEqualTo(result.getTitle());
-        assertThat(result.getContent()).isEqualTo(result.getContent());
+        assertThat(request.title()).isEqualTo(result.getTitle());
+        assertThat(request.content()).isEqualTo(result.getContent());
     }
 
     @Test

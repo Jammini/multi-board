@@ -46,8 +46,8 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PagingResponse<PostResponse> getPageList(PostPageSearchServiceRequest request) {
-        Page<Post> postPage = postRepository.findByTitleContaining(request.getKeyword(),
-            request.getPageable());
+        Page<Post> postPage = postRepository.findByTitleContaining(request.keyword(),
+            request.pageable());
         return new PagingResponse<>(postPage, PostResponse.class);
     }
 
@@ -56,8 +56,8 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
         PostEditor.PostEditorBuilder editorBuilder = post.toEditor();
         PostEditor postEditor = editorBuilder
-                                    .title(request.getTitle())
-                                    .content(request.getContent())
+                                    .title(request.title())
+                                    .content(request.content())
                                     .build();
         post.edit(postEditor);
         return post.getId();
