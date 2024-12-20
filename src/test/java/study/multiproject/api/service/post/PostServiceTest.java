@@ -103,7 +103,7 @@ class PostServiceTest {
             PageRequest.of(0, 10, Sort.by("id").descending()), "");
 
         // when
-        PagingResponse<PostResponse> result = postService.getPageList(request);
+        PagingResponse result = postService.getPageList(request);
 
         // then
         assertThat(10).isEqualTo(result.size());

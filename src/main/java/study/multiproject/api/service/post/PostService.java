@@ -41,10 +41,10 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PagingResponse<PostResponse> getPageList(PostPageSearchServiceRequest request) {
+    public PagingResponse getPageList(PostPageSearchServiceRequest request) {
         Page<Post> postPage = postRepository.findByTitleContaining(request.keyword(),
             request.pageable());
-        return new PagingResponse<>(postPage, PostResponse.class);
+        return new PagingResponse(postPage);
     }
 
     @Transactional

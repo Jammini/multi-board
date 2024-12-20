@@ -36,7 +36,7 @@ public class PostController {
     }
 
     @GetMapping("/posts")
-    public ApiResponse<PagingResponse<PostResponse>> getPageList(@Valid PostPageSearchRequest request) {
+    public ApiResponse<PagingResponse> getPageList(@Valid PostPageSearchRequest request) {
         return ApiResponse.success(postService.getPageList(request.toServiceRequest()));
     }
 
