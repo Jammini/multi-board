@@ -35,7 +35,7 @@ class PostServiceTest {
     @DisplayName("신규 게시글을 작성하면 아이디를 반환한다.")
     void createPost() {
         // given
-        PostCreateServiceRequest request = new PostCreateServiceRequest("잼미니", "반포자이 살고싶다.");
+        PostCreateServiceRequest request = new PostCreateServiceRequest("잼미니", "반포자이 살고싶다.", List.of("잼미니", "반포자이"));
 
         // when
         Long postId = postService.write(request);
@@ -58,7 +58,7 @@ class PostServiceTest {
         postRepository.save(post);
 
         // when
-        PostResponse result = postService.get(post.getId());
+        PostResponse result = postService.get(post.getId(), "visitorId");
 
         // then
         assertThat(post.getId()).isEqualTo(result.id());
@@ -161,7 +161,7 @@ class PostServiceTest {
         postRepository.save(post);
 
         // expected
-        assertThatThrownBy(() -> postService.get(post.getId() + 1L))
+        assertThatThrownBy(() -> postService.get(post.getId() + 1L, "visitorId"))
             .isInstanceOf(PostNotFoundException.class)
             .hasMessage("존재하지 않는 글입니다.");
     }

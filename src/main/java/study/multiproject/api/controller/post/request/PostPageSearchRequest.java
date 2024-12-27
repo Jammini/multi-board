@@ -15,11 +15,7 @@ public record PostPageSearchRequest(
         keyword = keyword == null ? "" : keyword;
     }
 
-    public PostPageSearchServiceRequest toServiceRequest() {
-        return new PostPageSearchServiceRequest(getPageable(), keyword);
-    }
-
-    private Pageable getPageable() {
+    public Pageable getPageable() {
         return PageRequest.of(page - 1, size, Sort.by("id").descending());
     }
 }
