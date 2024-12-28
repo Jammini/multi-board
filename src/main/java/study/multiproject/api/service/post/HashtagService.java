@@ -13,6 +13,9 @@ public class HashtagService {
 
     private final HashtagRepository hashtagRepository;
 
+    /**
+     * 모든 해시태그 조회
+     */
     @Transactional(readOnly = true)
     public List<HashtagResponse> getAllHashtags() {
         return hashtagRepository.findAll().stream()

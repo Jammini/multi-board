@@ -11,9 +11,6 @@ public record PostPageSearchRequest(
     @Min(value = 1, message = "사이즈 번호가 잘못되었습니다.") int size,
     String keyword
 ) {
-    public PostPageSearchRequest {
-        keyword = keyword == null ? "" : keyword;
-    }
 
     public Pageable getPageable() {
         return PageRequest.of(page - 1, size, Sort.by("id").descending());

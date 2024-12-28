@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import java.util.HashSet;
 import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -24,7 +25,7 @@ public class Hashtag {
     private String name;
 
     @OneToMany(mappedBy = "hashtag", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<PostHashtag> postHashtags;
+    private Set<PostHashtag> postHashtags = new HashSet<>();
 
     @Builder
     public Hashtag(String name) {

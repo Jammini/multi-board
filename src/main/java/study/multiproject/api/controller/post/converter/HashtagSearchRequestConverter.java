@@ -8,6 +8,6 @@ import study.multiproject.api.service.post.request.HashtagSearchServiceRequest;
 public class HashtagSearchRequestConverter {
 
     public HashtagSearchServiceRequest toServiceRequest(HashtagSearchRequest request) {
-        return new HashtagSearchServiceRequest(request.tagName(), request.getPageable());
+        return new HashtagSearchServiceRequest(request.keyword(), request.getPageable());
     }
 }
