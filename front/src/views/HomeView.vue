@@ -78,6 +78,9 @@ watch(route, (newRoute) => {
         <div class="regDate">2024-12-07</div>
       </div>
       <div class="sub d-flex">
+        <div class="viewCount">조회 수 : {{ post.viewCount }}</div>
+      </div>
+      <div class="sub d-flex">
         <div class="author">Jammini</div>
       </div>
     </li>
