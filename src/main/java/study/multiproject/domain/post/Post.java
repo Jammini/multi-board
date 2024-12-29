@@ -41,7 +41,7 @@ public class Post {
         this.postHashtags = new HashSet<>();
     }
 
-    public void incrementViewCount(Integer viewCount) {
+    public void changeViewCount(Integer viewCount) {
         this.viewCount = viewCount;
     }
 

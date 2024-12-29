@@ -26,7 +26,7 @@ public class PostHitsScheduler {
             Integer hits = postHitsService.getHits(key);
             if (hits != null) {
                 Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
-                post.incrementViewCount(hits);
+                post.changeViewCount(hits);
                 postRepository.save(post);
             }
         }
