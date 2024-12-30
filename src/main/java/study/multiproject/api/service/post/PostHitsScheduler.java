@@ -22,12 +22,16 @@ public class PostHitsScheduler {
     public void saveHitsToDatabase() {
         Set<String> keys = postHitsService.getAllKeys();
         for (String key : keys) {
-            Long postId = extractPostIdFromKey(key);
+            long postId = extractPostIdFromKey(key);
             Integer hits = postHitsService.getHits(key);
             if (hits != null) {
-                Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
-                post.changeViewCount(hits);
-                postRepository.save(post);
+                try {
+                    Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
+                    post.changeViewCount(hits);
+                } catch (PostNotFoundException e) {
+                    // 게시글이 삭제된 경우 redis 값 삭제
+                    postHitsService.deleteKey(key);
+                }
             }
         }
     }
@@ -35,8 +39,8 @@ public class PostHitsScheduler {
     /**
      * Redis에 저장된 조회수 키에서 게시글 ID 추출
      */
-    private Long extractPostIdFromKey(String key) {
+    private long extractPostIdFromKey(String key) {
         String[] parts = key.split("_");
-        return Long.valueOf(parts[2]);
+        return Long.parseLong(parts[2]);
     }
 }

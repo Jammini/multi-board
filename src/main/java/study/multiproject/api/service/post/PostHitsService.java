@@ -59,4 +59,11 @@ public class PostHitsService {
         LocalDateTime now = LocalDateTime.now();
         return Duration.between(now, now.plusDays(1).withHour(0).withMinute(0).withSecond(0));
     }
+
+    /**
+     * 키 삭제
+     */
+    public void deleteKey(String key) {
+        redisTemplate.delete(key);
+    }
 }

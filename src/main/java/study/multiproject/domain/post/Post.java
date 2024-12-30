@@ -19,15 +19,27 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post {
 
+    /**
+     * 식별자
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * 제목
+     */
     private String title;
 
+    /**
+     * 내용
+     */
     @Lob
     private String content;
 
+    /**
+     * 조회수
+     */
     private long viewCount;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)

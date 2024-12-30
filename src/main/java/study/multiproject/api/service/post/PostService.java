@@ -91,6 +91,8 @@ public class PostService {
                                     .content(request.content())
                                     .build();
         post.edit(postEditor);
+
+        updateHashtags(post, request.hashtags());
         return post.getId();
     }
 
@@ -112,4 +114,24 @@ public class PostService {
             request.pageable());
         return new PagingResponse(postPage);
     }
+
+    private void updateHashtags(Post post, List<String> newHashtags) {
+        // 기존 해시태그 삭제
+        post.getPostHashtags().clear();
+
+        // 새로운 해시태그 저장 및 연결
+        for (String tagName : newHashtags) {
+            Hashtag hashtag = hashtagRepository.findByName(tagName)
+                                  .orElseGet(() -> {
+                                      Hashtag newHashtag = Hashtag.builder().name(tagName).build();
+                                      return hashtagRepository.save(newHashtag);
+                                  });
+            PostHashtag postHashtag = PostHashtag.builder()
+                                    .post(post)
+                                    .hashtag(hashtag)
+                                    .build();
+            post.getPostHashtags().add(postHashtag);
+        }
+    }
+
 }
