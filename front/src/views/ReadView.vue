@@ -16,6 +16,8 @@ const post = ref({
   id: 0,
   title: "",
   content: "",
+  viewCount: 0,
+  hashtags: [] as string[], // 해시태그 배열 추가
 })
 
 const route = useRoute();
@@ -39,12 +41,20 @@ onMounted(() => {
 </script>
 
 <template>
-  <h2>{{post.title}}</h2>
+  <h2>{{ post.title }}</h2>
+  <div>조회수 : {{ post.viewCount }}</div>
   <div class="sub">
     <div class="regDate">2024-12-07</div>
   </div>
-  <div>{{post.content}}</div>
-  <div></div>
+  <div>{{ post.content }}</div>
+
+  <!-- 해시태그 목록 -->
+  <div class="hashtags mt-3">
+    <el-tag v-for="tag in post.hashtags" :key="tag" class="mr-2">
+      {{ tag }}
+    </el-tag>
+  </div>
+
   <div class="d-flex justify-content-end">
     <el-button type="primary" @click="moveToHome">목록으로</el-button>
     <el-button type="warning" @click="moveToEdit">수정</el-button>
@@ -52,6 +62,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
+
 
 .sub {
   margin-top: 4px;
@@ -64,4 +75,15 @@ onMounted(() => {
   line-height: 1.5;
 }
 
+.hashtags {
+  margin-top: 12px;
+}
+
+.mr-2 {
+  margin-right: 8px;
+}
+
+.mt-3 {
+  margin-top: 12px;
+}
 </style>
