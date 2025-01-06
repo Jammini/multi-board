@@ -45,6 +45,9 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PostHashtag> postHashtags;
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<File> files = new HashSet<>();
+
     @Builder
     protected Post(String title, String content) {
         this.title = title;
@@ -71,5 +74,15 @@ public class Post {
     public void addPostHashtag(PostHashtag postHashtag) {
         this.postHashtags.add(postHashtag);
         postHashtag.addPost(this);
+    }
+
+    public void addFile(File file) {
+        files.add(file);
+        file.setPost(this);
+    }
+
+    public void clearFiles() {
+        files.forEach(file -> file.setPost(null));
+        files.clear();
     }
 }
