@@ -1,4 +1,4 @@
-package study.multiproject.api.service.post.request;
+package study.multiproject.api.service.hashtag.request;
 
 import org.springframework.data.domain.Pageable;
 

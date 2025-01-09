@@ -1,4 +1,4 @@
-package study.multiproject.api.controller.post.request;
+package study.multiproject.api.controller.hashtag.request;
 
 import jakarta.validation.constraints.Min;
 import org.springframework.data.domain.PageRequest;

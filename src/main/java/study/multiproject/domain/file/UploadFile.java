@@ -1,4 +1,4 @@
-package study.multiproject.domain.post;
+package study.multiproject.domain.file;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,11 +12,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import study.multiproject.domain.post.Post;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class File {
+public class UploadFile {
 
     /**
      * 식별자
@@ -51,7 +52,8 @@ public class File {
     private Post post;
 
     @Builder
-    public File(String fileName, String originalName, String filePath, long fileSize, Post post) {
+    public UploadFile(String fileName, String originalName, String filePath, long fileSize,
+        Post post) {
         this.fileName = fileName;
         this.originalName = originalName;
         this.filePath = filePath;

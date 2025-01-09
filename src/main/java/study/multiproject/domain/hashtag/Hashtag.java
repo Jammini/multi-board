@@ -1,4 +1,4 @@
-package study.multiproject.domain.post;
+package study.multiproject.domain.hashtag;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -12,6 +12,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import study.multiproject.domain.post.PostHashtag;
 
 @Getter
 @Entity
@@ -31,10 +32,11 @@ public class Hashtag {
     private String name;
 
     @OneToMany(mappedBy = "hashtag", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<PostHashtag> postHashtags = new HashSet<>();
+    private Set<PostHashtag> postHashtags;
 
     @Builder
     public Hashtag(String name) {
         this.name = name;
+        postHashtags = new HashSet<>();
     }
 }

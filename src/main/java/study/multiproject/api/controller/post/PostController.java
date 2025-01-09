@@ -6,10 +6,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import study.multiproject.api.common.ApiResponse;
 import study.multiproject.api.controller.post.converter.PostCreateRequestConverter;
@@ -36,7 +36,7 @@ public class PostController {
      * 게시글 작성
      */
     @PostMapping("/posts")
-    public ApiResponse<Long> post(@RequestBody @Valid PostCreateRequest request) {
+    public ApiResponse<Long> post(@ModelAttribute @Valid PostCreateRequest request) {
         return ApiResponse.success(postService.write(postCreateRequestConverter.toServiceRequest(request)));
     }
 
@@ -62,7 +62,9 @@ public class PostController {
      */
     @PatchMapping("/posts/{postId}")
     public ApiResponse<Long> edit(@PathVariable Long postId,
-        @RequestBody @Valid PostEditRequest request) {
+        @ModelAttribute @Valid PostEditRequest request) {
+        System.out.println("edit 컴온");
+        System.out.println("request = " + request);
         return ApiResponse.success(postService.edit(postId, postEditRequestConverter.toServiceRequest(request)));
     }
 

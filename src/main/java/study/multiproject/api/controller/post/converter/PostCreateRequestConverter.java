@@ -8,6 +8,6 @@ import study.multiproject.api.service.post.request.PostCreateServiceRequest;
 public class PostCreateRequestConverter {
 
     public PostCreateServiceRequest toServiceRequest(PostCreateRequest request) {
-        return new PostCreateServiceRequest(request.title(), request.content(), request.hashtags());
+        return new PostCreateServiceRequest(request.title(), request.content(), request.hashtags(), request.files());
     }
 }

@@ -31,6 +31,11 @@ spring:
     redis:
       host: localhost
       port: 6379
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 30MB
+
 
 logging:
   level:
@@ -40,3 +45,5 @@ logging:
         type:
           descriptor:
             sql: trace
+
+file.dir: /Users/kimjungmin/documents/JM/project/img/
