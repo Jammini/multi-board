@@ -63,8 +63,6 @@ public class PostController {
     @PatchMapping("/posts/{postId}")
     public ApiResponse<Long> edit(@PathVariable Long postId,
         @ModelAttribute @Valid PostEditRequest request) {
-        System.out.println("edit 컴온");
-        System.out.println("request = " + request);
         return ApiResponse.success(postService.edit(postId, postEditRequestConverter.toServiceRequest(request)));
     }
 

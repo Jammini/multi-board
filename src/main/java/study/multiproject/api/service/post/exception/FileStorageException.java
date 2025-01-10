@@ -5,8 +5,7 @@ import study.multiproject.api.error.exception.ResponseCode;
 
 public class FileStorageException extends BaseException {
 
-    public FileStorageException(ResponseCode responseCode) {
-        super(responseCode);
+    public FileStorageException(ResponseCode responseCode, String message) {
+        super(responseCode, message);
     }
-
 }

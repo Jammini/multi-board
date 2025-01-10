@@ -5,22 +5,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import study.multiproject.api.service.file.FileService;
-import study.multiproject.api.service.post.exception.PostNotFoundException;
+import study.multiproject.api.service.file.request.FileData;
 import study.multiproject.api.service.hashtag.request.HashtagSearchServiceRequest;
+import study.multiproject.api.service.post.exception.PostNotFoundException;
 import study.multiproject.api.service.post.request.PostCreateServiceRequest;
 import study.multiproject.api.service.post.request.PostEditServiceRequest;
 import study.multiproject.api.service.post.request.PostPageSearchServiceRequest;
 import study.multiproject.api.service.post.response.PagingResponse;
 import study.multiproject.api.service.post.response.PostResponse;
+import study.multiproject.domain.file.UploadFile;
 import study.multiproject.domain.hashtag.Hashtag;
 import study.multiproject.domain.hashtag.HashtagRepository;
 import study.multiproject.domain.post.Post;
 import study.multiproject.domain.post.PostEditor;
 import study.multiproject.domain.post.PostHashtag;
 import study.multiproject.domain.post.PostRepository;
-import study.multiproject.domain.file.UploadFile;
 
 @Service
 @RequiredArgsConstructor
@@ -152,8 +152,8 @@ public class PostService {
     /**
      * 첨부파일 저장
      */
-    private void saveFile(List<MultipartFile> files, Post post) {
-        for (MultipartFile file : files) {
+    private void saveFile(List<FileData> files, Post post) {
+        for (FileData file : files) {
             UploadFile uploadFile = fileService.storeFile(file);
             post.addFile(uploadFile);
         }
@@ -162,17 +162,13 @@ public class PostService {
     /**
      * 첨부파일 수정
      */
-    private void updateFiles(Post post, List<Long> filesToDelete, List<MultipartFile> newFiles) {
+    private void updateFiles(Post post, List<Long> filesToDelete, List<FileData> newFiles) {
         // 삭제할 파일 처리
         for (Long fileId : filesToDelete) {
             fileService.deleteFile(fileId);
             post.removeFileById(fileId);
         }
-        
         // 새 파일 추가
-        for (MultipartFile file : newFiles) {
-            UploadFile uploadFile = fileService.storeFile(file);
-            post.addFile(uploadFile);
-        }
+        saveFile(newFiles, post);
     }
 }

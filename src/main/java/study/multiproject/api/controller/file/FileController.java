@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriUtils;
 import study.multiproject.api.service.file.FileService;
-import study.multiproject.domain.file.UploadFile;
+import study.multiproject.api.service.file.response.FileResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,13 +21,15 @@ public class FileController {
 
     @GetMapping("/files/{fileId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId) {
-        UploadFile uploadFile = fileService.getFileById(fileId);
-        Resource resource = fileService.loadAsResource(uploadFile.getFilePath());
-        String encodeUploadFileName = UriUtils.encode(uploadFile.getOriginalName(),
+        FileResponse response = fileService.getFileById(fileId);
+        Resource resource = fileService.loadAsResource(response.filePath());
+        String encodeUploadFileName = UriUtils.encode(response.fileName(),
             StandardCharsets.UTF_8);
         return ResponseEntity.ok()
                    .header(HttpHeaders.CONTENT_DISPOSITION,
-                       "attachment; filename=\"" + encodeUploadFileName + "\"")
+                       "attachment; filename=\"" + encodeUploadFileName + "\"; " +
+                           "filename*=UTF-8''" + encodeUploadFileName)
+                   .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(response.fileSize()))
                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
                    .body(resource);
     }
