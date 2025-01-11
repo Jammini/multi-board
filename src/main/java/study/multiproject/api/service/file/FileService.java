@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -16,6 +15,7 @@ import study.multiproject.api.service.file.exception.FileNotFoundException;
 import study.multiproject.api.service.file.request.FileData;
 import study.multiproject.api.service.file.response.FileResponse;
 import study.multiproject.api.service.post.exception.FileStorageException;
+import study.multiproject.config.FileProperties;
 import study.multiproject.domain.file.UploadFile;
 import study.multiproject.domain.file.UploadFileRepository;
 
@@ -23,8 +23,7 @@ import study.multiproject.domain.file.UploadFileRepository;
 @RequiredArgsConstructor
 public class FileService {
 
-    @Value("${file.dir}")
-    private String fileDirectory;
+    private final FileProperties fileProperties;
 
     private final UploadFileRepository uploadFileRepository;
 
@@ -76,7 +75,7 @@ public class FileService {
      * 파일 전체 경로
      */
     public String getFullPath(String fileName) {
-        return fileDirectory + fileName;
+        return fileProperties.getDir() + fileName;
     }
 
     /**
