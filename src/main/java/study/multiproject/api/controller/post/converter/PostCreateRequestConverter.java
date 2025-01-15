@@ -9,6 +9,6 @@ public class PostCreateRequestConverter {
 
     public PostCreateServiceRequest toServiceRequest(PostCreateRequest request) {
         return new PostCreateServiceRequest(request.title(), request.content(), request.hashtags(),
-            request.toFileDataList());
+            request.fileIds());
     }
 }

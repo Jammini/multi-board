@@ -1,22 +1,20 @@
 package study.multiproject.api.controller.post;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import study.multiproject.api.controller.post.converter.PostCreateRequestConverter;
 import study.multiproject.api.controller.post.converter.PostEditRequestConverter;
@@ -50,17 +48,13 @@ class PostControllerTest {
     @DisplayName("신규 게시글을 작성한다.")
     void createPost() throws Exception {
         // given
-        PostCreateRequest request = new PostCreateRequest("잼미니", "잼미니는 잼잼이다.", List.of(), null);
-        MockMultipartFile files = new MockMultipartFile("files", "example.txt", "text/plain", "파일 내용".getBytes()); // 첨부파일
+        PostCreateRequest request = new PostCreateRequest("잼미니", "잼미니는 잼잼이다.", null, null);
         postService.write(postCreateRequestConverter.toServiceRequest(request));
 
         // expected
-        mockMvc.perform(multipart("/posts")
-                            .file(files)
-                            .param("title", request.title())
-                            .param("content", request.content())
-                            .param("hashtags", request.hashtags().toString())
-                            .contentType(MULTIPART_FORM_DATA))
+        mockMvc.perform(post("/posts")
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
             .andDo(print())
             .andExpect(status().isOk());
     }
@@ -69,16 +63,12 @@ class PostControllerTest {
     @DisplayName("게시글 등록시 title 값은 필수이다.")
     void createPostCheckTitle() throws Exception {
         // given
-        PostCreateRequest request = new PostCreateRequest(null, "잼미니는 잼잼이다.", List.of(), null);
-        MockMultipartFile files = new MockMultipartFile("files", "example.txt", "text/plain", "파일 내용".getBytes()); // 첨부파일
+        PostCreateRequest request = new PostCreateRequest(null, "잼미니는 잼잼이다.", null, null);
 
         // expected
-        mockMvc.perform(multipart("/posts")
-                            .file(files)
-                            .param("title", request.title())
-                            .param("content", request.content())
-                            .param("hashtags", request.hashtags().toString())
-                            .contentType(MULTIPART_FORM_DATA))
+        mockMvc.perform(post("/posts")
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
             .andDo(print())
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message").value("제목은 필수입니다."));
@@ -88,16 +78,12 @@ class PostControllerTest {
     @DisplayName("게시글 등록시 Content 값은 필수이다.")
     void createPostCheckContent() throws Exception {
         // given
-        PostCreateRequest request = new PostCreateRequest("잼미니", null, List.of(), null);
-        MockMultipartFile files = new MockMultipartFile("files", "example.txt", "text/plain", "파일 내용".getBytes()); // 첨부파일
+        PostCreateRequest request = new PostCreateRequest("잼미니", null, null, null);
 
         // expected
-        mockMvc.perform(multipart("/posts")
-                            .file(files)
-                            .param("title", request.title())
-                            .param("content", request.content())
-                            .param("hashtags", request.hashtags().toString())
-                            .contentType(MULTIPART_FORM_DATA))
+        mockMvc.perform(post("/posts")
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
             .andDo(print())
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message").value("내용은 필수입니다."));
@@ -149,21 +135,12 @@ class PostControllerTest {
     @DisplayName("게시글 제목을 수정힌다.")
     void update() throws Exception {
         // given
-        PostEditRequest request = new PostEditRequest("제목 수정합니다.", "내용입니다.",List.of(), List.of(), null);
-        MockMultipartFile newFiles = new MockMultipartFile("newFiles", "example.txt", "text/plain", "새로운 파일 내용".getBytes());
+        PostEditRequest request = new PostEditRequest("제목 수정합니다.", "내용입니다.", null, null);
 
         // expected
-        mockMvc.perform(multipart("/posts/{postId}", 1L)
-                            .file(newFiles)
-                            .param("title", request.title())
-                            .param("content", request.content())
-                            .param("hashtags", request.hashtags().toString())
-                            .param("filesToDelete", "1", "2")
-                            .contentType(MULTIPART_FORM_DATA)
-                            .with(req -> {
-                                req.setMethod("PATCH");
-                                return req;
-                            }))
+        mockMvc.perform(patch("/posts/{postId}", 1L)
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isOk())
             .andDo(print());
     }
@@ -172,21 +149,12 @@ class PostControllerTest {
     @DisplayName("게시글 등록시 Title 값은 필수이다.")
     void updatePostCheckTitle() throws Exception {
         // given
-        PostEditRequest request = new PostEditRequest(null, "잼미니는 잼잼이다.", List.of(), null, null);
-        MockMultipartFile newFiles = new MockMultipartFile("newFiles", "example.txt", "text/plain", "새로운 파일 내용".getBytes());
+        PostEditRequest request = new PostEditRequest(null, "잼미니는 잼잼이다.", null, null);
 
         // expected
-        mockMvc.perform(multipart("/posts/{postId}", 1L)
-                            .file(newFiles)
-                            .param("title", request.title())
-                            .param("content", request.content())
-                            .param("hashtags", request.hashtags().toString())
-                            .param("filesToDelete", "1", "2")
-                            .contentType(MULTIPART_FORM_DATA)
-                            .with(req -> {
-                                req.setMethod("PATCH");
-                                return req;
-                            }))
+        mockMvc.perform(post("/posts")
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
             .andDo(print())
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message").value("제목은 필수입니다."));
@@ -196,21 +164,12 @@ class PostControllerTest {
     @DisplayName("게시글 등록시 Content 값은 필수이다.")
     void updatePostCheckContent() throws Exception {
         // given
-        PostEditRequest request = new PostEditRequest("잼미니", null, List.of(), null, null);
-        MockMultipartFile newFiles = new MockMultipartFile("newFiles", "example.txt", "text/plain", "새로운 파일 내용".getBytes());
+        PostEditRequest request = new PostEditRequest("잼미니", null, null, null);
 
         // expected
-        mockMvc.perform(multipart("/posts/{postId}", 1L)
-                            .file(newFiles)
-                            .param("title", request.title())
-                            .param("content", request.content())
-                            .param("hashtags", request.hashtags().toString())
-                            .param("filesToDelete", "1", "2")
-                            .contentType(MULTIPART_FORM_DATA)
-                            .with(req -> {
-                                req.setMethod("PATCH");
-                                return req;
-                            }))
+        mockMvc.perform(post("/posts")
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
             .andDo(print())
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message").value("내용은 필수입니다."));

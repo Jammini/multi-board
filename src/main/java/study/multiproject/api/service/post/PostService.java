@@ -37,7 +37,7 @@ public class PostService {
     @Transactional
     public Long write(PostCreateServiceRequest request) {
         Post post = postRepository.save(request.toEntity());
-        saveFile(request.files(), post);
+        linkFilesToPost(request.fileIds(), post);
         saveHashtag(request.hashtags(), post);
         return post.getId();
     }
@@ -90,8 +90,7 @@ public class PostService {
         post.edit(postEditor);
         // 해시태그 수정
         updateHashtags(post, request.hashtags());
-        // 첨부파일 수정
-        updateFiles(post, request.filesToDelete(), request.newFiles());
+        linkFilesToPost(request.fileIds(), post);
         return post.getId();
     }
 
@@ -150,11 +149,11 @@ public class PostService {
     }
 
     /**
-     * 첨부파일 저장
+     * 첨부파일 연결
      */
-    private void saveFile(List<FileData> files, Post post) {
-        for (FileData file : files) {
-            UploadFile uploadFile = fileService.storeFile(file);
+    private void linkFilesToPost(List<Long> fileIds, Post post) {
+        for (Long id : fileIds) {
+            UploadFile uploadFile = fileService.getFileEntityById(id);
             post.addFile(uploadFile);
         }
     }
@@ -169,6 +168,6 @@ public class PostService {
             post.removeFileById(fileId);
         }
         // 새 파일 추가
-        saveFile(newFiles, post);
+//        saveFile(newFiles, post);
     }
 }

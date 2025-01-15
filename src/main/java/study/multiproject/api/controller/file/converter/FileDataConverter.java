@@ -15,7 +15,7 @@ public class FileDataConverter {
         return files.stream()
                    .map(file -> {
                        try {
-                           return new FileData(file.getOriginalFilename(), file.getBytes());
+                           return new FileData(file.getOriginalFilename(), file.getInputStream());
                        } catch (IOException e) {
                            throw new FileConversionException(e.getMessage());
                        }

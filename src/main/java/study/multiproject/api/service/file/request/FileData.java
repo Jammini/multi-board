@@ -1,5 +1,7 @@
 package study.multiproject.api.service.file.request;
 
-public record FileData(String fileName, byte[] content) {
+import java.io.InputStream;
+
+public record FileData(String fileName, InputStream content) {
 
 }

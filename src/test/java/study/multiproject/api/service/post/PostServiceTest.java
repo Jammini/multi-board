@@ -121,7 +121,7 @@ class PostServiceTest {
                         .build();
         postRepository.save(post);
 
-        PostEditServiceRequest request = new PostEditServiceRequest("김정민", "판교 자이", null, null, null);
+        PostEditServiceRequest request = new PostEditServiceRequest("김정민", "판교 자이", null, null);
 
         // when
         Long postId = postService.edit(post.getId(), request);

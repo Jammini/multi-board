@@ -1,10 +1,12 @@
 package study.multiproject.api.service.file;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -27,23 +29,32 @@ public class FileService {
 
     private final UploadFileRepository uploadFileRepository;
 
+    public List<Long> storeFiles(List<FileData> files) {
+        return files.stream()
+                   .map(this::storeSingleFile)
+                   .toList();
+    }
+
     /**
      * 파일 저장
      */
-    public UploadFile storeFile(FileData file) {
+    public Long storeSingleFile(FileData file) {
         String originalFileName = file.fileName();
         String storeFileName = createStoreFileName(originalFileName);
-        try {
-            Files.write(Paths.get(getFullPath(storeFileName)), file.content());
+        Path targetPath = Paths.get(getFullPath(storeFileName));
+        try (InputStream inputStream = file.content()) {
+            Files.copy(inputStream, targetPath);
         } catch (IOException e) {
             throw new FileStorageException(ResponseCode.FILE_SAVE_ERROR, e.getMessage());
         }
-        return UploadFile.builder()
-                   .fileName(storeFileName)
-                   .originalName(originalFileName)
-                   .filePath(getFullPath(storeFileName))
-                   .fileSize(file.content().length)
-                   .build();
+        UploadFile uploadFile = UploadFile.builder()
+                                    .fileName(storeFileName)
+                                    .originalName(originalFileName)
+                                    .filePath(getFullPath(storeFileName))
+                                    .fileSize(getFileSize(targetPath))
+                                    .build();
+        uploadFileRepository.save(uploadFile);
+        return uploadFile.getId();
     }
 
     /**
@@ -67,8 +78,18 @@ public class FileService {
         return new FileResponse(uploadFile);
     }
 
+    /**
+     * 파일 삭제
+     */
     public void deleteFile(Long fileId) {
         uploadFileRepository.deleteById(fileId);
+    }
+
+    /**
+     * 파일 엔티티 조회
+     */
+    public UploadFile getFileEntityById(Long fileId) {
+        return uploadFileRepository.findById(fileId).orElseThrow(FileNotFoundException::new);
     }
 
     /**
@@ -93,5 +114,16 @@ public class FileService {
         String ext = extractExtension(originalFileName);
         String uuid = UUID.randomUUID().toString();
         return uuid + "." + ext;
+    }
+
+    /**
+     * 파일 크기 조회
+     */
+    private long getFileSize(Path path) {
+        try {
+            return Files.size(path);
+        } catch (IOException e) {
+            throw new FileStorageException(ResponseCode.FILE_SIZE_ERROR, e.getMessage());
+        }
     }
 }
