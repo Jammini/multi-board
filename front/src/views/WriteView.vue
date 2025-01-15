@@ -9,6 +9,7 @@ const content = ref("");
 const hashtags = ref<string[]>([]);
 const newHashtag = ref("");
 const files = ref<File[]>([]);
+const uploadFileIds = ref<number[]>([]);
 
 const router = useRouter();
 
@@ -26,37 +27,40 @@ const removeHashtag = (tag: string) => {
   hashtags.value = hashtags.value.filter((item) => item !== tag);
 };
 
-// const write = function () {
-//   axios.post("/api/posts", {
-//     title: title.value,
-//     content: content.value,
-//     hashtags: hashtags.value,
-//   })
-//   .then(() => {
-//     router.replace({name: "home"});
-//   })
-// }
+// 첨부파일 업로드
+const uploadFiles = async () => {
+  if (files.value.length === 0) return; // 파일이 없으면 업로드 스킵
 
-// 게시글 작성 요청
-const write = function () {
   const formData = new FormData();
-
-  formData.append("title", title.value);
-  formData.append("content", content.value);
-  formData.append("hashtags", hashtags.value);
-
-  files.value.forEach(file => {
-    formData.append("files", file); // 파일 추가
+  files.value.forEach((file) => {
+    formData.append("files", file);
   });
 
+  const response = await axios.post("/api/files", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+  uploadFileIds.value = response.data.data; // 업로드된 파일 ID 저장
+};
+
+// 게시글 작성 요청
+const write = async () => {
+  await uploadFiles(); // 첨부파일 먼저 업로드
+
+  const postData = {
+    title: title.value,
+    content: content.value,
+    hashtags: hashtags.value,
+    fileIds: uploadFileIds.value, // 업로드된 파일 ID 포함
+  };
+
   axios
-  .post("/api/posts", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  })
+  .post("/api/posts", postData)
   .then(() => {
     router.replace({ name: "home" });
+  })
+  .catch((error) => {
+    console.error("게시글 작성 실패:", error);
   });
 };
 
