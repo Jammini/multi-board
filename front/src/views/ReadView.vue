@@ -47,6 +47,19 @@ const downloadFile = (url: string, fileName: string) => {
     responseType: "blob", // 바이너리 데이터로 응답 받기
   })
   .then((response) => {
+    if (response.status !== 200) {
+      console.error("파일 다운로드 실패: 잘못된 응답 상태", response.status);
+      alert("파일을 다운로드할 수 없습니다.");
+      return;
+    }
+
+    const contentType = response.headers["content-type"];
+    if (contentType && contentType.includes("application/json")) {
+      console.error("파일 다운로드 실패: JSON 응답 수신");
+      alert("파일을 다운로드할 수 없습니다.");
+      return;
+    }
+
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement("a");
     link.href = url;
@@ -56,7 +69,8 @@ const downloadFile = (url: string, fileName: string) => {
     document.body.removeChild(link);
   })
   .catch((error) => {
-    console.error("파일 다운로드 실패:", error);
+    console.error("파일 다운로드 실패:", error)
+    alert("파일 다운로드 중 오류가 발생했습니다.");
   });
 };
 

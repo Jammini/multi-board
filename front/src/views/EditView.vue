@@ -28,12 +28,6 @@ axios.get(`/api/posts/${props.postId}`).then((response) => {
   post.value = response.data.data;
 });
 
-// const edit = () => {
-//   axios.patch(`/api/posts/${props.postId}`, post.value).then(() => {
-//     router.replace({name: "home"});
-//   });
-// }
-
 // 첨부파일 업로드
 const uploadFiles = async () => {
   if (newFiles.value.length === 0) return; // 파일이 없으면 업로드 스킵
@@ -43,17 +37,28 @@ const uploadFiles = async () => {
     formData.append("files", file);
   });
 
-  const response = await axios.post("/api/files", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-
-  // newFiles.value = response.data.data; // 업로드된 파일 ID 저장
-  return response.data.data;
+  try {
+    const response = await axios.post("/api/files", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data.data; // 업로드된 파일 ID 반환
+  } catch (error) {
+    console.error("파일 업로드 실패:", error);
+    alert("파일 업로드에 실패했습니다.");
+    throw error;
+  }
 };
 
 const edit = async () => {
-  const uploadedFileIds = await uploadFiles(); // 첨부파일 먼저 업로드
-
+  let uploadedFileIds: number[] = [];
+  try {
+    uploadedFileIds = await uploadFiles(); // 첨부파일 업로드
+  } catch (error) {
+    // 파일 업로드 실패 시 게시글 수정 중단
+    console.error("게시글 수정 중단:", error);
+    alert("게시글 수정에 실패했습니다.");
+    return;
+  }
   const filesToDelete = post.value.files
     .filter((file) => file.isDeleted)
     .map((file) => file.id);
@@ -75,31 +80,6 @@ const edit = async () => {
   .catch((error) => {
     console.error("수정 실패:", error);
   });
-  // const formData = new FormData();
-  // formData.append("title", post.value.title);
-  // formData.append("content", post.value.content);
-  // formData.append("fileIds", post.value.files.values()); // 파일 ID 추가
-
-  // 삭제할 파일 ID 추가
-  // const filesToDelete = post.value.files.filter((file) => file.isDeleted).map((file) => file.id);
-  //
-  // filesToDelete.forEach((fileId) => {
-  //   formData.append("filesToDelete", fileId); // 배열 형식으로 추가
-  // });
-  // // 새로 추가할 파일 추가
-  // newFiles.value.forEach((file) => formData.append("newFiles", file));
-  //
-  // axios
-  // .patch(`/api/posts/${post.value.id}`, formData, {
-  //   headers: { "Content-Type": "multipart/form-data" },
-  // })
-  // .then(() => {
-  //   alert("수정 완료");
-  //   router.replace({name: "home"});
-  // })
-  // .catch((error) => {
-  //   console.error("수정 실패:", error);
-  // });
 };
 
 // 해시태그 삭제
