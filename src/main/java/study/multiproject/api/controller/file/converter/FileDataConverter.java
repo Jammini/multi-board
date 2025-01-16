@@ -8,6 +8,9 @@ import study.multiproject.api.service.file.request.FileData;
 
 public class FileDataConverter {
 
+    private FileDataConverter() {
+    }
+
     public static List<FileData> toFileDataList(List<MultipartFile> files) {
         if (files == null) {
             return List.of();

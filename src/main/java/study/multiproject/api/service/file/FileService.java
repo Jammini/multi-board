@@ -2,15 +2,14 @@ package study.multiproject.api.service.file;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.PathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import study.multiproject.api.error.exception.ResponseCode;
 import study.multiproject.api.service.file.exception.FileNotFoundException;
@@ -61,12 +60,12 @@ public class FileService {
      * 파일 로드
      */
     public Resource loadAsResource(String filePath) {
-        try {
-            Path path = Paths.get(filePath);
-            return new UrlResource(path.toUri());
-        } catch (MalformedURLException e) {
-            throw new FileStorageException(ResponseCode.FILE_LOAD_ERROR, e.getMessage());
+        Path path = Paths.get(filePath);
+        PathResource resource = new PathResource(path);
+        if (!resource.exists() || !resource.isReadable()) {
+            throw new FileNotFoundException();
         }
+        return resource;
     }
 
     /**

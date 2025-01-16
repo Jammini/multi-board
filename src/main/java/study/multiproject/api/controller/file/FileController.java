@@ -36,10 +36,7 @@ public class FileController {
         String encodeUploadFileName = UriUtils.encode(response.fileName(),
             StandardCharsets.UTF_8);
         return ResponseEntity.ok()
-                   .header(HttpHeaders.CONTENT_DISPOSITION,
-                       "attachment; filename=\"" + encodeUploadFileName + "\"; " +
-                           "filename*=UTF-8''" + encodeUploadFileName)
-                   .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(response.fileSize()))
+                   .headers(createHeaders(encodeUploadFileName, response.fileSize()))
                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
                    .body(resource);
     }
@@ -59,5 +56,16 @@ public class FileController {
     public ApiResponse<Void> deleteFile(@PathVariable Long fileId) {
         fileService.deleteFile(fileId);
         return ApiResponse.success(null);
+    }
+
+    /**
+     * 파일 다운로드 헤더 생성
+     */
+    private HttpHeaders createHeaders(String encodedFileName, long fileSize) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION,
+            String.format("attachment; filename=\"%s\"; filename*=UTF-8''%s", encodedFileName, encodedFileName));
+        headers.add(HttpHeaders.CONTENT_LENGTH, String.valueOf(fileSize));
+        return headers;
     }
 }
