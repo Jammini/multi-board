@@ -36,7 +36,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew build
+        run: ./gradlew build sonar --info
       - name: Notify
         if: always()
         uses: slackapi/slack-github-action@v2.0.0
