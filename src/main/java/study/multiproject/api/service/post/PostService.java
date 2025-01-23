@@ -133,5 +133,4 @@ public class PostService {
             post.getPostHashtags().add(postHashtag);
         }
     }
-
 }
