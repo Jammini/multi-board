@@ -22,7 +22,28 @@
      - offset 방식
      - cursor 방식
    - 키워드 검색
+3. 스프린트 3 (2024.12.15 ~ 2024.12.28)
+   - 조회수 처리
+   - 조회수 증가
+   - 무한 조회수 증가 방지
+     - IP기반, 쿠키, 세션(Redis?), 디비, fingerprint
+   - 해시태그 추가
+   - 해시태그 검색
+4. 스프린트 4 (2024.12.29 ~ 2025.01.12)
+   - 파일 첨부
+5. 스프린트 5 (2025.01.13 ~ 2025.01.26)
+   - 파일 첨부
+   - Github Actions
 
+## 기술적 issue 해결 과정
+
+- [Github Actions으로 Sonar Cloud와 Slack 알림 설정하기](https://systemdata.tistory.com/115)
+- [운영환경에서 안전하게 테이블 칼럼을 추가하려면 어떤 방법이 좋을까?](https://systemdata.tistory.com/114)
+- [DTO는 어느 레이어까지 사용하는 것이 좋을까?](https://systemdata.tistory.com/112)
+- [Dependency Analyzer & Dependency Diagram 의존성 확인하기](https://systemdata.tistory.com/111)
+- [파일마다 EOL(EndOfLine) 넣어야 하는 이유는 무엇일까?](https://systemdata.tistory.com/110)
+- [자바 구글 코딩 컨벤션 적용하기](https://systemdata.tistory.com/109)
+- [Github 저장소에 Repository Rule 제약하기](https://systemdata.tistory.com/108)
 
 ## Git Branch Strategy
 
