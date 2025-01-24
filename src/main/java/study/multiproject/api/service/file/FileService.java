@@ -95,7 +95,11 @@ public class FileService {
      * 파일 전체 경로
      */
     public String getFullPath(String fileName) {
-        return fileProperties.getDir() + fileName;
+        String dir = fileProperties.getDir();
+        if (!dir.endsWith("/")) {
+            dir += "/";
+        }
+        return dir + fileName;
     }
 
     /**
