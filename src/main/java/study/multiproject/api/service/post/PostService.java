@@ -91,7 +91,6 @@ public class PostService {
                                     .content(request.content())
                                     .build();
         post.edit(postEditor);
-
         updateHashtags(post, request.hashtags());
         return post.getId();
     }
@@ -133,5 +132,4 @@ public class PostService {
             post.getPostHashtags().add(postHashtag);
         }
     }
-
 }

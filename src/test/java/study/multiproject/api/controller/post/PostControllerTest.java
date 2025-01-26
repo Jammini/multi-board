@@ -135,7 +135,7 @@ class PostControllerTest {
     @DisplayName("게시글 제목을 수정힌다.")
     void update() throws Exception {
         // given
-        PostEditRequest request = new PostEditRequest("제목 수정합니다.", "내용입니다.",null);
+        PostEditRequest request = new PostEditRequest("제목 수정합니다.", "내용입니다.", null);
 
         // expected
         mockMvc.perform(patch("/posts/{postId}", 1L)
