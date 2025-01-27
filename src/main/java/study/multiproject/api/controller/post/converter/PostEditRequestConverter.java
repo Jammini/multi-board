@@ -8,6 +8,6 @@ import study.multiproject.api.service.post.request.PostEditServiceRequest;
 public class PostEditRequestConverter {
 
     public PostEditServiceRequest toServiceRequest(PostEditRequest request) {
-        return new PostEditServiceRequest(request.title(), request.content(), request.hashtags());
+        return new PostEditServiceRequest(request.title(), request.content(), request.hashtags(), request.fileIds());
     }
 }

@@ -5,15 +5,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import study.multiproject.api.service.file.FileService;
+import study.multiproject.api.service.file.request.FileData;
+import study.multiproject.api.service.hashtag.request.HashtagSearchServiceRequest;
 import study.multiproject.api.service.post.exception.PostNotFoundException;
-import study.multiproject.api.service.post.request.HashtagSearchServiceRequest;
 import study.multiproject.api.service.post.request.PostCreateServiceRequest;
 import study.multiproject.api.service.post.request.PostEditServiceRequest;
 import study.multiproject.api.service.post.request.PostPageSearchServiceRequest;
 import study.multiproject.api.service.post.response.PagingResponse;
 import study.multiproject.api.service.post.response.PostResponse;
-import study.multiproject.domain.post.Hashtag;
-import study.multiproject.domain.post.HashtagRepository;
+import study.multiproject.domain.file.UploadFile;
+import study.multiproject.domain.hashtag.Hashtag;
+import study.multiproject.domain.hashtag.HashtagRepository;
 import study.multiproject.domain.post.Post;
 import study.multiproject.domain.post.PostEditor;
 import study.multiproject.domain.post.PostHashtag;
@@ -26,6 +29,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final HashtagRepository hashtagRepository;
     private final PostHitsService postHitsService;
+    private final FileService fileService;
 
     /**
      * 게시글 작성
@@ -33,15 +37,8 @@ public class PostService {
     @Transactional
     public Long write(PostCreateServiceRequest request) {
         Post post = postRepository.save(request.toEntity());
-
-        // 해시태그 저장 및 연결
-        for (String tagName : request.hashtags()) {
-            Hashtag hashtag = hashtagRepository.findByName(tagName)
-                                  .orElseGet(() -> hashtagRepository.save(
-                                      Hashtag.builder().name(tagName).build()));
-            PostHashtag postHashtag = PostHashtag.builder().hashtag(hashtag).build();
-            post.addPostHashtag(postHashtag);
-        }
+        linkFilesToPost(request.fileIds(), post);
+        saveHashtag(request.hashtags(), post);
         return post.getId();
     }
 
@@ -91,7 +88,9 @@ public class PostService {
                                     .content(request.content())
                                     .build();
         post.edit(postEditor);
+        // 해시태그 수정
         updateHashtags(post, request.hashtags());
+        linkFilesToPost(request.fileIds(), post);
         return post.getId();
     }
 
@@ -114,6 +113,9 @@ public class PostService {
         return new PagingResponse(postPage);
     }
 
+    /**
+     * 해시태그 수정
+     */
     private void updateHashtags(Post post, List<String> newHashtags) {
         // 기존 해시태그 삭제
         post.getPostHashtags().clear();
@@ -126,10 +128,46 @@ public class PostService {
                                       return hashtagRepository.save(newHashtag);
                                   });
             PostHashtag postHashtag = PostHashtag.builder()
-                                    .post(post)
-                                    .hashtag(hashtag)
-                                    .build();
+                                          .post(post)
+                                          .hashtag(hashtag)
+                                          .build();
             post.getPostHashtags().add(postHashtag);
         }
+    }
+
+    /**
+     * 해시태그 저장
+     */
+    private void saveHashtag(List<String> hashtags, Post post) {
+        for (String tagName : hashtags) {
+            Hashtag hashtag = hashtagRepository.findByName(tagName)
+                                  .orElseGet(() -> hashtagRepository.save(
+                                      Hashtag.builder().name(tagName).build()));
+            PostHashtag postHashtag = PostHashtag.builder().hashtag(hashtag).build();
+            post.addPostHashtag(postHashtag);
+        }
+    }
+
+    /**
+     * 첨부파일 연결
+     */
+    private void linkFilesToPost(List<Long> fileIds, Post post) {
+        for (Long id : fileIds) {
+            UploadFile uploadFile = fileService.getFileEntityById(id);
+            post.addFile(uploadFile);
+        }
+    }
+
+    /**
+     * 첨부파일 수정
+     */
+    private void updateFiles(Post post, List<Long> filesToDelete, List<FileData> newFiles) {
+        // 삭제할 파일 처리
+        for (Long fileId : filesToDelete) {
+            fileService.deleteFile(fileId);
+            post.removeFileById(fileId);
+        }
+        // 새 파일 추가
+//        saveFile(newFiles, post);
     }
 }

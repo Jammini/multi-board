@@ -1,4 +1,4 @@
-package study.multiproject.api.controller.post;
+package study.multiproject.api.controller.hashtag;
 
 import jakarta.validation.Valid;
 import java.util.List;
@@ -6,11 +6,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import study.multiproject.api.common.ApiResponse;
-import study.multiproject.api.controller.post.converter.HashtagSearchRequestConverter;
-import study.multiproject.api.controller.post.request.HashtagSearchRequest;
-import study.multiproject.api.service.post.HashtagService;
+import study.multiproject.api.controller.hashtag.converter.HashtagSearchRequestConverter;
+import study.multiproject.api.controller.hashtag.request.HashtagSearchRequest;
+import study.multiproject.api.service.hashtag.HashtagService;
 import study.multiproject.api.service.post.PostService;
-import study.multiproject.api.service.post.response.HashtagResponse;
+import study.multiproject.api.service.hashtag.response.HashtagResponse;
 import study.multiproject.api.service.post.response.PagingResponse;
 
 @RestController

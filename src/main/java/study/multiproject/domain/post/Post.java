@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import study.multiproject.domain.file.UploadFile;
 
 @Getter
 @Entity
@@ -45,12 +46,16 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PostHashtag> postHashtags;
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UploadFile> uploadFiles;
+
     @Builder
     protected Post(String title, String content) {
         this.title = title;
         this.content = content;
         this.viewCount = 0;
         this.postHashtags = new HashSet<>();
+        this.uploadFiles = new HashSet<>();
     }
 
     public void changeViewCount(Integer viewCount) {
@@ -71,5 +76,14 @@ public class Post {
     public void addPostHashtag(PostHashtag postHashtag) {
         this.postHashtags.add(postHashtag);
         postHashtag.addPost(this);
+    }
+
+    public void addFile(UploadFile uploadFile) {
+        uploadFiles.add(uploadFile);
+        uploadFile.setPost(this);
+    }
+
+    public void removeFileById(Long fileId) {
+        uploadFiles.removeIf(file -> file.getId().equals(fileId));
     }
 }

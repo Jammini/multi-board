@@ -8,6 +8,8 @@ const title = ref("");
 const content = ref("");
 const hashtags = ref<string[]>([]);
 const newHashtag = ref("");
+const files = ref<File[]>([]);
+const uploadFileIds = ref<number[]>([]);
 
 const router = useRouter();
 
@@ -25,16 +27,50 @@ const removeHashtag = (tag: string) => {
   hashtags.value = hashtags.value.filter((item) => item !== tag);
 };
 
-const write = function () {
-  axios.post("/api/posts", {
+// 첨부파일 업로드
+const uploadFiles = async () => {
+  if (files.value.length === 0) return; // 파일이 없으면 업로드 스킵
+
+  const formData = new FormData();
+  files.value.forEach((file) => {
+    formData.append("files", file);
+  });
+
+  const response = await axios.post("/api/files", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+  uploadFileIds.value = response.data.data; // 업로드된 파일 ID 저장
+};
+
+// 게시글 작성 요청
+const write = async () => {
+  await uploadFiles(); // 첨부파일 먼저 업로드
+
+  const postData = {
     title: title.value,
     content: content.value,
     hashtags: hashtags.value,
-  })
+    fileIds: uploadFileIds.value, // 업로드된 파일 ID 포함
+  };
+
+  axios
+  .post("/api/posts", postData)
   .then(() => {
-    router.replace({name: "home"});
+    router.replace({ name: "home" });
   })
-}
+  .catch((error) => {
+    console.error("게시글 작성 실패:", error);
+  });
+};
+
+// 첨부파일 변경 시 처리
+const handleChange = (uploadFileList) => {
+  // 개별 파일 객체를 배열에 추가
+  if (uploadFileList.raw) {
+    files.value.push(uploadFileList.raw as File); // raw가 존재하면 File로 변환하여 추가
+  }
+};
 
 </script>
 
@@ -45,6 +81,22 @@ const write = function () {
   <div class="mt-2">
     <el-input v-model="content" type="textarea" rows="15" placeholder="내용을 입력해주세요" />
   </div>
+  <div class="mt-2">
+    <!-- 첨부파일 업로드 -->
+    <el-upload
+      drag
+      action=""
+      :auto-upload="false"
+      :file-list="files"
+      multiple
+      list-type="text"
+      @change="handleChange"
+    >
+      <i class="el-icon-upload"></i>
+      <div class="el-upload__text">여기에 파일을 드래그하거나 클릭하여 업로드하세요</div>
+    </el-upload>
+  </div>
+
   <div class="mt-2">
     <!-- 해시태그 입력 필드 -->
     <el-input

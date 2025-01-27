@@ -1,11 +1,11 @@
-package study.multiproject.api.service.post;
+package study.multiproject.api.service.hashtag;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import study.multiproject.api.service.post.response.HashtagResponse;
-import study.multiproject.domain.post.HashtagRepository;
+import study.multiproject.api.service.hashtag.response.HashtagResponse;
+import study.multiproject.domain.hashtag.HashtagRepository;
 
 @Service
 @RequiredArgsConstructor

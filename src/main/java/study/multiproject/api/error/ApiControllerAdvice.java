@@ -28,7 +28,7 @@ public class ApiControllerAdvice {
 
     @ExceptionHandler(BaseException.class)
     public ApiResponse<ResponseCode> handleBaseException(BaseException exception) {
-        return buildAndReturnResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
+        return buildAndReturnResponse(HttpStatus.valueOf(exception.getResponseCode().getStatus()), exception.getMessage() + " | " + exception.getDetails());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
