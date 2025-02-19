@@ -9,7 +9,7 @@ public class CommentCreateRequestConverter {
 
     public CommentCreateServiceRequest toServiceRequest(CommentCreateRequest request) {
         return new CommentCreateServiceRequest(request.postId(), request.nickname(),
-            request.content(), request.parentCommentId(), request.writerId());
+            request.content(), request.path(), request.writerId());
     }
 
 }

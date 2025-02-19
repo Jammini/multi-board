@@ -4,7 +4,7 @@ public record CommentCreateRequest(
     Long postId,
     String nickname,
     String content,
-    Long parentCommentId,
+    String path,
     Long writerId) {
 
 }

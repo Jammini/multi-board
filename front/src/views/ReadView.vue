@@ -1,12 +1,11 @@
 <script setup lang="ts">
 
-import {onMounted, ref, computed} from "vue";
+import {onMounted, ref, provide} from "vue";
 import axios from "axios";
 import {ElButton, ElMessage, ElPagination} from "element-plus";
 import {useRoute, useRouter} from "vue-router";
-import { formatDistanceToNow } from "date-fns";
-import {ko} from "date-fns/locale/ko";
 import 'element-plus/dist/index.css';
+import CommentItem from "@/views/CommentItem.vue";
 
 const props = defineProps({
   postId: {
@@ -35,10 +34,8 @@ const pageSize = ref(10);
 const route = useRoute();
 const router = useRouter();
 
-// 상대 시간 계산 함수 (예: "3분 전")
-const relativeTime = (dateStr: string) => {
-  return formatDistanceToNow(new Date(dateStr), { addSuffix: true, locale: ko });
-};
+// Provide 전체 댓글 목록을 자식 재귀 컴포넌트에서 사용하도록 함
+provide("allComments", comments);
 
 const moveToEdit = () =>{
   router.push({name: "edit", params: {postId: props.postId}});
@@ -73,30 +70,12 @@ const fetchComments = () => {
     const data = response.data.data;
     comments.value = data.comment; // CommentPageResponse.comment 배열
     commentCount.value = data.commentCount;
+    // Provide 갱신
+    provide("allComments", comments.value);
   })
   .catch((error) => {
     console.error("댓글 불러오기 실패:", error);
   });
-};
-
-/**
- * 루트 댓글: 자신의 id와 parentCommentId가 같은 댓글
- */
-const rootComments = computed(() => {
-  return comments.value.filter(
-    (c) => Number(c.id) === Number(c.parentCommentId)
-  );
-});
-
-/**
- * 특정 댓글의 답글(대댓글) 가져오기
- */
-const getReplies = (commentId: number | string) => {
-  return comments.value.filter(
-    (c) =>
-      Number(c.parentCommentId) === Number(commentId) &&
-      Number(c.id) !== Number(commentId)
-  );
 };
 
 const handlePageChange = (page: number) => {
@@ -105,7 +84,7 @@ const handlePageChange = (page: number) => {
 };
 
 // 댓글 작성 API 호출
-const postComment = (parentId: number | null, content: string) => {
+const postComment = (path: string | null, content: string) => {
   if (!content.trim()) {
     ElMessage.error("댓글 내용을 입력해 주세요.");
     return;
@@ -115,7 +94,7 @@ const postComment = (parentId: number | null, content: string) => {
     postId: props.postId,
     nickname: "익명",
     content: content,
-    parentCommentId: parentId, // 여기서 부모 댓글의 id가 전달됨.
+    path: path, // 여기서 부모 댓글의 id가 전달됨.
     writerId: 1,
   };
 
@@ -124,7 +103,7 @@ const postComment = (parentId: number | null, content: string) => {
   .then((response) => {
     ElMessage.success("댓글이 등록되었습니다.");
     // 루트 댓글의 경우 newComment 초기화, 답글의 경우 해당 입력값 초기화
-    if (parentId === null) {
+    if (path === null) {
       newComment.value = "";
     }
     fetchComments();
@@ -146,6 +125,12 @@ const deleteComment = (commentId: number) => {
     console.error("댓글 삭제 실패:", error);
     ElMessage.error("댓글 삭제에 실패했습니다.");
   });
+};
+
+// 부모의 'reply' 이벤트를 받아 답글 등록 처리
+const handleReply = (payload: { parentPath: string; content: string }) => {
+  // payload.parentPath는 부모 댓글의 path가 됨.
+  postComment(payload.parentPath, payload.content);
 };
 
 // 첨부파일 다운로드
@@ -225,77 +210,19 @@ const downloadFile = (url: string, fileName: string, fileIndex: number) => {
     </el-tag>
   </div>
 
-  <!-- 댓글 목록 -->
   <div class="comments mt-3">
     <h3>댓글 ({{ commentCount }})</h3>
     <ul>
-      <li v-for="root in rootComments" :key="root.id" class="comment-item">
-        <!-- 루트 댓글 -->
-        <div class="comment-header">
-          <strong>{{ root.nickname }}</strong>
-          <span class="comment-time">({{ relativeTime(root.createdAt) }})</span>
-          <el-button
-            type="text"
-            size="small"
-            @click="deleteComment(root.id)"
-          >
-            삭제
-          </el-button>
-        </div>
-        <div class="comment-content" :class="{ deleted: root.deleted }">
-          <template v-if="root.deleted">
-            삭제된 댓글입니다
-          </template>
-          <template v-else>
-            {{ root.comment }}
-          </template>
-        </div>
-        <!-- 답글 버튼 및 입력폼 -->
-        <el-button
-          type="text"
-          size="small"
-          @click="root.showReply = !root.showReply"
-        >
-          답글
-        </el-button>
-        <div v-if="root.showReply" class="reply-input">
-          <el-input
-            type="textarea"
-            v-model="root.replyText"
-            placeholder="답글을 입력하세요."
-            rows="2"
-          />
-          <el-button
-            type="primary"
-            size="small"
-            @click="postComment(root.id, root.replyText)"
-          >
-            등록
-          </el-button>
-        </div>
-        <!-- 대댓글 목록 -->
-        <ul class="replies" v-if="getReplies(root.id).length">
-          <li v-for="reply in getReplies(root.id)" :key="reply.id" class="reply-item">
-            <div class="comment-header">
-              <strong>{{ reply.nickname }}</strong>
-              <span class="comment-time">({{ relativeTime(reply.createdAt) }})</span>
-              <el-button type="text" size="small" @click="deleteComment(reply.id)">
-                삭제
-              </el-button>
-            </div>
-            <div class="comment-content" :class="{ deleted: reply.deleted }">
-              <template v-if="reply.deleted">
-                삭제된 댓글입니다
-              </template>
-              <template v-else>
-                {{ reply.comment }}
-              </template>
-            </div>
-          </li>
-        </ul>
-        <hr class="comment-divider" />
-      </li>
+      <!-- 루트 댓글: path 길이가 5인 댓글 -->
+      <CommentItem
+        v-for="root in comments.filter(c => c.path && c.path.length === 5)"
+        :key="root.id"
+        :comment="root"
+        @delete="deleteComment"
+        @reply="handleReply"
+      />
     </ul>
+
     <!-- 페이지네이션 (댓글이 10개 이상일 경우) -->
     <el-pagination
       v-if="commentCount >= pageSize"
@@ -372,58 +299,6 @@ const downloadFile = (url: string, fileName: string, fileIndex: number) => {
 
 .comments h3 {
   margin-bottom: 8px;
-}
-
-.comment-item {
-  padding: 12px 0;
-}
-
-.comment-header {
-  font-size: 0.9rem;
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.comment-time {
-  color: #888;
-  font-size: 0.8rem;
-}
-
-.comment-content {
-  font-size: 1rem;
-  line-height: 1.4;
-  margin-bottom: 8px;
-}
-
-.comment-divider {
-  border: none;
-  border-top: 1px solid #ddd;
-  margin: 0;
-}
-
-/* 답글 입력폼 */
-.reply-input {
-  margin: 8px 0;
-}
-
-/* 대댓글(답글) 스타일 */
-.replies {
-  margin-left: 20px;
-  list-style-type: none;
-  padding: 0;
-}
-
-.reply-item {
-  padding: 8px 0;
-  border-bottom: 1px dashed #ccc;
-}
-
-/* 회색 처리: 삭제된 댓글 */
-.deleted {
-  color: gray;
-  font-style: italic;
 }
 
 </style>

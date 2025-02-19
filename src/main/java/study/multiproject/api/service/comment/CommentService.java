@@ -13,6 +13,7 @@ import study.multiproject.api.service.comment.response.CommentResponse;
 import study.multiproject.api.service.exception.CommentNotFoundException;
 import study.multiproject.api.service.exception.ParentCommentNotFoundException;
 import study.multiproject.domain.comment.Comment;
+import study.multiproject.domain.comment.CommentPath;
 import study.multiproject.domain.comment.CommentRepository;
 
 @Service
@@ -26,8 +27,17 @@ public class CommentService {
      */
     @Transactional
     public CommentResponse create(CommentCreateServiceRequest request) {
-        Comment parent = findParentComment(request.parentCommentId());
-        Comment comment = commentRepository.save(request.toEntity(parent));
+        Comment parent = findParentComment(request.path());
+        CommentPath parentCommentPath = parent == null ? CommentPath.create("") : parent.getCommentPath();
+
+        // 부모 댓글의 자식 댓글 중 TopPath를 찾는다.
+        String descendantsTopPath = commentRepository.findDescendantsTopPath(request.postId(),
+            parentCommentPath.getPath()).orElse(null);
+
+        // 자식 댓글의 Path를 생성한다.
+        CommentPath childCommentPath = parentCommentPath.createChildCommentPath(descendantsTopPath);
+
+        Comment comment = commentRepository.save(request.toEntity(childCommentPath));
         return new CommentResponse(comment);
     }
 
@@ -78,7 +88,7 @@ public class CommentService {
     private void recursionDelete(Comment comment) {
         commentRepository.delete(comment);
         if (!comment.isRoot()) {
-            commentRepository.findById(comment.getParentCommentId())
+            commentRepository.findByPath(comment.getCommentPath().getParentPath())
                 .filter(Comment::isDeleted)
                 .filter(not(this::hasChildren))
                 .ifPresent(this::recursionDelete);
@@ -89,19 +99,21 @@ public class CommentService {
      * 댓글의 자식 댓글이 있는지 확인
      */
     private boolean hasChildren(Comment comment) {
-        return commentRepository.countBy(comment.getPostId(), comment.getId(), 2L) == 2;
+        return commentRepository.findDescendantsTopPath(
+            comment.getPostId(),
+            comment.getCommentPath().getPath()
+        ).isPresent();
     }
 
     /**
      * 부모 댓글 조회
      */
-    private Comment findParentComment(Long parentCommentId) {
-        if (parentCommentId == null) {
+    private Comment findParentComment(String parentPath) {
+        if (parentPath == null) {
             return null;
         }
-        return commentRepository.findById(parentCommentId)
+        return commentRepository.findByPath(parentPath)
                    .filter(not(Comment::isDeleted))
-                   .filter(Comment::isRoot)
                    .orElseThrow(ParentCommentNotFoundException::new);
     }
 }

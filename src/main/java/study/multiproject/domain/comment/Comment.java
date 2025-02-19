@@ -1,10 +1,10 @@
 package study.multiproject.domain.comment;
 
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.PostPersist;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -35,9 +35,10 @@ public class Comment {
     private String content;
 
     /**
-     * 부모 댓글 아이디
+     * 경로 정보
      */
-    private Long parentCommentId;
+    @Embedded
+    private CommentPath commentPath;
 
     /**
      * 게시글 아이디
@@ -61,26 +62,19 @@ public class Comment {
     private LocalDateTime createdAt;
 
     @Builder
-    public Comment(Long id, String nickname, String content, Long parentCommentId, Long postId, Long writerId) {
+    public Comment(Long id, String nickname, String content, CommentPath commentPath, Long postId, Long writerId) {
         this.id = id;
         this.nickname = nickname;
         this.content = content;
-        this.parentCommentId = parentCommentId;
+        this.commentPath = commentPath;
         this.postId = postId;
         this.writerId = writerId;
         this.deleted = false;
         this.createdAt = LocalDateTime.now();
     }
 
-    @PostPersist
-    public void setParentCommentId() {
-        if (this.parentCommentId == null) {
-            this.parentCommentId = this.id;
-        }
-    }
-
     public boolean isRoot() {
-        return parentCommentId.longValue() == id;
+        return commentPath.isRoot();
     }
 
     public void delete() {
