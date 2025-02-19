@@ -1,17 +1,17 @@
 package study.multiproject.api.service.comment.request;
 
 import study.multiproject.domain.comment.Comment;
+import study.multiproject.domain.comment.CommentPath;
 
-public record CommentCreateServiceRequest(Long postId, String nickname, String content,
-                                          Long parentCommentId, Long writerId) {
+public record CommentCreateServiceRequest(Long postId, String nickname, String content, String path,
+                                          Long writerId) {
 
-    public Comment toEntity(Comment parentComment) {
+    public Comment toEntity(CommentPath commentPath) {
         return Comment.builder()
                    .postId(postId)
                    .nickname(nickname)
                    .content(content)
-                   .parentCommentId(
-                       parentComment == null ? null : parentComment.getId())
+                   .commentPath(commentPath)
                    .writerId(writerId)
                    .build();
     }

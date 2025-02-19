@@ -21,9 +21,10 @@ public enum ResponseCode {
     FILE_SIZE_ERROR(400, "F005", "파일 크기 확인에 실패했습니다."),
 
     // COMMENT
-
     NOT_FOUND_COMMENT(404, "C001", "존재하지 않는 댓글입니다."),
     NOT_FOUND_PARENT_COMMENT(404, "C002", "부모 댓글이 존재하지 않습니다."),
+    COMMENT_DEPTH_OVERFLOW(400, "C103", "댓글의 최대 깊이를 초과하였습니다."),
+    COMMENT_CHUNK_OVERFLOW(400, "C104", "댓글의 최대 개수를 초과하였습니다."),
     ;
 
     private final int status;
