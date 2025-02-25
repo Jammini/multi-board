@@ -34,9 +34,14 @@
 5. 스프린트 5 (2025.01.13 ~ 2025.01.26)
    - 파일 첨부
    - Github Actions
+6. 스프린트 6 (2025.01.27 ~ 2025.02.09)
+   - 답글(Reply)
+7. 스프린트 7 (2025.02.10 ~ 2025.02.23)
+   - 댓글(Comment)
 
 ## 기술적 issue 해결 과정
 
+- [댓글 알고리즘으로 무한 depth 구현하기](https://systemdata.tistory.com/116)
 - [Github Actions으로 Sonar Cloud와 Slack 알림 설정하기](https://systemdata.tistory.com/115)
 - [운영환경에서 안전하게 테이블 칼럼을 추가하려면 어떤 방법이 좋을까?](https://systemdata.tistory.com/114)
 - [DTO는 어느 레이어까지 사용하는 것이 좋을까?](https://systemdata.tistory.com/112)
