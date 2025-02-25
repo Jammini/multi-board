@@ -5,6 +5,6 @@ import study.multiproject.api.error.exception.ResponseCode;
 
 public class ParentCommentNotFoundException extends BaseException {
     public ParentCommentNotFoundException() {
-        super(ResponseCode.NOT_FOUND_COMMENT);
+        super(ResponseCode.NOT_FOUND_PARENT_COMMENT);
     }
 }
