@@ -7,6 +7,9 @@ import {useRoute, useRouter} from "vue-router";
 import 'element-plus/dist/index.css';
 import CommentItem from "@/views/CommentItem.vue";
 
+// 고정 사용자 아이디 (실제 서비스에서는 로그인 정보를 사용)
+const userId = 1;
+
 const props = defineProps({
   postId: {
     type: [Number, String],
@@ -22,6 +25,10 @@ const post = ref({
   hashtags: [] as string[], // 해시태그 배열 추가
   files: [] as { fileName: string; downloadUrl: string; isAvailable: boolean }[], // 첨부파일 배열 추가
 })
+
+// 좋아요 관련 상태
+const likeCount = ref(0);
+const userLiked = ref(false);
 
 const comments = ref([] as any[]); // 댓글 목록
 const commentCount = ref(0); // 전체 댓글 수
@@ -57,7 +64,62 @@ onMounted(() => {
     };
   });
   fetchComments();
+  fetchLikeCount();
+  fetchUserLike();
 });
+
+// 좋아요 수 불러오기
+const fetchLikeCount = () => {
+  axios
+  .get(`/api/likes/posts/${props.postId}/count`)
+  .then((response) => {
+    likeCount.value = response.data;
+  })
+  .catch((error) => {
+    console.error("좋아요 수 불러오기 실패:", error);
+  });
+};
+
+// 현재 사용자의 좋아요 여부 확인
+const fetchUserLike = () => {
+  axios
+  .get(`/api/likes/posts/${props.postId}/users/${userId}`)
+  .then((response) => {
+    userLiked.value = true;
+  })
+  .catch((error) => {
+    // 404 등의 오류이면 좋아요한 내역이 없다고 판단
+    userLiked.value = false;
+  });
+};
+
+// 좋아요/취소 토글
+const toggleLike = () => {
+  if (!userLiked.value) {
+    axios
+    .post(`/api/likes/posts/${props.postId}/users/${userId}/optimistic-lock`)
+    .then(() => {
+      userLiked.value = true;
+      fetchLikeCount();
+    })
+    .catch((error) => {
+      console.error("좋아요 실패:", error);
+      ElMessage.error("좋아요에 실패했습니다.");
+    });
+  } else {
+    axios
+    .delete(`/api/likes/posts/${props.postId}/users/${userId}/optimistic-lock`)
+    .then(() => {
+      userLiked.value = false;
+      fetchLikeCount();
+    })
+    .catch((error) => {
+      console.error("좋아요 취소 실패:", error);
+      ElMessage.error("좋아요 취소에 실패했습니다.");
+    });
+  }
+};
+
 
 // 댓글 목록 조회
 const fetchComments = () => {
@@ -181,6 +243,15 @@ const downloadFile = (url: string, fileName: string, fileIndex: number) => {
   </div>
   <div>{{ post.content }}</div>
 
+  <!-- 좋아요 영역 -->
+  <div class="like-section mt-3">
+    <el-button type="primary" @click="toggleLike">
+      {{ userLiked ? "좋아요 취소" : "좋아요" }}
+    </el-button>
+    <span class="like-count"> 좋아요 {{ likeCount }}개</span>
+  </div>
+
+
   <!-- 첨부파일 목록 -->
   <div v-if="post.files.length > 0" class="attachments mt-3">
     <h3>첨부파일</h3>
@@ -301,4 +372,13 @@ const downloadFile = (url: string, fileName: string, fileIndex: number) => {
   margin-bottom: 8px;
 }
 
+.like-section {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.like-count {
+  font-weight: bold;
+}
 </style>
