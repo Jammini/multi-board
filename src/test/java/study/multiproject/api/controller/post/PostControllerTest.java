@@ -1,6 +1,7 @@
 package study.multiproject.api.controller.post;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import study.multiproject.api.controller.post.converter.PostCreateRequestConverter;
 import study.multiproject.api.controller.post.converter.PostEditRequestConverter;
@@ -23,6 +25,7 @@ import study.multiproject.api.controller.post.request.PostCreateRequest;
 import study.multiproject.api.controller.post.request.PostEditRequest;
 import study.multiproject.api.service.post.PostService;
 
+@WithMockUser(username = "test@example.com", roles = "USER")
 @WebMvcTest(PostController.class)
 class PostControllerTest {
 
@@ -54,6 +57,7 @@ class PostControllerTest {
         // expected
         mockMvc.perform(post("/posts")
                             .contentType(APPLICATION_JSON)
+                            .with(csrf())
                             .content(objectMapper.writeValueAsString(request)))
             .andDo(print())
             .andExpect(status().isOk());
@@ -68,6 +72,7 @@ class PostControllerTest {
         // expected
         mockMvc.perform(post("/posts")
                             .contentType(APPLICATION_JSON)
+                            .with(csrf())
                             .content(objectMapper.writeValueAsString(request)))
             .andDo(print())
             .andExpect(status().isBadRequest())
@@ -83,6 +88,7 @@ class PostControllerTest {
         // expected
         mockMvc.perform(post("/posts")
                             .contentType(APPLICATION_JSON)
+                            .with(csrf())
                             .content(objectMapper.writeValueAsString(request)))
             .andDo(print())
             .andExpect(status().isBadRequest())
@@ -140,6 +146,7 @@ class PostControllerTest {
         // expected
         mockMvc.perform(patch("/posts/{postId}", 1L)
                             .contentType(APPLICATION_JSON)
+                            .with(csrf())
                             .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isOk())
             .andDo(print());
@@ -154,6 +161,7 @@ class PostControllerTest {
         // expected
         mockMvc.perform(post("/posts")
                             .contentType(APPLICATION_JSON)
+                            .with(csrf())
                             .content(objectMapper.writeValueAsString(request)))
             .andDo(print())
             .andExpect(status().isBadRequest())
@@ -169,6 +177,7 @@ class PostControllerTest {
         // expected
         mockMvc.perform(post("/posts")
                             .contentType(APPLICATION_JSON)
+                            .with(csrf())
                             .content(objectMapper.writeValueAsString(request)))
             .andDo(print())
             .andExpect(status().isBadRequest())
@@ -181,7 +190,8 @@ class PostControllerTest {
     void deletePost() throws Exception {
         // expected
         mockMvc.perform(delete("/posts/{postId}", 1L)
-                            .contentType(APPLICATION_JSON))
+                            .contentType(APPLICATION_JSON)
+                            .with(csrf()))
             .andDo(print())
             .andExpect(status().isOk());
     }
