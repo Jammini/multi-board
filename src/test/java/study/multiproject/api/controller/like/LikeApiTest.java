@@ -4,9 +4,14 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.web.client.RestClient;
+import study.multiproject.api.config.TestSecurityConfig;
 import study.multiproject.api.service.like.response.LikeResponse;
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@Import(TestSecurityConfig.class)
 public class LikeApiTest {
 
     RestClient restClient = RestClient.create("http://localhost:8080");
