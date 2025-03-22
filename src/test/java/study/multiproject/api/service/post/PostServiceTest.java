@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 import study.multiproject.api.service.post.exception.PostNotFoundException;
 import study.multiproject.api.service.post.request.PostCreateServiceRequest;
@@ -21,6 +22,7 @@ import study.multiproject.api.service.post.response.PostResponse;
 import study.multiproject.domain.post.Post;
 import study.multiproject.domain.post.PostRepository;
 
+@WithMockUser(username = "test@example.com", roles = "USER")
 @Transactional
 @SpringBootTest
 class PostServiceTest {
