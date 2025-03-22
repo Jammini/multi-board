@@ -1,6 +1,9 @@
 package study.multiproject.api.controller.post;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -15,14 +18,21 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import study.multiproject.api.config.TestSecurityConfig;
 import study.multiproject.api.controller.post.converter.PostCreateRequestConverter;
 import study.multiproject.api.controller.post.converter.PostEditRequestConverter;
 import study.multiproject.api.controller.post.converter.PostPageSearchRequestConverter;
 import study.multiproject.api.controller.post.request.PostCreateRequest;
 import study.multiproject.api.controller.post.request.PostEditRequest;
 import study.multiproject.api.service.post.PostService;
+import study.multiproject.api.service.post.request.PostCreateServiceRequest;
+import study.multiproject.api.service.post.request.PostEditServiceRequest;
 
+@WithMockUser(username = "test@example.com", roles = "USER")
+@Import(TestSecurityConfig.class)
 @WebMvcTest(PostController.class)
 class PostControllerTest {
 
@@ -47,13 +57,15 @@ class PostControllerTest {
     @Test
     @DisplayName("신규 게시글을 작성한다.")
     void createPost() throws Exception {
-        // given
         PostCreateRequest request = new PostCreateRequest("잼미니", "잼미니는 잼잼이다.", null, null);
-        postService.write(postCreateRequestConverter.toServiceRequest(request));
+        PostCreateServiceRequest serviceRequest = new PostCreateServiceRequest("잼미니", "잼미니는 잼잼이다.", null, null);
 
-        // expected
+        given(postCreateRequestConverter.toServiceRequest(any())).willReturn(serviceRequest);
+        given(postService.write(any())).willReturn(1L);
+
         mockMvc.perform(post("/posts")
                             .contentType(APPLICATION_JSON)
+                            .with(csrf())
                             .content(objectMapper.writeValueAsString(request)))
             .andDo(print())
             .andExpect(status().isOk());
@@ -62,12 +74,11 @@ class PostControllerTest {
     @Test
     @DisplayName("게시글 등록시 title 값은 필수이다.")
     void createPostCheckTitle() throws Exception {
-        // given
         PostCreateRequest request = new PostCreateRequest(null, "잼미니는 잼잼이다.", null, null);
 
-        // expected
         mockMvc.perform(post("/posts")
                             .contentType(APPLICATION_JSON)
+                            .with(csrf())
                             .content(objectMapper.writeValueAsString(request)))
             .andDo(print())
             .andExpect(status().isBadRequest())
@@ -75,14 +86,13 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("게시글 등록시 Content 값은 필수이다.")
+    @DisplayName("게시글 등록시 content 값은 필수이다.")
     void createPostCheckContent() throws Exception {
-        // given
         PostCreateRequest request = new PostCreateRequest("잼미니", null, null, null);
 
-        // expected
         mockMvc.perform(post("/posts")
                             .contentType(APPLICATION_JSON)
+                            .with(csrf())
                             .content(objectMapper.writeValueAsString(request)))
             .andDo(print())
             .andExpect(status().isBadRequest())
@@ -92,7 +102,6 @@ class PostControllerTest {
     @Test
     @DisplayName("게시글 한개를 조회한다.")
     void read() throws Exception {
-        // expected
         mockMvc.perform(get("/posts/{postId}", 1L)
                             .contentType(APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -102,7 +111,6 @@ class PostControllerTest {
     @Test
     @DisplayName("게시글 여러개를 조회한다")
     void readAll() throws Exception {
-        // expected
         mockMvc.perform(get("/posts?page=1&size=3&sort=id,desc")
                             .contentType(APPLICATION_JSON))
             .andDo(print())
@@ -112,7 +120,6 @@ class PostControllerTest {
     @Test
     @DisplayName("게시글 조회시 page 값이 0보다 작으면 예외가 발생한다.")
     void readAllCheckPage() throws Exception {
-        // expected
         mockMvc.perform(get("/posts?page=0&size=3&sort=id,desc")
                             .contentType(APPLICATION_JSON))
             .andDo(print())
@@ -123,7 +130,6 @@ class PostControllerTest {
     @Test
     @DisplayName("게시글 조회시 size 값이 0보다 작으면 예외가 발생한다.")
     void readAllCheckSize() throws Exception {
-        // expected
         mockMvc.perform(get("/posts?page=1&size=0&sort=id,desc")
                             .contentType(APPLICATION_JSON))
             .andDo(print())
@@ -134,26 +140,28 @@ class PostControllerTest {
     @Test
     @DisplayName("게시글 제목을 수정힌다.")
     void update() throws Exception {
-        // given
         PostEditRequest request = new PostEditRequest("제목 수정합니다.", "내용입니다.", null, null);
+        PostEditServiceRequest serviceRequest = new PostEditServiceRequest("제목 수정합니다.", "내용입니다.", null, null);
 
-        // expected
+        given(postEditRequestConverter.toServiceRequest(any())).willReturn(serviceRequest);
+        given(postService.edit(any(), any())).willReturn(1L);
+
         mockMvc.perform(patch("/posts/{postId}", 1L)
                             .contentType(APPLICATION_JSON)
+                            .with(csrf())
                             .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isOk())
             .andDo(print());
     }
 
     @Test
-    @DisplayName("게시글 등록시 Title 값은 필수이다.")
+    @DisplayName("게시글 수정시 title 값은 필수이다.")
     void updatePostCheckTitle() throws Exception {
-        // given
         PostEditRequest request = new PostEditRequest(null, "잼미니는 잼잼이다.", null, null);
 
-        // expected
-        mockMvc.perform(post("/posts")
+        mockMvc.perform(patch("/posts/{postId}", 1L)
                             .contentType(APPLICATION_JSON)
+                            .with(csrf())
                             .content(objectMapper.writeValueAsString(request)))
             .andDo(print())
             .andExpect(status().isBadRequest())
@@ -161,27 +169,25 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("게시글 등록시 Content 값은 필수이다.")
+    @DisplayName("게시글 수정시 content 값은 필수이다.")
     void updatePostCheckContent() throws Exception {
-        // given
         PostEditRequest request = new PostEditRequest("잼미니", null, null, null);
 
-        // expected
-        mockMvc.perform(post("/posts")
+        mockMvc.perform(patch("/posts/{postId}", 1L)
                             .contentType(APPLICATION_JSON)
+                            .with(csrf())
                             .content(objectMapper.writeValueAsString(request)))
             .andDo(print())
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message").value("내용은 필수입니다."));
     }
 
-
     @Test
     @DisplayName("게시글 삭제")
     void deletePost() throws Exception {
-        // expected
         mockMvc.perform(delete("/posts/{postId}", 1L)
-                            .contentType(APPLICATION_JSON))
+                            .contentType(APPLICATION_JSON)
+                            .with(csrf()))
             .andDo(print())
             .andExpect(status().isOk());
     }
