@@ -25,6 +25,13 @@ public enum ResponseCode {
     NOT_FOUND_PARENT_COMMENT(404, "C002", "부모 댓글이 존재하지 않습니다."),
     COMMENT_DEPTH_OVERFLOW(400, "C103", "댓글의 최대 깊이를 초과하였습니다."),
     COMMENT_CHUNK_OVERFLOW(400, "C104", "댓글의 최대 개수를 초과하였습니다."),
+
+    // USER
+    ALREADY_EXISTS_EMAIL(400, "U001", "이미 가입된 이메일입니다."),
+    INVALID_USER_INFO(401, "U002", "아이디 혹은 비밀번호가 올바르지 않습니다."),
+    NOT_FOUND_USER(404, "U003", "존재하지 않는 사용자입니다."),
+    UNAUTHORIZED(401, "U003", "로그인이 필요합니다."),
+    FORBIDDEN(403, "U004", "접근 권한이 없습니다."),
     ;
 
     private final int status;

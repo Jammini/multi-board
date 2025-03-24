@@ -35,4 +35,11 @@ public class ApiResponse<T> {
                    .message(message)
                    .build();
     }
+
+    public static <T> ApiResponse<T> fail(ResponseCode responseCode) {
+        return ApiResponse.<T>builder()
+                   .status(HttpStatus.valueOf(responseCode.getStatus()))
+                   .message(responseCode.getMessage())
+                   .build();
+    }
 }
