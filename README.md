@@ -38,9 +38,17 @@
    - 답글(Reply)
 7. 스프린트 7 (2025.02.10 ~ 2025.02.23)
    - 댓글(Comment)
+8. 스프린트 8 (2025.02.24 ~ 2025.03.09)
+   - 좋아요(like)
+9. 스프린트 9 (2025.03.10 ~ 2025.03.23)
+   - 회원체계
+   - 로그인
+   - 로그아웃
+   - 회원가입
 
 ## 기술적 issue 해결 과정
 
+- [좋아요 수를 이용해 동시성 처리 비교하기](https://systemdata.tistory.com/117)
 - [댓글 알고리즘으로 무한 depth 구현하기](https://systemdata.tistory.com/116)
 - [Github Actions으로 Sonar Cloud와 Slack 알림 설정하기](https://systemdata.tistory.com/115)
 - [운영환경에서 안전하게 테이블 칼럼을 추가하려면 어떤 방법이 좋을까?](https://systemdata.tistory.com/114)
