@@ -1,6 +1,9 @@
 package study.multiproject.config.filter;
 
+import static study.multiproject.config.AuthorizationConstants.BEARER;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,14 +13,18 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import study.multiproject.config.JwtTokenUtil;
+import study.multiproject.config.UserPrincipal;
 
 public class EmailPasswordAuthFilter extends AbstractAuthenticationProcessingFilter {
 
     private final ObjectMapper objectMapper;
+    private final JwtTokenUtil jwtTokenUtil;
 
-    public EmailPasswordAuthFilter(String loginUrl, ObjectMapper objectMapper) {
+    public EmailPasswordAuthFilter(String loginUrl, ObjectMapper objectMapper, JwtTokenUtil jwtTokenUtil) {
         super(loginUrl);
         this.objectMapper = objectMapper;
+        this.jwtTokenUtil = jwtTokenUtil;
     }
 
     @Override
@@ -32,6 +39,16 @@ public class EmailPasswordAuthFilter extends AbstractAuthenticationProcessingFil
 
         token.setDetails(this.authenticationDetailsSource.buildDetails(request));
         return this.getAuthenticationManager().authenticate(token);
+    }
+
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request,
+        HttpServletResponse response, FilterChain chain, Authentication authResult)
+        throws IOException, ServletException {
+        UserPrincipal principal = (UserPrincipal) authResult.getPrincipal();
+
+        String jwtToken = jwtTokenUtil.generateToken(principal);
+        response.addHeader("Authorization", BEARER + " " + jwtToken);
     }
 
     @Getter
