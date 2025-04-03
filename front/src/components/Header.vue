@@ -1,7 +1,5 @@
 <template>
   <el-header class="header">
-    <!--    <RouterLink to="/">Home</RouterLink>-->
-    <!--    <RouterLink to="/write">글 작성</RouterLink>-->
     <div class="header-container">
       <div class="menu-left">
         <RouterLink to="/" class="nav-link">Home</RouterLink>
@@ -10,7 +8,7 @@
 
       <div>
         <!-- 로그인 안 된 상태 -->
-        <template v-if="!isLogin">
+        <template v-if="!isTokenExist">
           <router-link to="/login">
             <el-button type="primary" plain>로그인</el-button>
           </router-link>
@@ -30,47 +28,68 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import {ref, onMounted, onBeforeUnmount} from 'vue';
 import { useRouter } from 'vue-router';
-import {eventBus} from "@/stores/eventBus";
+import { eventBus } from '@/stores/eventBus';
+import { ElButton } from 'element-plus';
+import { jwtDecode } from "jwt-decode";
 
 const router = useRouter();
-const isLogin = ref(false);
+const isTokenExist = ref(false);
 const userEmail = ref('');
 const userName = ref('');
+
 // 로그인 여부 확인 API
 const checkLogin = async () => {
+  const token = localStorage.getItem('jwt_token');
+  if (!token) {
+    isTokenExist.value = false;
+    return;
+  }
+
   try {
-    const res = await axios.get('/api/users/me', {
-      withCredentials: true
-    });
-    userEmail.value = res.data.data.email;
-    userName.value = res.data.data.name;
-    isLogin.value = true;
+    // JWT 토큰 디코딩하여 사용자 정보 추출
+    const decodedToken = jwtDecode<any>(token);  // JWT 토큰 디코딩
+
+    // exp 값 확인 (만료 시간을 확인)
+    const currentTime = Math.floor(Date.now() / 1000); // 현재 시간 (초 단위)
+    if (decodedToken.exp < currentTime) {
+      // 토큰이 만료되었으면 로그아웃 처리
+      logout();
+      return;
+    }
+
+    userEmail.value = decodedToken.sub;  // 'sub'는 이메일
+    userName.value = decodedToken.name;  // 'name'은 사용자 닉네임
+    isTokenExist.value = true;
   } catch (e) {
-    isLogin.value = false;
+    isTokenExist.value = false;
   }
 };
 
 // 로그아웃 요청
 const logout = async () => {
   try {
-    await axios.post('/api/logout');
-    isLogin.value = false;
-    router.push('/');
-    eventBus.emit('logout');
-    alert('로그아웃 완료');
+    localStorage.removeItem('jwt_token'); // localStorage에서 JWT 토큰 제거
+    checkLogin(); // 로그아웃 후 로그인 상태 갱신
+    eventBus.emit('logout'); // 로그아웃 이벤트 발생
+    router.push('/'); // 홈으로 리디렉션
   } catch (e) {
     alert('로그아웃 실패');
     console.error(e);
   }
 };
 
+// 컴포넌트가 마운트되면 로그인 상태 확인
 onMounted(() => {
   checkLogin();
-  eventBus.on('login', checkLogin); // 로그인 이벤트 수신 시 checkLogin 실행
-  eventBus.on('logout', checkLogin); // 로그아웃 시도 마찬가지
+  eventBus.on('login', checkLogin); // 로그인 이벤트가 발생하면 로그인 상태 갱신
+  eventBus.on('logout', checkLogin); // 로그아웃 시도 시 로그인 상태 갱신
+});
+
+onBeforeUnmount(() => {
+  eventBus.off('login', checkLogin); // 이벤트 리스너 해제
+  eventBus.off('logout', checkLogin);
 });
 </script>
 
@@ -88,7 +107,6 @@ onMounted(() => {
   align-items: center;
   height: 100%;
 }
-
 
 .menu-left {
   display: flex;
@@ -110,5 +128,4 @@ onMounted(() => {
   display: flex;
   gap: 10px;
 }
-
 </style>

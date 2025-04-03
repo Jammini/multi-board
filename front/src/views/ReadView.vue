@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import {onMounted, ref, provide} from "vue";
-import axios from "axios";
+import axios from "@/axios.js";
 import {ElButton, ElMessage, ElPagination} from "element-plus";
 import {useRoute, useRouter} from "vue-router";
 import 'element-plus/dist/index.css';

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import axios from "axios";
+import axios from "@/axios.js";
 import { onMounted, ref, watch } from "vue";
 import { ElInput, ElPagination, ElSelect, ElOption } from "element-plus";
 import { useRoute, useRouter } from "vue-router";

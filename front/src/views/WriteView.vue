@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {ref} from "vue";
 import {ElButton, ElInput} from "element-plus";
-import axios from 'axios';
+import axios from '@/axios.js';
 import {useRouter} from "vue-router";
 
 const title = ref("");
