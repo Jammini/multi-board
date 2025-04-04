@@ -38,6 +38,10 @@ public class UserService {
         return new UserResponse(user);
     }
 
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    }
+
     /**
      * 이메일 중복 체크
      */

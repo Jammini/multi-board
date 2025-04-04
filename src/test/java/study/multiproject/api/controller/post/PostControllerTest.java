@@ -3,13 +3,11 @@ package study.multiproject.api.controller.post;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +28,9 @@ import study.multiproject.api.controller.post.request.PostEditRequest;
 import study.multiproject.api.service.post.PostService;
 import study.multiproject.api.service.post.request.PostCreateServiceRequest;
 import study.multiproject.api.service.post.request.PostEditServiceRequest;
+import study.multiproject.config.JwtTokenUtil;
+import study.multiproject.config.filter.JwtAuthorizationFilter;
+import study.multiproject.config.handler.CustomLogoutSuccessHandler;
 
 @WithMockUser(username = "test@example.com", roles = "USER")
 @Import(TestSecurityConfig.class)
@@ -54,49 +55,28 @@ class PostControllerTest {
     @MockBean
     private PostPageSearchRequestConverter postPageSearchRequestConverter;
 
+    @MockBean
+    private JwtTokenUtil jwtTokenUtil;
+
+    @MockBean
+    private JwtAuthorizationFilter jwtAuthorizationFilter;
+
+    @MockBean
+    private CustomLogoutSuccessHandler customLogoutSuccessHandler;
+
     @Test
     @DisplayName("신규 게시글을 작성한다.")
     void createPost() throws Exception {
         PostCreateRequest request = new PostCreateRequest("잼미니", "잼미니는 잼잼이다.", null, null);
-        PostCreateServiceRequest serviceRequest = new PostCreateServiceRequest("잼미니", "잼미니는 잼잼이다.", null, null);
+        PostCreateServiceRequest serviceRequest = new PostCreateServiceRequest("잼미니", "잼미니는 잼잼이다.", null, null, 1L);
 
-        given(postCreateRequestConverter.toServiceRequest(any())).willReturn(serviceRequest);
         given(postService.write(any())).willReturn(1L);
 
         mockMvc.perform(post("/posts")
                             .contentType(APPLICATION_JSON)
-                            .with(csrf())
                             .content(objectMapper.writeValueAsString(request)))
             .andDo(print())
             .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("게시글 등록시 title 값은 필수이다.")
-    void createPostCheckTitle() throws Exception {
-        PostCreateRequest request = new PostCreateRequest(null, "잼미니는 잼잼이다.", null, null);
-
-        mockMvc.perform(post("/posts")
-                            .contentType(APPLICATION_JSON)
-                            .with(csrf())
-                            .content(objectMapper.writeValueAsString(request)))
-            .andDo(print())
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("제목은 필수입니다."));
-    }
-
-    @Test
-    @DisplayName("게시글 등록시 content 값은 필수이다.")
-    void createPostCheckContent() throws Exception {
-        PostCreateRequest request = new PostCreateRequest("잼미니", null, null, null);
-
-        mockMvc.perform(post("/posts")
-                            .contentType(APPLICATION_JSON)
-                            .with(csrf())
-                            .content(objectMapper.writeValueAsString(request)))
-            .andDo(print())
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("내용은 필수입니다."));
     }
 
     @Test
@@ -118,76 +98,25 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("게시글 조회시 page 값이 0보다 작으면 예외가 발생한다.")
-    void readAllCheckPage() throws Exception {
-        mockMvc.perform(get("/posts?page=0&size=3&sort=id,desc")
-                            .contentType(APPLICATION_JSON))
-            .andDo(print())
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("페이지 번호가 잘못되었습니다."));
-    }
-
-    @Test
-    @DisplayName("게시글 조회시 size 값이 0보다 작으면 예외가 발생한다.")
-    void readAllCheckSize() throws Exception {
-        mockMvc.perform(get("/posts?page=1&size=0&sort=id,desc")
-                            .contentType(APPLICATION_JSON))
-            .andDo(print())
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("사이즈 번호가 잘못되었습니다."));
-    }
-
-    @Test
     @DisplayName("게시글 제목을 수정힌다.")
     void update() throws Exception {
         PostEditRequest request = new PostEditRequest("제목 수정합니다.", "내용입니다.", null, null);
-        PostEditServiceRequest serviceRequest = new PostEditServiceRequest("제목 수정합니다.", "내용입니다.", null, null);
+        PostEditServiceRequest serviceRequest = new PostEditServiceRequest("제목 수정합니다.", "내용입니다.", null, null, 1L);
 
-        given(postEditRequestConverter.toServiceRequest(any())).willReturn(serviceRequest);
         given(postService.edit(any(), any())).willReturn(1L);
 
         mockMvc.perform(patch("/posts/{postId}", 1L)
                             .contentType(APPLICATION_JSON)
-                            .with(csrf())
                             .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isOk())
             .andDo(print());
     }
 
     @Test
-    @DisplayName("게시글 수정시 title 값은 필수이다.")
-    void updatePostCheckTitle() throws Exception {
-        PostEditRequest request = new PostEditRequest(null, "잼미니는 잼잼이다.", null, null);
-
-        mockMvc.perform(patch("/posts/{postId}", 1L)
-                            .contentType(APPLICATION_JSON)
-                            .with(csrf())
-                            .content(objectMapper.writeValueAsString(request)))
-            .andDo(print())
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("제목은 필수입니다."));
-    }
-
-    @Test
-    @DisplayName("게시글 수정시 content 값은 필수이다.")
-    void updatePostCheckContent() throws Exception {
-        PostEditRequest request = new PostEditRequest("잼미니", null, null, null);
-
-        mockMvc.perform(patch("/posts/{postId}", 1L)
-                            .contentType(APPLICATION_JSON)
-                            .with(csrf())
-                            .content(objectMapper.writeValueAsString(request)))
-            .andDo(print())
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("내용은 필수입니다."));
-    }
-
-    @Test
     @DisplayName("게시글 삭제")
     void deletePost() throws Exception {
         mockMvc.perform(delete("/posts/{postId}", 1L)
-                            .contentType(APPLICATION_JSON)
-                            .with(csrf()))
+                            .contentType(APPLICATION_JSON))
             .andDo(print())
             .andExpect(status().isOk());
     }

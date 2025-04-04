@@ -1,15 +1,21 @@
 package study.multiproject.domain.user;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import study.multiproject.domain.comment.Comment;
+import study.multiproject.domain.post.Post;
 
 @Table(name = "users")
 @Getter
@@ -44,6 +50,11 @@ public class User {
      */
     private LocalDateTime createdAt;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Post> post;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Comment> comment;
 
     @Builder
     private User(String email, String password, String name) {
@@ -51,5 +62,7 @@ public class User {
         this.password = password;
         this.name = name;
         this.createdAt = LocalDateTime.now();
+        this.post = new HashSet<>();
+        this.comment = new HashSet<>();
     }
 }

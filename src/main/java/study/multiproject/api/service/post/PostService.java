@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import study.multiproject.api.service.file.FileService;
-import study.multiproject.api.service.file.request.FileData;
 import study.multiproject.api.service.hashtag.request.HashtagSearchServiceRequest;
 import study.multiproject.api.service.post.exception.PostNotFoundException;
 import study.multiproject.api.service.post.request.PostCreateServiceRequest;
@@ -14,6 +13,7 @@ import study.multiproject.api.service.post.request.PostEditServiceRequest;
 import study.multiproject.api.service.post.request.PostPageSearchServiceRequest;
 import study.multiproject.api.service.post.response.PagingResponse;
 import study.multiproject.api.service.post.response.PostResponse;
+import study.multiproject.api.service.user.UserService;
 import study.multiproject.domain.file.UploadFile;
 import study.multiproject.domain.hashtag.Hashtag;
 import study.multiproject.domain.hashtag.HashtagRepository;
@@ -21,6 +21,7 @@ import study.multiproject.domain.post.Post;
 import study.multiproject.domain.post.PostEditor;
 import study.multiproject.domain.post.PostHashtag;
 import study.multiproject.domain.post.PostRepository;
+import study.multiproject.domain.user.User;
 
 @Service
 @RequiredArgsConstructor
@@ -30,13 +31,15 @@ public class PostService {
     private final HashtagRepository hashtagRepository;
     private final PostHitsService postHitsService;
     private final FileService fileService;
+    private final UserService userService;
 
     /**
      * 게시글 작성
      */
     @Transactional
     public Long write(PostCreateServiceRequest request) {
-        Post post = postRepository.save(request.toEntity());
+        User user = userService.getUserById(request.userId());
+        Post post = postRepository.save(request.toEntity(user));
         linkFilesToPost(request.fileIds(), post);
         saveHashtag(request.hashtags(), post);
         return post.getId();
@@ -158,16 +161,4 @@ public class PostService {
         }
     }
 
-    /**
-     * 첨부파일 수정
-     */
-    private void updateFiles(Post post, List<Long> filesToDelete, List<FileData> newFiles) {
-        // 삭제할 파일 처리
-        for (Long fileId : filesToDelete) {
-            fileService.deleteFile(fileId);
-            post.removeFileById(fileId);
-        }
-        // 새 파일 추가
-//        saveFile(newFiles, post);
-    }
 }
