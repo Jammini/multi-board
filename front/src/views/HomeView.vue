@@ -81,7 +81,7 @@ watch(route, (newRoute) => {
         <div class="viewCount">조회 수 : {{ post.viewCount }}</div>
       </div>
       <div class="sub d-flex">
-        <div class="author">Jammini</div>
+        <div class="author">작성자 : {{ post.authorName }}</div>
       </div>
     </li>
   </ul>

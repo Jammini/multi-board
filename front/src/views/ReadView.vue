@@ -6,9 +6,11 @@ import {ElButton, ElMessage, ElPagination} from "element-plus";
 import {useRoute, useRouter} from "vue-router";
 import 'element-plus/dist/index.css';
 import CommentItem from "@/views/CommentItem.vue";
+import { jwtDecode } from "jwt-decode";
 
 // 고정 사용자 아이디 (실제 서비스에서는 로그인 정보를 사용)
-const userId = 1;
+const userId = ref(0);
+const userName = ref("");
 
 const props = defineProps({
   postId: {
@@ -22,6 +24,8 @@ const post = ref({
   title: "",
   content: "",
   viewCount: 0,
+  authorId: 0,
+  authorName: "",
   hashtags: [] as string[], // 해시태그 배열 추가
   files: [] as { fileName: string; downloadUrl: string; isAvailable: boolean }[], // 첨부파일 배열 추가
 })
@@ -66,6 +70,12 @@ onMounted(() => {
   fetchComments();
   fetchLikeCount();
   fetchUserLike();
+  const token = localStorage.getItem('jwt_token');
+  if (token) {
+    const decoded: any = jwtDecode(token);  // JWT 디코딩
+    userId.value = decoded.userId;  // 토큰에서 사용자 ID 추출
+    userName.value = decoded.userName;  // 토큰에서 사용자 이름 추출
+  }
 });
 
 // 좋아요 수 불러오기
@@ -154,10 +164,10 @@ const postComment = (path: string | null, content: string) => {
   // 예시: nickname과 writerId는 고정값 (추후 로그인 정보로 대체)
   const payload = {
     postId: props.postId,
-    nickname: "익명",
+    nickname: userName.value,
     content: content,
     path: path, // 여기서 부모 댓글의 id가 전달됨.
-    writerId: 1,
+    writerId: userId.value,
   };
 
   axios
@@ -322,7 +332,7 @@ const downloadFile = (url: string, fileName: string, fileIndex: number) => {
 
   <div class="d-flex justify-content-end">
     <el-button type="primary" @click="moveToHome">목록으로</el-button>
-    <el-button type="warning" @click="moveToEdit">수정</el-button>
+    <el-button v-if="post.authorId === userId" type="warning" @click="moveToEdit">수정</el-button>
   </div>
 </template>
 
