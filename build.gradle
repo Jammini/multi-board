@@ -54,3 +54,7 @@ sonar {
         property 'sonar.projectKey', 'Jammini_multi-board'
     }
 }
+
+test {
+    environment 'JWT_SECRET', 'your-secret-value'
+}
