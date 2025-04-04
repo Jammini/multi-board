@@ -54,8 +54,6 @@ public class SecurityConfig {
                                                                      .requestMatchers("/").permitAll()
                                                                      .requestMatchers("/users/signup").permitAll()
                                                                      .requestMatchers("/login").permitAll()
-                                                                     .requestMatchers("/posts/*").hasAnyRole("USER", "ADMIN")
-//                                                                     .requestMatchers("/admin").hasRole("ADMIN")
                                                                      .anyRequest().authenticated()
                    )
                    .addFilterBefore(emailPasswordAuthFilter(), UsernamePasswordAuthenticationFilter.class)

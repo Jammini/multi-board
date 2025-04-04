@@ -2,6 +2,7 @@ package study.multiproject.api.controller.comment;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,7 @@ import study.multiproject.api.controller.comment.request.CommentPageRequest;
 import study.multiproject.api.service.comment.CommentService;
 import study.multiproject.api.service.comment.response.CommentPageResponse;
 import study.multiproject.api.service.comment.response.CommentResponse;
+import study.multiproject.config.UserPrincipal;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,8 +30,8 @@ public class CommentController {
      * 댓글 생성
      */
     @PostMapping("/comments")
-    public ApiResponse<CommentResponse> create(@RequestBody CommentCreateRequest request) {
-        return ApiResponse.success(commentService.create(commentCreateRequestConverter.toServiceRequest(request)));
+    public ApiResponse<CommentResponse> create(@RequestBody CommentCreateRequest request, @AuthenticationPrincipal UserPrincipal principal) {
+        return ApiResponse.success(commentService.create(commentCreateRequestConverter.toServiceRequest(request, principal.getUserId())));
     }
 
     /**

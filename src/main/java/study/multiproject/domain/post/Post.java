@@ -2,10 +2,13 @@ package study.multiproject.domain.post;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,6 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import study.multiproject.domain.file.UploadFile;
+import study.multiproject.domain.user.User;
 
 @Getter
 @Entity
@@ -43,19 +47,33 @@ public class Post {
      */
     private long viewCount;
 
+    /**
+     * 해시태그
+     */
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PostHashtag> postHashtags;
 
+    /**
+     * 첨부파일
+     */
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UploadFile> uploadFiles;
 
+    /**
+     * 작성자
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @Builder
-    protected Post(String title, String content) {
+    protected Post(String title, String content, User user) {
         this.title = title;
         this.content = content;
         this.viewCount = 0;
         this.postHashtags = new HashSet<>();
         this.uploadFiles = new HashSet<>();
+        this.user = user;
     }
 
     public void changeViewCount(Integer viewCount) {

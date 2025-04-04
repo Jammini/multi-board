@@ -12,15 +12,18 @@ import study.multiproject.api.service.comment.response.CommentPageResponse;
 import study.multiproject.api.service.comment.response.CommentResponse;
 import study.multiproject.api.service.exception.CommentNotFoundException;
 import study.multiproject.api.service.exception.ParentCommentNotFoundException;
+import study.multiproject.api.service.user.UserService;
 import study.multiproject.domain.comment.Comment;
 import study.multiproject.domain.comment.CommentPath;
 import study.multiproject.domain.comment.CommentRepository;
+import study.multiproject.domain.user.User;
 
 @Service
 @RequiredArgsConstructor
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final UserService userService;
 
     /**
      * 댓글 생성
@@ -37,7 +40,8 @@ public class CommentService {
         // 자식 댓글의 Path를 생성한다.
         CommentPath childCommentPath = parentCommentPath.createChildCommentPath(descendantsTopPath);
 
-        Comment comment = commentRepository.save(request.toEntity(childCommentPath));
+        User user = userService.getUserById(request.writerId());
+        Comment comment = commentRepository.save(request.toEntity(childCommentPath, user));
         return new CommentResponse(comment);
     }
 
@@ -72,9 +76,9 @@ public class CommentService {
     public CommentPageResponse readAll(CommentPageServiceRequest request) {
         List<Comment> comments = commentRepository.findAll(
             request.postId(),
-            request.pageable().getOffset(),
-            request.pageable().getPageSize()
+            request.pageable()
         );
+
         List<CommentResponse> commentResponses = comments.stream()
                                                      .map(CommentResponse::new)
                                                      .toList();

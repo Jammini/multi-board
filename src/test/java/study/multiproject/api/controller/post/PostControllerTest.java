@@ -58,9 +58,9 @@ class PostControllerTest {
     @DisplayName("신규 게시글을 작성한다.")
     void createPost() throws Exception {
         PostCreateRequest request = new PostCreateRequest("잼미니", "잼미니는 잼잼이다.", null, null);
-        PostCreateServiceRequest serviceRequest = new PostCreateServiceRequest("잼미니", "잼미니는 잼잼이다.", null, null);
+        PostCreateServiceRequest serviceRequest = new PostCreateServiceRequest("잼미니", "잼미니는 잼잼이다.", null, null, 1L);
 
-        given(postCreateRequestConverter.toServiceRequest(any())).willReturn(serviceRequest);
+        given(postCreateRequestConverter.toServiceRequest(any(), 1L)).willReturn(serviceRequest);
         given(postService.write(any())).willReturn(1L);
 
         mockMvc.perform(post("/posts")
@@ -141,9 +141,9 @@ class PostControllerTest {
     @DisplayName("게시글 제목을 수정힌다.")
     void update() throws Exception {
         PostEditRequest request = new PostEditRequest("제목 수정합니다.", "내용입니다.", null, null);
-        PostEditServiceRequest serviceRequest = new PostEditServiceRequest("제목 수정합니다.", "내용입니다.", null, null);
+        PostEditServiceRequest serviceRequest = new PostEditServiceRequest("제목 수정합니다.", "내용입니다.", null, null, 1L);
 
-        given(postEditRequestConverter.toServiceRequest(any())).willReturn(serviceRequest);
+        given(postEditRequestConverter.toServiceRequest(any(), 1L)).willReturn(serviceRequest);
         given(postService.edit(any(), any())).willReturn(1L);
 
         mockMvc.perform(patch("/posts/{postId}", 1L)

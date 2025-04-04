@@ -7,9 +7,9 @@ import study.multiproject.api.service.comment.request.CommentCreateServiceReques
 @Component
 public class CommentCreateRequestConverter {
 
-    public CommentCreateServiceRequest toServiceRequest(CommentCreateRequest request) {
+    public CommentCreateServiceRequest toServiceRequest(CommentCreateRequest request, Long userId) {
         return new CommentCreateServiceRequest(request.postId(), request.nickname(),
-            request.content(), request.path(), request.writerId());
+            request.content(), request.path(), userId);
     }
 
 }

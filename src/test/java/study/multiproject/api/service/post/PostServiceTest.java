@@ -37,7 +37,7 @@ class PostServiceTest {
     @DisplayName("신규 게시글을 작성하면 아이디를 반환한다.")
     void createPost() {
         // given
-        PostCreateServiceRequest request = new PostCreateServiceRequest("잼미니", "반포자이 살고싶다.", List.of("잼미니", "반포자이"), List.of());
+        PostCreateServiceRequest request = new PostCreateServiceRequest("잼미니", "반포자이 살고싶다.", List.of("잼미니", "반포자이"), List.of(), 1L);
 
         // when
         Long postId = postService.write(request);
@@ -123,7 +123,7 @@ class PostServiceTest {
                         .build();
         postRepository.save(post);
 
-        PostEditServiceRequest request = new PostEditServiceRequest("김정민", "판교 자이", null, null);
+        PostEditServiceRequest request = new PostEditServiceRequest("김정민", "판교 자이", null, null, 1L);
 
         // when
         Long postId = postService.edit(post.getId(), request);
