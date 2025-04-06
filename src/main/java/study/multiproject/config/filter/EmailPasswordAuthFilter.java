@@ -1,5 +1,6 @@
 package study.multiproject.config.filter;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static study.multiproject.config.AuthorizationConstants.BEARER;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,7 +49,7 @@ public class EmailPasswordAuthFilter extends AbstractAuthenticationProcessingFil
         UserPrincipal principal = (UserPrincipal) authResult.getPrincipal();
 
         String jwtToken = jwtTokenUtil.generateToken(principal);
-        response.addHeader("Authorization", BEARER + " " + jwtToken);
+        response.addHeader(AUTHORIZATION, BEARER + " " + jwtToken);
     }
 
     @Getter

@@ -1,5 +1,6 @@
 package study.multiproject.config.filter;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static study.multiproject.config.AuthorizationConstants.BEARER;
 
 import jakarta.servlet.FilterChain;
@@ -26,14 +27,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain chain) throws IOException, ServletException {
-        String jwtHeader = request.getHeader("Authorization");
+        String jwtHeader = request.getHeader(AUTHORIZATION);
 
         if (jwtHeader == null || !jwtHeader.startsWith(BEARER)) {
             chain.doFilter(request, response);
             return;
         }
         // JWT 토큰을 검증해서 정상적인 사용자인지 확인
-        String jwtToken = jwtHeader.replace(BEARER + " ", "");
+        String jwtToken = jwtHeader.substring(BEARER.length() + 1);
         String email = jwtTokenUtil.extractEmail(jwtToken);
 
         // 서명이 정상적으로 됨
