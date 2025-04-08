@@ -16,6 +16,14 @@ const router = createRouter({
       path: "/write",
       name: "write",
       component: WriteView,
+      beforeEnter: (to, from, next) => {
+        const token = localStorage.getItem('jwt_token');
+        if (!token) {
+          next('/login');  // 로그인되지 않은 경우 login 페이지로 리디렉션
+        } else {
+          next();  // 로그인 상태라면 계속 진행
+        }
+      }
     },
     {
       path: "/read/:postId",
@@ -28,6 +36,14 @@ const router = createRouter({
       name: "edit",
       component: EditView,
       props: true,
+      beforeEnter: (to, from, next) => {
+        const token = localStorage.getItem('jwt_token');
+        if (!token) {
+          next('/login');  // 로그인되지 않은 경우 login 페이지로 리디렉션
+        } else {
+          next();  // 로그인 상태라면 계속 진행
+        }
+      }
     },
     {
       path: '/login',
@@ -49,5 +65,15 @@ const router = createRouter({
     // },
   ],
 })
+
+// 라우터 가드 추가 - 모든 라우트에 적용
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('jwt_token');
+  if (to.name !== 'login' && to.name !== 'signup' && !token) {
+    next('/login');  // 로그인하지 않은 상태에서 로그인, 회원가입 외의 페이지에 접근하면 login 페이지로 리디렉션
+  } else {
+    next();  // 로그인 상태일 경우 계속 진행
+  }
+});
 
 export default router

@@ -7,7 +7,7 @@ import study.multiproject.api.service.post.request.PostEditServiceRequest;
 @Component
 public class PostEditRequestConverter {
 
-    public PostEditServiceRequest toServiceRequest(PostEditRequest request) {
-        return new PostEditServiceRequest(request.title(), request.content(), request.hashtags(), request.fileIds());
+    public PostEditServiceRequest toServiceRequest(PostEditRequest request, Long userId) {
+        return new PostEditServiceRequest(request.title(), request.content(), request.hashtags(), request.fileIds(), userId);
     }
 }

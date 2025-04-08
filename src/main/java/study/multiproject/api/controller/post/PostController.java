@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -21,6 +22,7 @@ import study.multiproject.api.controller.post.request.PostPageSearchRequest;
 import study.multiproject.api.service.post.PostService;
 import study.multiproject.api.service.post.response.PagingResponse;
 import study.multiproject.api.service.post.response.PostResponse;
+import study.multiproject.config.UserPrincipal;
 
 @Slf4j
 @RestController
@@ -36,8 +38,8 @@ public class PostController {
      * 게시글 작성
      */
     @PostMapping("/posts")
-    public ApiResponse<Long> post(@RequestBody @Valid PostCreateRequest request) {
-        return ApiResponse.success(postService.write(postCreateRequestConverter.toServiceRequest(request)));
+    public ApiResponse<Long> post(@RequestBody @Valid PostCreateRequest request, @AuthenticationPrincipal UserPrincipal principal) {
+        return ApiResponse.success(postService.write(postCreateRequestConverter.toServiceRequest(request, principal.getUserId())));
     }
 
     /**
@@ -62,8 +64,8 @@ public class PostController {
      */
     @PatchMapping("/posts/{postId}")
     public ApiResponse<Long> edit(@PathVariable Long postId,
-        @RequestBody @Valid PostEditRequest request) {
-        return ApiResponse.success(postService.edit(postId, postEditRequestConverter.toServiceRequest(request)));
+        @RequestBody @Valid PostEditRequest request, @AuthenticationPrincipal UserPrincipal principal) {
+        return ApiResponse.success(postService.edit(postId, postEditRequestConverter.toServiceRequest(request, principal.getUserId())));
     }
 
     /**

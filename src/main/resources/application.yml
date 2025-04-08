@@ -47,3 +47,6 @@ logging:
             sql: trace
 
 file.dir: /Users/kimjungmin/documents/JM/project/img/
+
+jwt:
+  secret: ${JWT_SECRET}

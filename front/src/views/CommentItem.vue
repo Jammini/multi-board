@@ -1,9 +1,10 @@
 <template>
   <li class="comment-item" :style="depthStyle">
     <div class="comment-header">
-      <strong>{{ comment.nickname }}</strong>
+      <strong>{{ comment.writerName }}</strong>
       <span class="comment-time">({{ relativeTime(comment.createdAt) }})</span>
-      <el-button v-if="!comment.deleted" type="text" size="small" @click="$emit('delete', comment.id)">
+      <!-- 로그인한 사용자가 작성한 댓글에만 삭제 버튼 표시 -->
+      <el-button v-if="!comment.deleted && isOwner" type="text" size="small" @click="deleteComment(comment.id)">
         삭제
       </el-button>
     </div>
@@ -43,10 +44,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, inject } from "vue";
+import {ref, computed, inject, onMounted} from "vue";
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale/ko";
 import { ElButton, ElInput } from "element-plus";
+import { jwtDecode } from "jwt-decode";
 
 const props = defineProps({
   comment: {
@@ -54,6 +56,9 @@ const props = defineProps({
     required: true,
   },
 });
+
+// 로그인한 사용자 ID 저장
+const userId = ref<number | null>(null);
 
 // inject 전체 댓글 reactive 참조
 const allComments = inject("allComments");
@@ -91,9 +96,22 @@ const depthStyle = computed(() => {
 const showReply = ref(false);
 const replyText = ref("");
 
+// 댓글 작성자가 로그인한 사용자와 같은지 확인하는 함수
+const isOwner = computed(() => {
+  return props.comment.writerId === userId.value;
+});
+
 const toggleReply = () => {
   showReply.value = !showReply.value;
 };
+
+onMounted(() => {
+  const token = localStorage.getItem("jwt_token");
+  if (token) {
+    const decoded: any = jwtDecode(token); // JWT 디코딩
+    userId.value = decoded.userId; // 토큰에서 사용자 ID 추출
+  }
+});
 
 const emit = defineEmits(["delete", "reply"]);
 
@@ -107,6 +125,12 @@ const postReply = () => {
 const handleChildReply = (payload: any) => {
   emit("reply", payload);
 };
+
+// 댓글 삭제 처리
+const deleteComment = (commentId: number) => {
+  emit("delete", commentId);
+};
+
 </script>
 
 <style scoped>

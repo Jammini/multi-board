@@ -13,24 +13,26 @@
 import { ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
-import { useUserStore } from '@/stores/user';
 import {eventBus} from "@/stores/eventBus";
-
-const userStore = useUserStore();
 const email = ref('');
 const password = ref('');
 const router = useRouter();
 
 const login = async () => {
   try {
-    await axios.post('/api/login', {
+    const response = await axios.post('/api/login', {
       email: email.value,
       password: password.value
     }, {
-      withCredentials: true
+      withCredentials: true // 쿠키를 요청에 포함시킴
     });
+
+    // 서버에서 Authorization 헤더로 JWT 토큰을 받아 localStorage에 저장
+    const token = response.headers['authorization'].split(' ')[1]; // "Bearer <token>" 형식에서 토큰 추출
+    localStorage.setItem('jwt_token', token); // localStorage에 JWT 저장
+
     eventBus.emit('login');
-    userStore.login(email.value); // 로그인 상태 저장
+
     alert('로그인 성공!');
     router.push('/');
   } catch (error: any) {
