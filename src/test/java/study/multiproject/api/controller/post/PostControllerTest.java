@@ -20,17 +20,18 @@ import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import study.multiproject.api.config.TestSecurityConfig;
-import study.multiproject.api.controller.post.converter.PostCreateRequestConverter;
-import study.multiproject.api.controller.post.converter.PostEditRequestConverter;
-import study.multiproject.api.controller.post.converter.PostPageSearchRequestConverter;
-import study.multiproject.api.controller.post.request.PostCreateRequest;
-import study.multiproject.api.controller.post.request.PostEditRequest;
-import study.multiproject.api.service.post.PostService;
-import study.multiproject.api.service.post.request.PostCreateServiceRequest;
-import study.multiproject.api.service.post.request.PostEditServiceRequest;
-import study.multiproject.config.JwtTokenUtil;
-import study.multiproject.config.filter.JwtAuthorizationFilter;
-import study.multiproject.config.handler.CustomLogoutSuccessHandler;
+import study.multiproject.post.api.PostController;
+import study.multiproject.post.api.converter.PostCreateRequestConverter;
+import study.multiproject.post.api.converter.PostEditRequestConverter;
+import study.multiproject.post.api.converter.PostPageSearchRequestConverter;
+import study.multiproject.post.api.request.PostCreateRequest;
+import study.multiproject.post.api.request.PostEditRequest;
+import study.multiproject.post.application.PostService;
+import study.multiproject.post.application.request.PostCreateServiceRequest;
+import study.multiproject.post.application.request.PostEditServiceRequest;
+import study.multiproject.global.util.JwtTokenUtil;
+import study.multiproject.global.config.security.filter.JwtAuthorizationFilter;
+import study.multiproject.global.config.security.handler.CustomLogoutSuccessHandler;
 
 @WithMockUser(username = "test@example.com", roles = "USER")
 @Import(TestSecurityConfig.class)

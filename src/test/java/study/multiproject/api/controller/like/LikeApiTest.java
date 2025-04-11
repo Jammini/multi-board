@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.client.RestClient;
 import study.multiproject.api.config.TestSecurityConfig;
-import study.multiproject.api.service.like.response.LikeResponse;
+import study.multiproject.like.application.response.LikeResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Import(TestSecurityConfig.class)

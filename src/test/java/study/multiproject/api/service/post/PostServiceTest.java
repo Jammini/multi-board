@@ -14,16 +14,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
-import study.multiproject.api.service.post.exception.PostNotFoundException;
-import study.multiproject.api.service.post.request.PostCreateServiceRequest;
-import study.multiproject.api.service.post.request.PostEditServiceRequest;
-import study.multiproject.api.service.post.request.PostPageSearchServiceRequest;
-import study.multiproject.api.service.post.response.PagingResponse;
-import study.multiproject.api.service.post.response.PostResponse;
-import study.multiproject.domain.post.Post;
-import study.multiproject.domain.post.PostRepository;
-import study.multiproject.domain.user.User;
-import study.multiproject.domain.user.UserRepository;
+import study.multiproject.post.exception.PostNotFoundException;
+import study.multiproject.post.application.PostService;
+import study.multiproject.post.application.request.PostCreateServiceRequest;
+import study.multiproject.post.application.request.PostEditServiceRequest;
+import study.multiproject.post.application.request.PostPageSearchServiceRequest;
+import study.multiproject.post.application.response.PagingResponse;
+import study.multiproject.post.application.response.PostResponse;
+import study.multiproject.post.domain.Post;
+import study.multiproject.post.dao.PostRepository;
+import study.multiproject.user.domain.User;
+import study.multiproject.user.dao.UserRepository;
 
 @WithMockUser(username = "test@example.com", roles = "USER")
 @Transactional
