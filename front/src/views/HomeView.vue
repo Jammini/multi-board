@@ -68,14 +68,36 @@ watch(route, (newRoute) => {
   <ul>
     <li v-for="post in response.items" :key="post.id">
       <div class="title">
+        <!-- 비밀글인 경우 -->
+        <template v-if="post.isSecret">
+          <span>🔒 </span>
+          <!-- 본인이 작성한 글이면 링크 제공 -->
+          <router-link
+            v-if="post.isOwner"
+            :to="{ name: 'read', params: { postId: post.id }, query: { keyword: input, page: response.page, type: searchType } }"
+          >
+            {{ post.title }}
+          </router-link>
+          <!-- 다른 사람이 작성한 비밀글이면 경고창 띄우기 -->
+          <span
+            v-else
+            style="color: gray; cursor: pointer;"
+            @click="() => alert('비공개 문의내역은 작성자 본인만 확인하실 수 있습니다.')"
+          >
+            비공개 글입니다
+          </span>
+        </template>
+
+
         <router-link
+          v-else
           :to="{ name: 'read', params: { postId: post.id }, query: { keyword: input, page: response.page, type: searchType }}"
         >
           {{ post.title }}
         </router-link>
       </div>
       <div class="sub d-flex">
-        <div class="regDate">2024-12-07</div>
+        <div class="regDate"> {{ post.createdAt }}</div>
       </div>
       <div class="sub d-flex">
         <div class="viewCount">조회 수 : {{ post.viewCount }}</div>

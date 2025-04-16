@@ -6,6 +6,7 @@ import {useRouter} from "vue-router";
 
 const title = ref("");
 const content = ref("");
+const isSecret = ref(false);
 const hashtags = ref<string[]>([]);
 const newHashtag = ref("");
 const files = ref<File[]>([]);
@@ -50,6 +51,7 @@ const write = async () => {
   const postData = {
     title: title.value,
     content: content.value,
+    isSecret: isSecret.value,
     hashtags: hashtags.value,
     fileIds: uploadFileIds.value, // 업로드된 파일 ID 포함
   };
@@ -115,6 +117,11 @@ const handleChange = (uploadFileList) => {
       </span>
     </div>
   </div>
+  <!-- 비밀글 체크박스 추가 -->
+  <div class="mt-2">
+    <el-checkbox v-model="isSecret">비밀글로 작성</el-checkbox>
+  </div>
+
   <div class="mt-2">
     <!-- 작성 완료 버튼 -->
     <div class="d-flex justify-content-end">
