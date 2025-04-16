@@ -32,6 +32,10 @@ public enum ResponseCode {
     NOT_FOUND_USER(404, "U003", "존재하지 않는 사용자입니다."),
     UNAUTHORIZED(401, "U003", "로그인이 필요합니다."),
     FORBIDDEN(403, "U004", "접근 권한이 없습니다."),
+
+    // SHORTEN_URL
+    NOT_FOUND_SHORTEN_URL(404, "S001", "존재하지 않는 단축 URL입니다."),
+    LACK_OF_SHORTEN_URL_KEY(400, "S002", "단축 URL 키가 없습니다."),
     ;
 
     private final int status;

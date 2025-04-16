@@ -19,7 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
 import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter.HeaderValue;
 import study.multiproject.global.config.security.filter.EmailPasswordAuthFilter;
 import study.multiproject.global.config.security.filter.JwtAuthorizationFilter;
@@ -60,6 +59,10 @@ public class SecurityConfig {
                                                                          "/users/signup")
                                                                      .permitAll()
                                                                      .requestMatchers("/login")
+                                                                     .permitAll()
+                                                                     .requestMatchers( "/shortenUrl/**")
+                                                                     .permitAll()
+                                                                     .requestMatchers( "/{shortenUrlKey}")
                                                                      .permitAll()
                                                                      .anyRequest().authenticated()
                    )

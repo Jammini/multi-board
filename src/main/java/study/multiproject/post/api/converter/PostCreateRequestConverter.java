@@ -8,7 +8,7 @@ import study.multiproject.post.application.request.PostCreateServiceRequest;
 public class PostCreateRequestConverter {
 
     public PostCreateServiceRequest toServiceRequest(PostCreateRequest request, Long userId) {
-        return new PostCreateServiceRequest(request.title(), request.content(), request.hashtags(),
-            request.fileIds(), userId);
+        return new PostCreateServiceRequest(request.title(), request.content(), request.isSecret(),
+            request.hashtags(), request.fileIds(), userId);
     }
 }
