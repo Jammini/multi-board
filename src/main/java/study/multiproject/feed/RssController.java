@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import study.multiproject.post.application.PostService;
@@ -24,7 +25,7 @@ public class RssController {
 
     private final PostService postService;
 
-    @GetMapping(value = "/rss", produces = "application/rss+xml")
+    @GetMapping(value = "/rss", produces = MediaType.APPLICATION_RSS_XML_VALUE)
     public void getRssFeed(HttpServletResponse response) throws Exception {
         List<PostResponse> posts = postService.getList();
 

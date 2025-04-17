@@ -20,6 +20,7 @@ import study.multiproject.post.domain.Post;
 import study.multiproject.post.domain.PostEditor;
 import study.multiproject.post.domain.PostHashtag;
 import study.multiproject.post.exception.PostNotFoundException;
+import study.multiproject.post.exception.SecretPostException;
 import study.multiproject.user.application.UserService;
 import study.multiproject.user.domain.User;
 
@@ -53,7 +54,7 @@ public class PostService {
         Post post = postRepository.findPostWithHashtags(id).orElseThrow(PostNotFoundException::new);
         // 비밀글이면서 작성자와 방문자가 다를 경우
         if (post.isSecret() && !post.getUser().getId().equals(userId)) {
-            throw new PostNotFoundException();
+            throw new SecretPostException();
         }
 
         if (!postHitsService.isExistInSet(visitorId, post.getId())) {

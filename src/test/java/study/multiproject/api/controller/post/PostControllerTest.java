@@ -101,7 +101,7 @@ class PostControllerTest {
     @Test
     @DisplayName("게시글 제목을 수정힌다.")
     void update() throws Exception {
-        PostEditRequest request = new PostEditRequest("제목 수정합니다.", "내용입니다.", false,null, null);
+        PostEditRequest request = new PostEditRequest("제목 수정합니다.", "내용입니다.", false, null, null);
         PostEditServiceRequest serviceRequest = new PostEditServiceRequest("제목 수정합니다.", "내용입니다.", false, null, null, 1L);
 
         given(postService.edit(any(), any())).willReturn(1L);

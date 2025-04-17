@@ -6,19 +6,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import study.multiproject.global.config.security.UserPrincipal;
 
-public class Auditor implements AuditorAware<String> {
+public class LoginUserAuditor implements AuditorAware<String> {
 
     @Override
     public Optional<String> getCurrentAuditor() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication == null || !authentication.isAuthenticated()) {
-            return Optional.empty();
-        }
 
-        Object principal = authentication.getPrincipal();
-
-        if (principal instanceof UserPrincipal userPrincipal) {
-            return Optional.ofNullable(userPrincipal.getName());
+        if (authentication instanceof UserPrincipal userPrincipal) {
+            return Optional.of(userPrincipal.getName());
         }
         return Optional.empty();
     }

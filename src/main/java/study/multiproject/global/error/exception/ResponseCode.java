@@ -12,6 +12,7 @@ public enum ResponseCode {
     // POST
     NOT_FOUND_POST(404, "P001", "존재하지 않는 글입니다."),
     CLASS_INSTANTIATION_ERROR(500, "P002", "클래스 인스턴스화에 실패하였습니다."),
+    SECRET_POST(403, "P003", "비밀글에 접근할 수 없습니다."),
 
     // FILE
     NOT_FOUND_FILE(404, "F001", "존재하지 않는 파일입니다."),

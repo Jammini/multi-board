@@ -9,13 +9,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.OutputStreamWriter;
 import java.util.Date;
 import java.util.List;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class AtomController {
 
-    @GetMapping(value = "/atom", produces = "application/atom+xml")
+    @GetMapping(value = "/atom", produces = MediaType.APPLICATION_ATOM_XML_VALUE)
     public void atom(HttpServletResponse response) throws Exception {
         Feed feed = new Feed("atom_1.0");
         feed.setTitle("My Atom Feed");
