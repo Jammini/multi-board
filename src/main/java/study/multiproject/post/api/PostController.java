@@ -46,17 +46,17 @@ public class PostController {
      * 게시글 조회
      */
     @GetMapping("/posts/{postId}")
-    public ApiResponse<PostResponse> get(@PathVariable Long postId, HttpServletRequest request) {
+    public ApiResponse<PostResponse> get(@PathVariable Long postId, HttpServletRequest request, @AuthenticationPrincipal UserPrincipal principal) {
         String visitorId = request.getRemoteAddr();
-        return ApiResponse.success(postService.get(postId, visitorId));
+        return ApiResponse.success(postService.get(postId, visitorId, principal.getUserId()));
     }
 
     /**
      * 게시글 목록 조회
      */
     @GetMapping("/posts")
-    public ApiResponse<PagingResponse> getPageList(@Valid PostPageSearchRequest request) {
-        return ApiResponse.success(postService.getPageList(postPageSearchRequestConverter.toServiceRequest(request)));
+    public ApiResponse<PagingResponse> getPageList(@Valid PostPageSearchRequest request, @AuthenticationPrincipal UserPrincipal principal) {
+        return ApiResponse.success(postService.getPageList(postPageSearchRequestConverter.toServiceRequest(request, principal.getUserId())));
     }
 
     /**

@@ -7,7 +7,7 @@ import study.multiproject.post.application.request.PostPageSearchServiceRequest;
 @Component
 public class PostPageSearchRequestConverter {
 
-    public PostPageSearchServiceRequest toServiceRequest(PostPageSearchRequest request) {
-        return new PostPageSearchServiceRequest(request.getPageable(), request.keyword());
+    public PostPageSearchServiceRequest toServiceRequest(PostPageSearchRequest request, Long userId) {
+        return new PostPageSearchServiceRequest(request.getPageable(), request.keyword(), userId);
     }
 }

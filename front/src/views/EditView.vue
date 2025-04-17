@@ -10,6 +10,7 @@ const post = ref({
   id: 0,
   title: "",
   content: "",
+  isSecret: false,
   hashtags: [] as string[], // 해시태그 추가
   files: [],
 })
@@ -66,6 +67,7 @@ const edit = async () => {
   const formData = {
     title: post.value.title,
     content: post.value.content,
+    isSecret: post.value.isSecret,
     hashtags: post.value.hashtags,
     fileIds: uploadedFileIds || [], // 새로 추가된 파일 ID
     filesToDelete, // 삭제할 파일 ID
@@ -170,6 +172,9 @@ const handleNewFileChange = (uploadFileList) => {
         {{ tag }}
       </el-tag>
     </div>
+  </div>
+  <div class="mt-2">
+    <el-checkbox v-model="post.isSecret">비밀글로 설정</el-checkbox>
   </div>
   <div class="mt-2 d-flex justify-content-end">
     <el-button type="warning" @click="edit()">수정완료</el-button>

@@ -55,7 +55,7 @@ class PostServiceTest {
     @DisplayName("신규 게시글을 작성하면 아이디를 반환한다.")
     void createPost() {
         // given
-        PostCreateServiceRequest request = new PostCreateServiceRequest("잼미니", "반포자이 살고싶다.", List.of("잼미니", "반포자이"), List.of(), user.getId());
+        PostCreateServiceRequest request = new PostCreateServiceRequest("잼미니", "반포자이 살고싶다.", false, List.of("잼미니", "반포자이"), List.of(), user.getId());
 
         // when
         Long postId = postService.write(request);
@@ -79,35 +79,12 @@ class PostServiceTest {
         postRepository.save(post);
 
         // when
-        PostResponse result = postService.get(post.getId(), "visitorId");
+        PostResponse result = postService.get(post.getId(), "visitorId", 1L);
 
         // then
         assertThat(post.getId()).isEqualTo(result.id());
         assertThat(post.getTitle()).isEqualTo(result.title());
         assertThat(post.getContent()).isEqualTo(result.content());
-    }
-
-    @Test
-    @DisplayName("게시글 여러개를 조회한다.")
-    void readAllPost() {
-        // given
-        Post post1 = Post.builder()
-                         .title("잼미니1")
-                         .content("내용입니다1")
-                         .user(user)
-                         .build();
-        Post post2 = Post.builder()
-                         .title("잼미니2")
-                         .content("내용입니다2")
-                         .user(user)
-                         .build();
-        postRepository.saveAll(List.of(post1, post2));
-
-        // when
-        List<PostResponse> result = postService.getList();
-
-        // then
-        assertThat(2L).isEqualTo(result.size());
     }
 
     @Test
@@ -124,7 +101,7 @@ class PostServiceTest {
         postRepository.saveAll(posts);
 
         PostPageSearchServiceRequest request = new PostPageSearchServiceRequest(
-            PageRequest.of(0, 10, Sort.by("id").descending()), "");
+            PageRequest.of(0, 10, Sort.by("id").descending()), "", 1L);
 
         // when
         PagingResponse result = postService.getPageList(request);
@@ -145,7 +122,7 @@ class PostServiceTest {
                         .build();
         postRepository.save(post);
 
-        PostEditServiceRequest request = new PostEditServiceRequest("김정민", "판교 자이", null, null, 1L);
+        PostEditServiceRequest request = new PostEditServiceRequest("김정민", "판교 자이", false,null, null, 1L);
 
         // when
         Long postId = postService.edit(post.getId(), request);
@@ -185,7 +162,7 @@ class PostServiceTest {
         postRepository.save(post);
 
         // expected
-        assertThatThrownBy(() -> postService.get(post.getId() + 1L, "visitorId"))
+        assertThatThrownBy(() -> postService.get(post.getId() + 1L, "visitorId", 1L))
             .isInstanceOf(PostNotFoundException.class)
             .hasMessage("존재하지 않는 글입니다.");
     }

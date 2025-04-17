@@ -16,13 +16,16 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 import study.multiproject.file.domain.UploadFile;
+import study.multiproject.global.entity.BaseEntity;
 import study.multiproject.user.domain.User;
 
 @Getter
 @Entity
+@SQLRestriction("is_deleted = false")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Post {
+public class Post extends BaseEntity {
 
     /**
      * 식별자
@@ -48,6 +51,16 @@ public class Post {
     private long viewCount;
 
     /**
+     * 비밀글 여부
+     */
+    private boolean isSecret;
+
+    /**
+     * 삭제 여부
+     */
+    private boolean isDeleted;
+
+    /**
      * 해시태그
      */
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -67,10 +80,12 @@ public class Post {
     private User user;
 
     @Builder
-    protected Post(String title, String content, User user) {
+    protected Post(String title, String content, boolean isSecret, User user) {
         this.title = title;
         this.content = content;
         this.viewCount = 0;
+        this.isSecret = isSecret;
+        this.isDeleted = false;
         this.postHashtags = new HashSet<>();
         this.uploadFiles = new HashSet<>();
         this.user = user;
@@ -83,12 +98,14 @@ public class Post {
     public PostEditor.PostEditorBuilder toEditor() {
         return PostEditor.builder()
                    .title(title)
-                   .content(content);
+                   .content(content)
+                   .isSecret(isSecret);
     }
 
     public void edit(PostEditor postEditor) {
         this.title = postEditor.getTitle();
         this.content = postEditor.getContent();
+        this.isSecret = postEditor.isSecret();
     }
 
     public void addPostHashtag(PostHashtag postHashtag) {

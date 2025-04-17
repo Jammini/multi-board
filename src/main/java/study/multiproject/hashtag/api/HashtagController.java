@@ -3,9 +3,11 @@ package study.multiproject.hashtag.api;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import study.multiproject.global.common.ApiResponse;
+import study.multiproject.global.config.security.UserPrincipal;
 import study.multiproject.hashtag.api.converter.HashtagSearchRequestConverter;
 import study.multiproject.hashtag.api.request.HashtagSearchRequest;
 import study.multiproject.hashtag.application.HashtagService;
@@ -33,8 +35,8 @@ public class HashtagController {
      * 해시태그를 이용하여 게시글 조회
      */
     @GetMapping("/posts/hashtags")
-    public ApiResponse<PagingResponse> getPostsByHashtag(@Valid HashtagSearchRequest request) {
+    public ApiResponse<PagingResponse> getPostsByHashtag(@Valid HashtagSearchRequest request, @AuthenticationPrincipal UserPrincipal principal) {
         return ApiResponse.success(
-            postService.getPostsByHashtag(converter.toServiceRequest(request)));
+            postService.getPostsByHashtag(converter.toServiceRequest(request, principal.getUserId())));
     }
 }

@@ -6,21 +6,22 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import study.multiproject.file.application.FileService;
+import study.multiproject.file.domain.UploadFile;
 import study.multiproject.hashtag.application.request.HashtagSearchServiceRequest;
-import study.multiproject.post.exception.PostNotFoundException;
+import study.multiproject.hashtag.dao.HashtagRepository;
+import study.multiproject.hashtag.domain.Hashtag;
 import study.multiproject.post.application.request.PostCreateServiceRequest;
 import study.multiproject.post.application.request.PostEditServiceRequest;
 import study.multiproject.post.application.request.PostPageSearchServiceRequest;
 import study.multiproject.post.application.response.PagingResponse;
 import study.multiproject.post.application.response.PostResponse;
-import study.multiproject.user.application.UserService;
-import study.multiproject.file.domain.UploadFile;
-import study.multiproject.hashtag.domain.Hashtag;
-import study.multiproject.hashtag.dao.HashtagRepository;
+import study.multiproject.post.dao.PostRepository;
 import study.multiproject.post.domain.Post;
 import study.multiproject.post.domain.PostEditor;
 import study.multiproject.post.domain.PostHashtag;
-import study.multiproject.post.dao.PostRepository;
+import study.multiproject.post.exception.PostNotFoundException;
+import study.multiproject.post.exception.SecretPostException;
+import study.multiproject.user.application.UserService;
 import study.multiproject.user.domain.User;
 
 @Service
@@ -49,22 +50,26 @@ public class PostService {
      * 게시글 조회
      */
     @Transactional(readOnly = true)
-    public PostResponse get(Long id, String visitorId) {
+    public PostResponse get(Long id, String visitorId, Long userId) {
         Post post = postRepository.findPostWithHashtags(id).orElseThrow(PostNotFoundException::new);
+        // 비밀글이면서 작성자와 방문자가 다를 경우
+        if (post.isSecret() && !post.getUser().getId().equals(userId)) {
+            throw new SecretPostException();
+        }
 
         if (!postHitsService.isExistInSet(visitorId, post.getId())) {
             postHitsService.increaseData("viewCount_post_" + post.getId());
             postHitsService.addToSet(visitorId, post.getId());
         }
-        return new PostResponse(post);
+        return new PostResponse(post, userId);
     }
 
     /**
-     * 게시글 목록 전체 조회
+     * 최근 20개 게시글 목록 조회
      */
     @Transactional(readOnly = true)
     public List<PostResponse> getList() {
-        return postRepository.findAll().stream()
+        return postRepository.findTop20ByOrderByCreatedAtDesc().stream()
                    .map(PostResponse::new)
                    .toList();
     }
@@ -76,7 +81,7 @@ public class PostService {
     public PagingResponse getPageList(PostPageSearchServiceRequest request) {
         Page<Post> postPage = postRepository.findByTitleContaining(request.keyword(),
             request.pageable());
-        return new PagingResponse(postPage);
+        return new PagingResponse(postPage, request.userId());
     }
 
     /**
@@ -89,6 +94,7 @@ public class PostService {
         PostEditor postEditor = editorBuilder
                                     .title(request.title())
                                     .content(request.content())
+                                    .isSecret(request.isSecret())
                                     .build();
         post.edit(postEditor);
         // 해시태그 수정
@@ -113,7 +119,7 @@ public class PostService {
     public PagingResponse getPostsByHashtag(HashtagSearchServiceRequest request) {
         Page<Post> postPage = postRepository.findByHashtagName(request.keyword(),
             request.pageable());
-        return new PagingResponse(postPage);
+        return new PagingResponse(postPage, request.userId());
     }
 
     /**
