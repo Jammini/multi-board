@@ -3,42 +3,42 @@ package study.multiproject.feed;
 import com.rometools.rome.feed.atom.Content;
 import com.rometools.rome.feed.atom.Entry;
 import com.rometools.rome.feed.atom.Feed;
-import com.rometools.rome.feed.atom.Link;
-import com.rometools.rome.io.WireFeedOutput;
-import jakarta.servlet.http.HttpServletResponse;
-import java.io.OutputStreamWriter;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import study.multiproject.post.application.PostService;
+import study.multiproject.post.application.response.PostResponse;
 
 @RestController
+@RequiredArgsConstructor
 public class AtomController {
 
+    private final PostService postService;
+
     @GetMapping(value = "/atom", produces = MediaType.APPLICATION_ATOM_XML_VALUE)
-    public void atom(HttpServletResponse response) throws Exception {
+    public Feed atom(HttpServletRequest request) throws Exception {
+        List<PostResponse> posts = postService.getList();
+
         Feed feed = new Feed("atom_1.0");
-        feed.setTitle("My Atom Feed");
+        feed.setTitle("토이 프로젝트 - 게시판");
         feed.setUpdated(new Date());
-        feed.setId("https://mydomain.com");
+        feed.setId("https://github.com/Jammini/multi-board");
 
-        Entry entry = new Entry();
-        entry.setTitle("첫 번째 포스트");
-        entry.setId("https://mydomain.com/posts/1");
-        entry.setUpdated(new Date());
-        entry.setSummary(new Content() {{
-            setValue("내용 요약입니다.");
-        }});
-        entry.setAlternateLinks(List.of(new Link() {{
-            setHref("https://mydomain.com/posts/1");
-        }}));
-
-        feed.setEntries(List.of(entry));
-
-        response.setCharacterEncoding("UTF-8");
-        try (OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream())) {
-            new WireFeedOutput().output(feed, writer);
+        List<Entry> items = new ArrayList<>();
+        for (PostResponse post : posts) {
+            Entry entry = new Entry();
+            entry.setTitle(post.title());
+            entry.setSummary(new Content() {{
+                setValue(post.content());
+            }});
+            items.add(entry);
         }
+        feed.setEntries(items);
+        return feed;
     }
 }

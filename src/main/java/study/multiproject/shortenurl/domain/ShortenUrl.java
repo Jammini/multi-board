@@ -4,7 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.util.Random;
+import java.security.SecureRandom;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,9 +38,8 @@ public class ShortenUrl {
     private Long redirectCount;
 
     @Builder
-    protected ShortenUrl(String originalUrl, String shortenUrlKey) {
+    protected ShortenUrl(String originalUrl) {
         this.originalUrl = originalUrl;
-        this.shortenUrlKey = shortenUrlKey;
         this.redirectCount = 0L;
     }
 
@@ -51,21 +50,31 @@ public class ShortenUrl {
         this.redirectCount++;
     }
 
-    /**
-     * ShortenUrlKey 생성
-     */
-    public static String generateShortenUrlKey() {
-        String base56Characters = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz";
-        Random random = new Random();
-        StringBuilder shortenUrlKey = new StringBuilder();
-
-        for(int count = 0; count < 8; count++) {
-            int base56CharactersIndex = random.nextInt(0, base56Characters.length());
-            char base56Character = base56Characters.charAt(base56CharactersIndex);
-            shortenUrlKey.append(base56Character);
-        }
-        return shortenUrlKey.toString();
+    public void saveShortenUrlKey(String shortenUrlKey) {
+        this.shortenUrlKey = shortenUrlKey;
     }
 
+    public static String generate(long id) {
+        int RANDOM_BITS = 16;
+        SecureRandom RANDOM = new SecureRandom();
 
+        int randomPart = RANDOM.nextInt(1 << RANDOM_BITS); // 65536 - 1
+        long composite = (id << RANDOM_BITS) | randomPart;
+        return encodeBase62(composite);
+    }
+
+    private static String encodeBase62(long num) {
+        char[] ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
+        int BASE = ALPHABET.length;
+
+        if (num == 0) {
+            return String.valueOf(ALPHABET[0]);
+        }
+        StringBuilder sb = new StringBuilder();
+        while (num > 0) {
+            sb.append(ALPHABET[(int)(num % BASE)]);
+            num /= BASE;
+        }
+        return sb.reverse().toString();
+    }
 }

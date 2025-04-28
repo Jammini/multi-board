@@ -7,4 +7,6 @@ import study.multiproject.shortenurl.domain.ShortenUrl;
 public interface ShortenUrlRepository extends JpaRepository<ShortenUrl, Long> {
 
     Optional<ShortenUrl> findByShortenUrlKey(String shortenUrlKey);
+
+    Optional<ShortenUrl> findByOriginalUrl(String originalUrl);
 }

@@ -1,5 +1,6 @@
 package study.multiproject.shortenurl.application;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,7 +9,6 @@ import study.multiproject.shortenurl.application.response.ShortenUrlInformationR
 import study.multiproject.shortenurl.application.response.ShortenUrlResponse;
 import study.multiproject.shortenurl.dao.ShortenUrlRepository;
 import study.multiproject.shortenurl.domain.ShortenUrl;
-import study.multiproject.shortenurl.exception.LackOfShortenUrlKeyException;
 import study.multiproject.shortenurl.exception.NotFoundShortenUrlException;
 
 @Service
@@ -23,12 +23,19 @@ public class ShortenUrlService {
     @Transactional
     public ShortenUrlResponse generateShortenUrl(ShortenUrlCreateServiceRequest request) {
         String originalUrl = request.originalUrl();
-        String shortenUrlKey = getUniqueShortenUrlKey();
 
+        // 이전에 이미 생성된 적이 있는 URL이면 따로 생성하지 않고 기존 값을 재활용
+        Optional<ShortenUrl> existing = shortenUrlRepository.findByOriginalUrl(originalUrl);
+        if (existing.isPresent()) {
+            return new ShortenUrlResponse(existing.get());
+        }
+        // 없으면 생성
         ShortenUrl shortenUrl = shortenUrlRepository.save(ShortenUrl.builder()
                                                         .originalUrl(originalUrl)
-                                                        .shortenUrlKey(shortenUrlKey)
                                                         .build());
+
+        String shortenUrlKey = ShortenUrl.generate(shortenUrl.getId());
+        shortenUrl.saveShortenUrlKey(shortenUrlKey);
         return new ShortenUrlResponse(shortenUrl);
     }
 
@@ -51,19 +58,5 @@ public class ShortenUrlService {
             NotFoundShortenUrlException::new);
         shortenUrl.increaseRedirectCount();
         return shortenUrl.getOriginalUrl();
-    }
-
-    /**
-     * 단축 URL 키를 생성한다.
-     */
-    private String getUniqueShortenUrlKey() {
-        int count = 0;
-        while (count++ < 5) {
-            String shortenUrlKey = ShortenUrl.generateShortenUrlKey();
-            if (shortenUrlRepository.findByShortenUrlKey(shortenUrlKey).isEmpty()) {
-                return shortenUrlKey;
-            }
-        }
-        throw new LackOfShortenUrlKeyException();
     }
 }

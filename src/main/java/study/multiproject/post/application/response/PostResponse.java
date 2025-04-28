@@ -1,7 +1,7 @@
 package study.multiproject.post.application.response;
 
-import static study.multiproject.global.util.TimeParsingUtils.formatterString;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,7 +18,8 @@ public record PostResponse(
     String authorName,
     Set<String> hashtags,
     List<FileResponse> files,
-    String createdAt) {
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime createdAt) {
 
     public PostResponse(Post post, Long userId) {
         this(
@@ -31,7 +32,7 @@ public record PostResponse(
             post.getUser().getId(),
             post.getUser().getName(),
             post.getPostHashtags().stream().map(c -> c.getHashtag().getName()).collect(Collectors.toSet()),
-            post.getUploadFiles().stream().map(FileResponse::new).toList(), formatterString(post.getCreatedAt()));
+            post.getUploadFiles().stream().map(FileResponse::new).toList(), post.getCreatedAt());
     }
 
     public PostResponse(Post post) {
@@ -45,6 +46,6 @@ public record PostResponse(
             post.getUser().getId(),
             post.getUser().getName(),
             post.getPostHashtags().stream().map(c -> c.getHashtag().getName()).collect(Collectors.toSet()),
-            post.getUploadFiles().stream().map(FileResponse::new).toList(), formatterString(post.getCreatedAt()));
+            post.getUploadFiles().stream().map(FileResponse::new).toList(), post.getCreatedAt());
     }
 }
