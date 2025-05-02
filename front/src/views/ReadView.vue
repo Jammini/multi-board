@@ -261,7 +261,7 @@ const copyShareLink = async () => {
 
     const shortenKey = response.data.data.shortenUrlKey;
 
-    const shortenUrl = `http://localhost:8080/${shortenKey}`;
+    const shortenUrl = `http://localhost:8080/shortenUrl/${shortenKey}`;
 
     await navigator.clipboard.writeText(shortenUrl);
 

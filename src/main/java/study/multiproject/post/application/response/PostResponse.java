@@ -32,7 +32,8 @@ public record PostResponse(
             post.getUser().getId(),
             post.getUser().getName(),
             post.getPostHashtags().stream().map(c -> c.getHashtag().getName()).collect(Collectors.toSet()),
-            post.getUploadFiles().stream().map(FileResponse::new).toList(), post.getCreatedAt());
+            post.getUploadFiles().stream().map(FileResponse::new).toList(),
+            post.getCreatedAt());
     }
 
     public PostResponse(Post post) {
@@ -46,6 +47,7 @@ public record PostResponse(
             post.getUser().getId(),
             post.getUser().getName(),
             post.getPostHashtags().stream().map(c -> c.getHashtag().getName()).collect(Collectors.toSet()),
-            post.getUploadFiles().stream().map(FileResponse::new).toList(), post.getCreatedAt());
+            post.getUploadFiles().stream().map(FileResponse::new).toList(),
+            post.getCreatedAt());
     }
 }

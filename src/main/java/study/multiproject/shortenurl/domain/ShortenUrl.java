@@ -43,38 +43,20 @@ public class ShortenUrl {
         this.redirectCount = 0L;
     }
 
-    /**
-     * redirect 횟수 증가
-     */
-    public void increaseRedirectCount() {
-        this.redirectCount++;
+    public static long generate(long id) {
+        int RANDOM_BITS = 16;
+        SecureRandom RANDOM = new SecureRandom();
+
+        int randomPart = RANDOM.nextInt(1 << RANDOM_BITS); // 65536 - 1
+        long composite = (id << RANDOM_BITS) | randomPart;
+        return composite;
     }
 
     public void saveShortenUrlKey(String shortenUrlKey) {
         this.shortenUrlKey = shortenUrlKey;
     }
 
-    public static String generate(long id) {
-        int RANDOM_BITS = 16;
-        SecureRandom RANDOM = new SecureRandom();
-
-        int randomPart = RANDOM.nextInt(1 << RANDOM_BITS); // 65536 - 1
-        long composite = (id << RANDOM_BITS) | randomPart;
-        return encodeBase62(composite);
-    }
-
-    private static String encodeBase62(long num) {
-        char[] ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
-        int BASE = ALPHABET.length;
-
-        if (num == 0) {
-            return String.valueOf(ALPHABET[0]);
-        }
-        StringBuilder sb = new StringBuilder();
-        while (num > 0) {
-            sb.append(ALPHABET[(int)(num % BASE)]);
-            num /= BASE;
-        }
-        return sb.reverse().toString();
+    public void addRedirectCount(Long count) {
+        this.redirectCount = this.redirectCount + count;
     }
 }
