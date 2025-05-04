@@ -5,8 +5,8 @@ import java.util.Objects;
 import study.multiproject.post.domain.Post;
 import study.multiproject.user.domain.User;
 
-public record PostCreateServiceRequest(String title, String content, List<String> hashtags,
-                                       List<Long> fileIds, Long userId) {
+public record PostCreateServiceRequest(String title, String content, boolean isSecret,
+                                       List<String> hashtags, List<Long> fileIds, Long userId) {
 
     public PostCreateServiceRequest {
         hashtags = Objects.requireNonNullElse(hashtags, List.of());
@@ -17,6 +17,7 @@ public record PostCreateServiceRequest(String title, String content, List<String
         return Post.builder()
                    .title(title)
                    .content(content)
+                   .isSecret(isSecret)
                    .user(user)
                    .build();
     }

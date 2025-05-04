@@ -12,6 +12,7 @@ public enum ResponseCode {
     // POST
     NOT_FOUND_POST(404, "P001", "존재하지 않는 글입니다."),
     CLASS_INSTANTIATION_ERROR(500, "P002", "클래스 인스턴스화에 실패하였습니다."),
+    SECRET_POST(403, "P003", "비밀글에 접근할 수 없습니다."),
 
     // FILE
     NOT_FOUND_FILE(404, "F001", "존재하지 않는 파일입니다."),
@@ -32,6 +33,10 @@ public enum ResponseCode {
     NOT_FOUND_USER(404, "U003", "존재하지 않는 사용자입니다."),
     UNAUTHORIZED(401, "U003", "로그인이 필요합니다."),
     FORBIDDEN(403, "U004", "접근 권한이 없습니다."),
+
+    // SHORTEN_URL
+    NOT_FOUND_SHORTEN_URL(404, "S001", "존재하지 않는 단축 URL입니다."),
+    LACK_OF_SHORTEN_URL_KEY(400, "S002", "단축 URL 키가 없습니다."),
     ;
 
     private final int status;

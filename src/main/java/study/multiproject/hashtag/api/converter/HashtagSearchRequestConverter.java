@@ -7,7 +7,7 @@ import study.multiproject.hashtag.application.request.HashtagSearchServiceReques
 @Component
 public class HashtagSearchRequestConverter {
 
-    public HashtagSearchServiceRequest toServiceRequest(HashtagSearchRequest request) {
-        return new HashtagSearchServiceRequest(request.keyword(), request.getPageable());
+    public HashtagSearchServiceRequest toServiceRequest(HashtagSearchRequest request, Long userId) {
+        return new HashtagSearchServiceRequest(request.keyword(), request.getPageable(), userId);
     }
 }

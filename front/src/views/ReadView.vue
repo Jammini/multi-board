@@ -58,10 +58,17 @@ const moveToHome = () => {
 
 onMounted(() => {
   axios.get(`/api/posts/${props.postId}`).then((response) => {
+    const res = response.data;
+
+    if (res.status === "NOT_FOUND") {
+      alert("잘못된 접근입니다.");
+      router.replace({ name: "home" });
+      return;
+    }
     // 초기 파일 데이터에 isAvailable 플래그 추가
     post.value = {
-      ...response.data.data,
-      files: response.data.data.files.map((file) => ({
+      ...res.data,
+      files: res.data.files.map((file) => ({
         ...file,
         isAvailable: true,
       })),
@@ -243,13 +250,38 @@ const downloadFile = (url: string, fileName: string, fileIndex: number) => {
   });
 };
 
+// 공유하기 링크 복사
+const copyShareLink = async () => {
+  try {
+    const currentUrl = window.location.href;
+
+    const response = await axios.post("/api/shortenUrl", {
+      originalUrl: currentUrl,
+    });
+
+    const shortenKey = response.data.data.shortenUrlKey;
+
+    const shortenUrl = `http://localhost:8080/shortenUrl/${shortenKey}`;
+
+    await navigator.clipboard.writeText(shortenUrl);
+
+    ElMessage.success("공유 링크가 복사되었습니다!");
+  } catch (error) {
+    console.error("공유 링크 복사 실패:", error);
+    ElMessage.error("공유 링크 복사에 실패했습니다.");
+  }
+};
+
 </script>
 
 <template>
-  <h2>{{ post.title }}</h2>
+  <div class="title-row">
+    <h2>{{ post.title }}</h2>
+    <el-button type="info" size="small" @click="copyShareLink">공유하기</el-button>
+  </div>
   <div>조회수 : {{ post.viewCount }}</div>
   <div class="sub">
-    <div class="regDate">2024-12-07</div>
+    <div class="regDate">{{ post.createdAt }}</div>
   </div>
   <div>{{ post.content }}</div>
 
@@ -390,5 +422,11 @@ const downloadFile = (url: string, fileName: string, fileIndex: number) => {
 }
 .like-count {
   font-weight: bold;
+}
+.title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
 }
 </style>

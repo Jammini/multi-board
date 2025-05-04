@@ -1,5 +1,6 @@
 package study.multiproject.post.dao;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,4 +18,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("SELECT p FROM Post p LEFT JOIN FETCH p.postHashtags ph LEFT JOIN FETCH ph.hashtag LEFT JOIN FETCH p.uploadFiles f WHERE p.id = :postId")
     Optional<Post> findPostWithHashtags(@Param("postId") Long postId);
+
+    List<Post> findTop20ByOrderByCreatedAtDesc();
 }
