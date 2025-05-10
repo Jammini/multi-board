@@ -15,7 +15,6 @@ import study.multiproject.shortenurl.api.converter.ShortenUrlCreateRequestConver
 import study.multiproject.shortenurl.api.request.ShortenUrlCreateRequest;
 import study.multiproject.shortenurl.application.ShortenUrlService;
 import study.multiproject.shortenurl.application.request.ShortenUrlCreateServiceRequest;
-import study.multiproject.shortenurl.application.response.ShortenUrlInformationResponse;
 import study.multiproject.shortenurl.application.response.ShortenUrlResponse;
 
 @RestController
@@ -29,8 +28,10 @@ public class ShortenUrlController {
      * ShortenUrl 생성
      */
     @PostMapping("/shortenUrl")
-    public ApiResponse<ShortenUrlResponse> createShortenUrl(@RequestBody @Valid ShortenUrlCreateRequest request) {
-        ShortenUrlCreateServiceRequest serviceRequest = shortenUrlCreateRequestConverter.toServiceRequest(request);
+    public ApiResponse<ShortenUrlResponse> createShortenUrl(
+        @RequestBody @Valid ShortenUrlCreateRequest request) {
+        ShortenUrlCreateServiceRequest serviceRequest = shortenUrlCreateRequestConverter
+                                                            .toServiceRequest(request);
         ShortenUrlResponse response = shortenUrlService.generateShortenUrl(serviceRequest);
         return ApiResponse.success(response);
     }
@@ -46,16 +47,5 @@ public class ShortenUrlController {
                    .location(URI.create(originalUrl))
                    .build();
     }
-
-    /**
-     * ShortenUrl 정보 조회
-     */
-    @GetMapping("/shortenUrl/info/{shortenUrlKey}")
-    public ApiResponse<ShortenUrlInformationResponse> getShortenUrlInformation(
-        @PathVariable String shortenUrlKey) {
-        ShortenUrlInformationResponse response = shortenUrlService.getShortenUrlInformationByShortenUrlKey(shortenUrlKey);
-        return ApiResponse.success(response);
-    }
-
 }
 
