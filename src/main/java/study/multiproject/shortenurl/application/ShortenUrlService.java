@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import study.multiproject.shortenurl.application.request.ShortenUrlCreateServiceRequest;
-import study.multiproject.shortenurl.application.response.ShortenUrlInformationResponse;
 import study.multiproject.shortenurl.application.response.ShortenUrlResponse;
 import study.multiproject.shortenurl.common.Base62;
 import study.multiproject.shortenurl.dao.ShortenUrlRepository;
@@ -26,8 +25,8 @@ public class ShortenUrlService {
         String originalUrl = request.originalUrl();
 
         ShortenUrl shortenUrl = shortenUrlRepository.save(ShortenUrl.builder()
-                                                     .originalUrl(originalUrl)
-                                                     .build());
+                                                              .originalUrl(originalUrl)
+                                                              .build());
         String encodeKey = base62.encode(shortenUrl.getId());
         return new ShortenUrlResponse(encodeKey);
     }
@@ -38,17 +37,8 @@ public class ShortenUrlService {
     @Transactional(readOnly = true)
     public String getOriginalUrlByShortenUrlKey(String shortenUrlKey) {
         Long id = base62.decode(shortenUrlKey);
-        ShortenUrl shortenUrl = shortenUrlRepository.findById(id).orElseThrow(NotFoundShortenUrlException::new);
+        ShortenUrl shortenUrl = shortenUrlRepository.findById(id)
+                                    .orElseThrow(NotFoundShortenUrlException::new);
         return shortenUrl.getOriginalUrl();
-    }
-
-    /**
-     * ShortenUrl 정보를 조회한다.
-     */
-    @Transactional(readOnly = true)
-    public ShortenUrlInformationResponse getShortenUrlInformationByShortenUrlKey(String shortenUrlKey) {
-        ShortenUrl shortenUrl = shortenUrlRepository.findByShortenUrlKey(shortenUrlKey).orElseThrow(
-            NotFoundShortenUrlException::new);
-        return new ShortenUrlInformationResponse(shortenUrl);
     }
 }
