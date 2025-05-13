@@ -27,6 +27,14 @@ export default defineConfig({
       "/files": {
         target: "http://localhost:8080",
       },
+      '/rss': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
+      '/atom': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
     },
   },
 })
