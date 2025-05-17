@@ -65,4 +65,8 @@ public class User {
         this.post = new HashSet<>();
         this.comment = new HashSet<>();
     }
+
+    public void changePassword(String password) {
+        this.password = password;
+    }
 }

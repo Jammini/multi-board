@@ -1,10 +1,11 @@
 <template>
-  <div>
+  <div class="login-view">
     <h2>로그인</h2>
     <el-form @submit.prevent="login">
       <el-input v-model="email" placeholder="이메일" />
       <el-input v-model="password" placeholder="비밀번호" type="password" />
       <el-button type="primary" native-type="submit">로그인</el-button>
+      <el-button type="text" native-type="button" @click="goToPasswordReset">비밀번호 찾기</el-button>
     </el-form>
   </div>
 </template>
@@ -42,4 +43,16 @@ const login = async () => {
     console.error('로그인 실패:', error);
   }
 };
+
+const goToPasswordReset = () => {
+  router.push('/password-reset-request');
+};
 </script>
+
+
+<style scoped>
+.login-view {
+  max-width: 400px;
+  margin: 2rem auto;
+}
+</style>

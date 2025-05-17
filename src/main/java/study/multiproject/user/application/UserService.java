@@ -61,4 +61,8 @@ public class UserService {
         }
     }
 
+    public void changePassword(Long userId, String password) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        user.changePassword(passwordEncoder.encode(password));
+    }
 }

@@ -64,6 +64,8 @@ public class SecurityConfig {
                                                                      .permitAll()
                                                                      .requestMatchers( "/{shortenUrlKey}")
                                                                      .permitAll()
+                                                                     .requestMatchers("/auth/**")
+                                                                     .permitAll()
                                                                      .anyRequest().authenticated()
                    )
                    .addFilterBefore(emailPasswordAuthFilter(),

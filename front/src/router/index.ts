@@ -54,6 +54,17 @@ const router = createRouter({
       path: '/signup',
       name: 'signup',
       component: () => import('@/views/SignupView.vue')
+    },
+    {
+      path: '/password-reset-request',
+      name: 'password-reset-request',
+      component: () => import('@/views/PasswordResetRequestView.vue')
+    },
+    {
+      path: '/password-reset/confirm/:token',
+      name: 'password-reset-confirm',
+      component: () => import('@/views/PasswordResetConfirmView.vue'),
+      props: true
     }
     // {
     //   path: '/about',
@@ -69,7 +80,7 @@ const router = createRouter({
 // 라우터 가드 추가 - 모든 라우트에 적용
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('jwt_token');
-  if (to.name !== 'login' && to.name !== 'signup' && !token) {
+  if (to.name !== 'login' && to.name !== 'signup' && to.name !== 'password-reset-request' && to.name !== 'password-reset-confirm' && !token) {
     next('/login');  // 로그인하지 않은 상태에서 로그인, 회원가입 외의 페이지에 접근하면 login 페이지로 리디렉션
   } else {
     next();  // 로그인 상태일 경우 계속 진행
