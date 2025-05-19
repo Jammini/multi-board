@@ -10,7 +10,6 @@ import study.multiproject.auth.api.request.PasswordResetConfirmRequest;
 import study.multiproject.auth.api.request.PasswordResetRequest;
 import study.multiproject.auth.appilcation.AuthService;
 import study.multiproject.auth.appilcation.response.PasswordResetResponse;
-import study.multiproject.auth.exception.PasswordMismatchException;
 import study.multiproject.global.common.ApiResponse;
 
 @RestController
@@ -33,9 +32,6 @@ public class AuthController {
      */
     @PostMapping("/auth/password-reset/confirm/{token}")
     public ApiResponse<Void> confirmReset(@PathVariable String token, @RequestBody @Valid PasswordResetConfirmRequest request) {
-        if (!request.newPassword().equals(request.confirmPassword())) {
-            throw new PasswordMismatchException();
-        }
         authService.confirmPasswordReset(token, request.newPassword());
         return ApiResponse.success(null);
     }

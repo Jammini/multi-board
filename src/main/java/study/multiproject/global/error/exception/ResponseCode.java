@@ -39,8 +39,7 @@ public enum ResponseCode {
     LACK_OF_SHORTEN_URL_KEY(400, "S002", "단축 URL 키가 없습니다."),
 
     // AUTH
-    PASSWORD_MISMATCH(400, "A001", "비밀번호가 일치하지 않습니다."),
-    INVALID_TOKEN(401, "A002", "유효하지 않은 토큰입니다."),
+    INVALID_TOKEN(401, "A001", "유효하지 않은 토큰입니다."),
     ;
 
     private final int status;
