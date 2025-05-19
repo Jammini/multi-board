@@ -62,9 +62,11 @@ file.dir: /Users/kimjungmin/documents/JM/project/img/
 jwt:
   secret: ${JWT_SECRET}
 
-mail:
-  reset-token:
+app:
+  frontend:
+    base-url: "http://localhost:5173"
+  password-reset:
     redis-prefix: "pwd-reset:"
-    expiry-minutes: 30
-    resetUrl: "http://localhost:5173/password-reset/confirm/"
+    expiry-minutes: 30m
+    reset-url: "${app.frontend.base-url}/password-reset/confirm/"
 
