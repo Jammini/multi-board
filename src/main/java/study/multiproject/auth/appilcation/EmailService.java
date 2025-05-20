@@ -12,7 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class EmailService {
     private final JavaMailSender mailSender;
 
-    public void sendEmail(String to, String token, String resetUrl, Duration expiryMinutes) {
+    public void sendEmail(String to, String token, String resetUrl, Duration expiryTime) {
         String uri = UriComponentsBuilder
                          .fromHttpUrl(resetUrl)
                          .path(token)
@@ -25,7 +25,7 @@ public class EmailService {
             "안녕하세요,\n\n" +
             "아래 링크를 클릭하여 비밀번호를 재설정해 주세요:\n\n" +
             uri + "\n\n" +
-            "이 링크는 " + expiryMinutes.toMinutes() + "분간 유효합니다."
+            "이 링크는 " + expiryTime.toMinutes() + "분간 유효합니다."
         );
         mailSender.send(msg);
     }

@@ -4,7 +4,7 @@ import java.time.Duration;
 
 public record PasswordResetResponse(
     String email,
-    Duration expiryMinute
+    Duration expiryTime
 ) {
 
 }

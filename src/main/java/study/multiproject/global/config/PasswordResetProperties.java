@@ -12,6 +12,6 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "app.password-reset")
 public class PasswordResetProperties {
     private String redisPrefix;
-    private Duration expiryMinutes;
+    private Duration expiryTime;
     private String resetUrl;
 }

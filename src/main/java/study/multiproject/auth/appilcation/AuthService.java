@@ -28,11 +28,11 @@ public class AuthService {
         String redisKey = passwordResetProperties.getRedisPrefix() + token;
 
         // Redis에 저장
-        redisTemplate.opsForValue().set(redisKey, user.getId().toString(), passwordResetProperties.getExpiryMinutes());
+        redisTemplate.opsForValue().set(redisKey, user.getId().toString(), passwordResetProperties.getExpiryTime());
 
         // 이메일 전송
-        emailService.sendEmail(user.getEmail(), token, passwordResetProperties.getResetUrl(), passwordResetProperties.getExpiryMinutes());
-        return new PasswordResetResponse(user.getEmail(), passwordResetProperties.getExpiryMinutes());
+        emailService.sendEmail(user.getEmail(), token, passwordResetProperties.getResetUrl(), passwordResetProperties.getExpiryTime());
+        return new PasswordResetResponse(user.getEmail(), passwordResetProperties.getExpiryTime());
     }
 
     @Transactional
