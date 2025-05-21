@@ -67,6 +67,6 @@ app:
     base-url: "http://localhost:5173"
   password-reset:
     redis-prefix: "pwd-reset:"
-    expiry-minutes: 30m
+    expiry-time: 30m
     reset-url: "${app.frontend.base-url}/password-reset/confirm/"
 

@@ -1,5 +1,7 @@
 package study.multiproject.auth.appilcation;
 
+import static study.multiproject.global.util.DurationFormatter.formatDurationInKorean;
+
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
@@ -25,7 +27,7 @@ public class EmailService {
             "안녕하세요,\n\n" +
             "아래 링크를 클릭하여 비밀번호를 재설정해 주세요:\n\n" +
             uri + "\n\n" +
-            "이 링크는 " + expiryTime.toMinutes() + "분간 유효합니다."
+            "이 링크는 " + formatDurationInKorean(expiryTime) + " 유효합니다."
         );
         mailSender.send(msg);
     }
