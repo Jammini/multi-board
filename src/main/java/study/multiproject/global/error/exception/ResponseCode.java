@@ -37,6 +37,9 @@ public enum ResponseCode {
     // SHORTEN_URL
     NOT_FOUND_SHORTEN_URL(404, "S001", "존재하지 않는 단축 URL입니다."),
     LACK_OF_SHORTEN_URL_KEY(400, "S002", "단축 URL 키가 없습니다."),
+
+    // AUTH
+    INVALID_TOKEN(401, "A001", "유효하지 않은 토큰입니다."),
     ;
 
     private final int status;
