@@ -68,7 +68,6 @@ public class UserService {
             throw new AlreadyExistsEmailException();
         }
     }
-
     /**
      * 프로필 수정
      */
@@ -88,5 +87,9 @@ public class UserService {
             UploadFile uploadFile = fileService.storeSingleFile(fileData);
             user.updateProfileImage(uploadFile);
         });
+
+    public void changePassword(Long userId, String password) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        user.changePassword(passwordEncoder.encode(password));
     }
 }

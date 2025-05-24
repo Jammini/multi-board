@@ -99,5 +99,8 @@ public class User {
     public void clearProfileImage() {
         this.profileImage.setUser(null);
         this.profileImage = null;
+
+    public void changePassword(String password) {
+        this.password = password;
     }
 }
