@@ -87,6 +87,7 @@ public class UserService {
             UploadFile uploadFile = fileService.storeSingleFile(fileData);
             user.updateProfileImage(uploadFile);
         });
+    }
 
     public void changePassword(Long userId, String password) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
