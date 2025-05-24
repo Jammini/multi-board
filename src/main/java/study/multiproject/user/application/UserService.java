@@ -1,9 +1,14 @@
 package study.multiproject.user.application;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import study.multiproject.file.application.FileService;
+import study.multiproject.file.domain.UploadFile;
+import study.multiproject.user.application.request.ProfileUpdateServiceRequest;
 import study.multiproject.user.exception.AlreadyExistsEmailException;
 import study.multiproject.user.exception.UserNotFoundException;
 import study.multiproject.user.application.request.UserSignupServiceRequest;
@@ -16,7 +21,10 @@ import study.multiproject.user.dao.UserRepository;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final FileService fileService;
     private final PasswordEncoder passwordEncoder;
+    @PersistenceContext
+    private final EntityManager em;
 
     /**
      * 회원가입
@@ -61,4 +69,24 @@ public class UserService {
         }
     }
 
+    /**
+     * 프로필 수정
+     */
+    @Transactional
+    public void updateProfile(Long userId, ProfileUpdateServiceRequest request) {
+        User user = getUserById(userId);
+        user.updateNickname(request.nickname());
+
+        request.fileData().ifPresent(fileData -> {
+            UploadFile oldProfileImage = user.getProfileImage();
+            if (oldProfileImage != null) {
+                user.clearProfileImage();
+                fileService.deleteFile(oldProfileImage);
+                em.flush();
+            }
+
+            UploadFile uploadFile = fileService.storeSingleFile(fileData);
+            user.updateProfileImage(uploadFile);
+        });
+    }
 }

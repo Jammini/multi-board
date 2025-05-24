@@ -30,14 +30,14 @@ public class FileService {
 
     public List<Long> storeFiles(List<FileData> files) {
         return files.stream()
-                   .map(this::storeSingleFile)
+                   .map(uploadFile -> storeSingleFile(uploadFile).getId())
                    .toList();
     }
 
     /**
      * 파일 저장
      */
-    public Long storeSingleFile(FileData file) {
+    public UploadFile storeSingleFile(FileData file) {
         String originalFileName = file.fileName();
         String storeFileName = createStoreFileName(originalFileName);
         Path targetPath = Paths.get(getFullPath(storeFileName));
@@ -52,8 +52,7 @@ public class FileService {
                                     .filePath(getFullPath(storeFileName))
                                     .fileSize(getFileSize(targetPath))
                                     .build();
-        uploadFileRepository.save(uploadFile);
-        return uploadFile.getId();
+        return uploadFileRepository.save(uploadFile);
     }
 
     /**
@@ -82,6 +81,13 @@ public class FileService {
      */
     public void deleteFile(Long fileId) {
         uploadFileRepository.deleteById(fileId);
+    }
+
+    /**
+     * 파일 삭제
+     */
+    public void deleteFile(UploadFile file) {
+        uploadFileRepository.delete(file);
     }
 
     /**
