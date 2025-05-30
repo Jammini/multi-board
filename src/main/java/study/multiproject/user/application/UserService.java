@@ -9,12 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 import study.multiproject.file.application.FileService;
 import study.multiproject.file.domain.UploadFile;
 import study.multiproject.user.application.request.ProfileUpdateServiceRequest;
-import study.multiproject.user.exception.AlreadyExistsEmailException;
-import study.multiproject.user.exception.UserNotFoundException;
 import study.multiproject.user.application.request.UserSignupServiceRequest;
 import study.multiproject.user.application.response.UserResponse;
-import study.multiproject.user.domain.User;
 import study.multiproject.user.dao.UserRepository;
+import study.multiproject.user.domain.User;
+import study.multiproject.user.exception.AlreadyExistsEmailException;
+import study.multiproject.user.exception.UserNotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -76,17 +76,15 @@ public class UserService {
         User user = getUserById(userId);
         user.updateNickname(request.nickname());
 
-        request.fileData().ifPresent(fileData -> {
-            UploadFile oldProfileImage = user.getProfileImage();
-            if (oldProfileImage != null) {
-                user.clearProfileImage();
-                fileService.deleteFile(oldProfileImage);
-                em.flush();
-            }
+        if (request.removePhoto()) {
+            user.clearProfileImage();
+            return;
+        }
 
-            UploadFile uploadFile = fileService.storeSingleFile(fileData);
+        if (request.fileId() != null) {
+            UploadFile uploadFile = fileService.getFileEntityById(request.fileId());
             user.updateProfileImage(uploadFile);
-        });
+        }
     }
 
     public void changePassword(Long userId, String password) {

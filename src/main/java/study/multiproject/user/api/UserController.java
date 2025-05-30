@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import study.multiproject.file.application.FileService;
+import study.multiproject.file.application.request.FileData;
 import study.multiproject.global.common.ApiResponse;
 import study.multiproject.user.api.converter.ProfileUpdateRequestConverter;
 import study.multiproject.user.api.converter.UserSignupRequestConverter;
@@ -26,6 +28,7 @@ public class UserController {
     private final UserService userService;
     private final UserSignupRequestConverter userSignupRequestConverter;
     private final ProfileUpdateRequestConverter profileUpdateRequestConverter;
+    private final FileService fileService;
 
     /**
      * 회원가입
@@ -51,7 +54,13 @@ public class UserController {
     @PutMapping(value = "/users/me/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<Void> updateProfile(@AuthenticationPrincipal UserPrincipal principal,
         @ModelAttribute @Valid ProfileUpdateRequest request) {
-        userService.updateProfile(principal.getUserId(), profileUpdateRequestConverter.toServiceRequest(request));
+
+        Long fileId = null;
+        if (request.file() != null && !request.file().isEmpty()) {
+            FileData fileData = profileUpdateRequestConverter.toServiceRequest(request.file());
+            fileId = fileService.storeSingleFile(fileData);
+        }
+        userService.updateProfile(principal.getUserId(), profileUpdateRequestConverter.toServiceRequest(request.nickname(), request.removePhoto(), fileId));
         return ApiResponse.success(null);
     }
 }

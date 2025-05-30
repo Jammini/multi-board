@@ -1,9 +1,13 @@
 package study.multiproject.file.api;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriUtils;
+import study.multiproject.file.exception.FilePreviewException;
 import study.multiproject.global.common.ApiResponse;
 import study.multiproject.file.api.converter.FileDataConverter;
 import study.multiproject.file.application.FileService;
@@ -56,6 +61,36 @@ public class FileController {
     public ApiResponse<Void> deleteFile(@PathVariable Long fileId) {
         fileService.deleteFile(fileId);
         return ApiResponse.success(null);
+    }
+
+    /**
+     * 프로필 사진 미리보기
+     */
+    @GetMapping("/files/preview/{fileId}")
+    public ResponseEntity<Resource> previewFile(@PathVariable Long fileId) {
+        FileResponse response = fileService.getFileById(fileId);
+        Resource resource = fileService.loadAsResource(response.filePath());
+
+        String contentType;
+        try {
+            contentType = Files.probeContentType(
+                Paths.get(response.filePath())
+            );
+        } catch (IOException e) {
+            throw new FilePreviewException(e.getMessage());
+        }
+        MediaType mediaType = contentType != null
+                                  ? MediaType.parseMediaType(contentType)
+                                  : MediaType.APPLICATION_OCTET_STREAM;
+
+        ContentDisposition disposition = ContentDisposition
+                                             .inline()
+                                             .filename(response.fileName())
+                                             .build();
+        return ResponseEntity.ok()
+                   .contentType(mediaType)
+                   .header(HttpHeaders.CONTENT_DISPOSITION, disposition.toString())
+                   .body(resource);
     }
 
     /**
