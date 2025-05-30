@@ -57,7 +57,7 @@ logging:
           descriptor:
             sql: trace
 
-file.dir: /Users/kimjungmin/documents/JM/project/img/
+#file.dir: /Users/kimjungmin/documents/JM/project/img/
 
 jwt:
   secret: ${JWT_SECRET}
@@ -69,4 +69,6 @@ app:
     redis-prefix: "pwd-reset:"
     expiry-time: 30m
     reset-url: "${app.frontend.base-url}/password-reset/confirm/"
+  file:
+    dir: "${user.dir}/uploads/files"
 

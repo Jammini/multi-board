@@ -4,6 +4,7 @@
       <div class="menu-left">
         <RouterLink to="/" class="nav-link">Home</RouterLink>
         <RouterLink to="/write" class="nav-link">글 작성</RouterLink>
+        <RouterLink to="/mypage" class="nav-link">MyPage</RouterLink>
       </div>
 
       <div>

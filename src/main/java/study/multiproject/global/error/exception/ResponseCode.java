@@ -20,6 +20,7 @@ public enum ResponseCode {
     FILE_LOAD_ERROR(500, "F003", "파일을 읽을 수 없습니다."),
     FILE_CONVERSION_ERROR(500, "F004", "파일 변환에 실패했습니다."),
     FILE_SIZE_ERROR(400, "F005", "파일 크기 확인에 실패했습니다."),
+    FILE_PREVIEW_ERROR(500, "F006", "파일 미리보기 생성에 실패했습니다."),
 
     // COMMENT
     NOT_FOUND_COMMENT(404, "C001", "존재하지 않는 댓글입니다."),

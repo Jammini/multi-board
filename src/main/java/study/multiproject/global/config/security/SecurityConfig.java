@@ -66,6 +66,8 @@ public class SecurityConfig {
                                                                      .permitAll()
                                                                      .requestMatchers("/auth/**")
                                                                      .permitAll()
+                                                                     .requestMatchers("/files/preview/**")
+                                                                     .permitAll()
                                                                      .anyRequest().authenticated()
                    )
                    .addFilterBefore(emailPasswordAuthFilter(),
