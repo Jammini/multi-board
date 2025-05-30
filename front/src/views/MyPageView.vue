@@ -1,56 +1,51 @@
 <template>
   <div class="my-page">
     <h2>내 프로필</h2>
-
-    <!-- View Mode -->
-    <div v-if="!isEditMode">
+    <el-form @submit.prevent="onSubmit" :model="form" label-position="top">
       <div class="profile-header">
+        <!-- 프로필 이미지: preview에 항상 이미지 URL 또는 기본 이미지가 들어있음 -->
         <el-avatar
-          v-if="user.profileThumbnailUrl"
-          :src="user.profileThumbnailUrl"
+          :src="preview"
           size="250"
           class="avatar"
         />
-        <div v-else class="avatar placeholder">
-          <i class="el-icon-user" />
+
+        <div class="photo-buttons">
+          <!-- 사진이 없으면 변경 버튼, 있으면 삭제 버튼 -->
+          <el-button
+            v-if="removeFlag"
+            size="mini"
+            @click="triggerFileInput"
+          >
+            사진 변경
+          </el-button>
+          <el-button
+            v-else
+            size="mini"
+            type="danger"
+            @click="removePhoto"
+          >
+            사진 삭제
+          </el-button>
         </div>
+
+        <input
+          ref="fileInput"
+          type="file"
+          class="hidden"
+          @change="onFileChange"
+          accept="image/*"
+        />
       </div>
 
-      <el-descriptions title="프로필 정보" border>
-        <el-descriptions-item label="닉네임">{{ user.nickname }}</el-descriptions-item>
-        <el-descriptions-item label="이메일">{{ user.email }}</el-descriptions-item>
-      </el-descriptions>
+      <el-form-item label="닉네임">
+        <el-input v-model="form.nickname" placeholder="닉네임을 입력하세요" />
+      </el-form-item>
 
-      <el-button type="primary" @click="enterEditMode">프로필 변경</el-button>
-    </div>
-
-    <!-- Edit Mode -->
-    <div v-else>
-      <el-form @submit.prevent="onSubmit" :model="form" label-width="100px">
-        <div class="profile-header">
-          <el-avatar
-            v-if="preview"
-            :src="preview"
-            size="250"
-            class="avatar"
-          />
-          <div v-else class="avatar placeholder">
-            <i class="el-icon-user" />
-          </div>
-        </div>
-
-        <el-form-item label="닉네임">
-          <el-input v-model="form.nickname" />
-        </el-form-item>
-        <el-form-item label="프로필 사진">
-          <input type="file" @change="onFileChange" accept="image/*" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" native-type="submit">저장</el-button>
-          <el-button type="default" @click="cancelEdit">취소</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
+      <el-form-item>
+        <el-button type="primary" native-type="submit">저장</el-button>
+      </el-form-item>
+    </el-form>
   </div>
 </template>
 
@@ -60,74 +55,69 @@ import axios from 'axios';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+const defaultAvatar = '/images/default-avatar.png';
 
-// 사용자 정보
-const user = reactive({
-  email: '',
-  nickname: '',
-  profileThumbnailUrl: ''
-});
-
-// 편집 모드 여부
-const isEditMode = ref(false);
-
-// 폼과 미리보기
 const form = reactive({ nickname: '', image: null as File | null });
-const preview = ref<string | null>(null);
+// 삭제 플래그 (true면 사진 없음/변경 상태, false면 사진 존재/삭제 상태)
+const removeFlag = ref(false);
+const preview = ref<string>(defaultAvatar);
+const fileInput = ref<HTMLInputElement | null>(null);
 
-// 초기 로드: 내 정보 가져오기
 onMounted(async () => {
   try {
     const res = await axios.get('/api/users/me');
     const data = res.data.data;
-    user.email = data.email;
-    user.nickname = data.nickname;
-    user.profileThumbnailUrl = data.profileFilePath;
+    form.nickname = data.nickname;
+    if (data.profileFileId) {
+      preview.value = `${API_BASE}/files/preview/${data.profileFileId}`;
+      removeFlag.value = false;
+    } else {
+      preview.value = defaultAvatar;
+      removeFlag.value = true;
+    }
   } catch (err) {
     console.error('내 정보 조회 실패:', err);
     router.push('/login');
   }
 });
 
-// 편집 모드 진입
-function enterEditMode() {
-  form.nickname = user.nickname;
-  preview.value = user.profileThumbnailUrl || null;
-  isEditMode.value = true;
+function triggerFileInput() {
+  fileInput.value?.click();
 }
 
-// 편집 취소
-function cancelEdit() {
-  isEditMode.value = false;
+function removePhoto() {
+  form.image = null;
+  preview.value = defaultAvatar;
+  removeFlag.value = true;
 }
 
-// 파일 변경 핸들러
 function onFileChange(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0] || null;
   form.image = file;
-  preview.value = file ? URL.createObjectURL(file) : null;
+  if (file) {
+    // 업로드 전 임시 preview
+    preview.value = URL.createObjectURL(file);
+    removeFlag.value = false;
+  }
 }
 
-// 프로필 업데이트 제출
 async function onSubmit() {
-  const data = new FormData();
-  data.append('nickname', form.nickname);
+  const formData = new FormData();
+  formData.append('nickname', form.nickname);
+  formData.append('removePhoto', String(removeFlag.value));
+  removeFlag.value = false; // 제출 후 초기화
   if (form.image) {
-    data.append('file', form.image);
+    formData.append('file', form.image);
+    form.image = null; // 업로드 후 초기화
   }
-
   try {
-    await axios.put('/api/users/me/profile', data, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+    await axios.put('/api/users/me/profile', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
     });
-    // 업데이트 후 뷰 모드로 전환 및 정보 갱신
-    isEditMode.value = false;
-    user.nickname = form.nickname;
-    user.profileThumbnailUrl = preview.value || '';
     alert('프로필이 업데이트되었습니다.');
   } catch (err: any) {
-    const msg = err.response?.data?.message || '프로필 업데이트 중 오류가 발생했습니다.';
-    alert(msg);
+    alert(err.response?.data?.message || '오류가 발생했습니다.');
   }
 }
 </script>
@@ -139,6 +129,7 @@ async function onSubmit() {
   text-align: center;
 }
 .profile-header {
+  position: relative;
   margin-bottom: 2rem;
 }
 .avatar {
@@ -148,18 +139,17 @@ async function onSubmit() {
   height: 250px;
 }
 .avatar img {
-  width: 100%;
-  height: 100%;
+  width: 100% !important;
+  height: 100% !important;
   object-fit: cover;
 }
-.avatar.placeholder {
-  width: 250px;
-  height: 250px;
-  line-height: 250px;
-  background-color: #f0f0f0;
-  color: #ccc;
-  font-size: 3rem;
-  text-align: center;
-  border-radius: 50%;
+.photo-buttons {
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+.hidden {
+  display: none;
 }
 </style>

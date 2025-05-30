@@ -26,6 +26,8 @@ export default defineConfig({
       },
       "/files": {
         target: "http://localhost:8080",
+        changeOrigin: true,
+        rewrite: (path) => path,
       },
       '/rss': {
         target: 'http://localhost:8080',
