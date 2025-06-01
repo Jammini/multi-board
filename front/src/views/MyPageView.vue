@@ -13,7 +13,7 @@
         <div class="photo-buttons">
           <!-- 사진이 없으면 변경 버튼, 있으면 삭제 버튼 -->
           <el-button
-            v-if="removeFlag"
+            v-if="!hasProfile"
             size="mini"
             @click="triggerFileInput"
           >
@@ -59,6 +59,7 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 const defaultAvatar = '/images/default-avatar.png';
 
 const form = reactive({ nickname: '', image: null as File | null });
+const hasProfile = ref(false);
 // 삭제 플래그 (true면 사진 없음/변경 상태, false면 사진 존재/삭제 상태)
 const removeFlag = ref(false);
 const preview = ref<string>(defaultAvatar);
@@ -71,9 +72,11 @@ onMounted(async () => {
     form.nickname = data.nickname;
     if (data.profileFileId) {
       preview.value = `${API_BASE}/files/preview/${data.profileFileId}`;
+      hasProfile.value = true;
       removeFlag.value = false;
     } else {
       preview.value = defaultAvatar;
+      hasProfile.value = false;
       removeFlag.value = true;
     }
   } catch (err) {
@@ -89,6 +92,7 @@ function triggerFileInput() {
 function removePhoto() {
   form.image = null;
   preview.value = defaultAvatar;
+  // hasProfile.value = false;
   removeFlag.value = true;
 }
 
@@ -98,6 +102,7 @@ function onFileChange(e: Event) {
   if (file) {
     // 업로드 전 임시 preview
     preview.value = URL.createObjectURL(file);
+    hasProfile.value = true;
     removeFlag.value = false;
   }
 }
@@ -106,7 +111,6 @@ async function onSubmit() {
   const formData = new FormData();
   formData.append('nickname', form.nickname);
   formData.append('removePhoto', String(removeFlag.value));
-  removeFlag.value = false; // 제출 후 초기화
   if (form.image) {
     formData.append('file', form.image);
     form.image = null; // 업로드 후 초기화
@@ -116,6 +120,7 @@ async function onSubmit() {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     alert('프로필이 업데이트되었습니다.');
+    router.push('/');
   } catch (err: any) {
     alert(err.response?.data?.message || '오류가 발생했습니다.');
   }
