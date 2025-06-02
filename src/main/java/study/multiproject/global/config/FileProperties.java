@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 @Component
-@ConfigurationProperties(prefix = "file")
+@ConfigurationProperties(prefix = "app.file")
 public class FileProperties {
     private String dir;
 }

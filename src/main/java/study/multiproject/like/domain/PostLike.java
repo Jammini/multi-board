@@ -41,6 +41,6 @@ public class PostLike {
     public PostLike(Long postId, Long userId) {
         this.postId = postId;
         this.userId = userId;
-        this.createdAt = LocalDateTime.now();;
+        this.createdAt = LocalDateTime.now();
     }
 }

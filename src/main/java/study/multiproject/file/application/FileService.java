@@ -85,6 +85,13 @@ public class FileService {
     }
 
     /**
+     * 파일 삭제
+     */
+    public void deleteFile(UploadFile file) {
+        uploadFileRepository.delete(file);
+    }
+
+    /**
      * 파일 엔티티 조회
      */
     public UploadFile getFileEntityById(Long fileId) {
