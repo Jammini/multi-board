@@ -7,7 +7,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import study.multiproject.file.application.FileService;
-import study.multiproject.file.domain.UploadFile;
 import study.multiproject.user.application.request.ProfileUpdateServiceRequest;
 import study.multiproject.user.application.request.UserSignupServiceRequest;
 import study.multiproject.user.application.response.UserResponse;
@@ -82,8 +81,7 @@ public class UserService {
         }
 
         if (request.fileId() != null) {
-            UploadFile uploadFile = fileService.getFileEntityById(request.fileId());
-            user.updateProfileImage(uploadFile);
+            user.updateProfileImage(request.fileId());
         }
     }
 

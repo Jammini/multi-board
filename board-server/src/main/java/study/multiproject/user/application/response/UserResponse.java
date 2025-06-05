@@ -16,7 +16,7 @@ public record UserResponse(
             user.getEmail(),
             user.getName(),
             user.getNickname(),
-            user.getProfileImage() != null ? user.getProfileImage().getId(): null
+            user.getFileId()
         );
     }
 }

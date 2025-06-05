@@ -2,13 +2,10 @@ package study.multiproject.user.domain;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -18,7 +15,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import study.multiproject.comment.domain.Comment;
-import study.multiproject.file.domain.UploadFile;
 import study.multiproject.post.domain.Post;
 
 @Table(name = "users")
@@ -60,11 +56,9 @@ public class User {
     private LocalDateTime createdAt;
 
     /**
-     * 프로필 아이디
+     * 프로필 파일 아이디
      */
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "profile_file_id")
-    private UploadFile profileImage;
+    private Long fileId;
 
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -89,16 +83,12 @@ public class User {
         }
     }
 
-    public void updateProfileImage(UploadFile newImage) {
-        if (newImage != null) {
-            this.profileImage = newImage;
-            newImage.setUser(this);
-        }
+    public void updateProfileImage(Long fileId) {
+        this.fileId = fileId;
     }
 
     public void clearProfileImage() {
-        this.profileImage.setUser(null);
-        this.profileImage = null;
+        this.fileId = null;
     }
 
     public void changePassword(String password) {

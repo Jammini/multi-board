@@ -7,14 +7,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import study.multiproject.post.domain.Post;
-import study.multiproject.user.domain.User;
 
 @Getter
 @Entity
@@ -53,11 +51,6 @@ public class UploadFile {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @Setter
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
-
     @Builder
     public UploadFile(String fileName, String originalName, String filePath, long fileSize,
         Post post) {
@@ -67,5 +60,4 @@ public class UploadFile {
         this.fileSize = fileSize;
         this.post = post;
     }
-
 }
