@@ -67,8 +67,8 @@ onMounted(async () => {
     const res = await axios.get('/api/users/me');
     const data = res.data.data;
     form.nickname = data.nickname;
-    if (data.profileFileId) {
-      preview.value = `${API_BASE}/files/preview/${data.profileFileId}`;
+    if (data.profileImageId) {
+      preview.value = `${API_BASE}/files/preview/${data.profileImageId}`;
       removeFlag.value = false;
     } else {
       preview.value = defaultAvatar;

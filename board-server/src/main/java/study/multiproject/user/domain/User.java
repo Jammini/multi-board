@@ -58,7 +58,7 @@ public class User {
     /**
      * 프로필 파일 아이디
      */
-    private Long fileId;
+    private Long profileImageId;
 
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -83,12 +83,12 @@ public class User {
         }
     }
 
-    public void updateProfileImage(Long fileId) {
-        this.fileId = fileId;
+    public void updateProfileImage(Long profileImageId) {
+        this.profileImageId = profileImageId;
     }
 
     public void clearProfileImage() {
-        this.fileId = null;
+        this.profileImageId = null;
     }
 
     public void changePassword(String password) {
