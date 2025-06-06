@@ -13,14 +13,12 @@
         <div class="photo-buttons">
           <!-- 사진이 없으면 변경 버튼, 있으면 삭제 버튼 -->
           <el-button
-            v-if="!hasProfile"
             size="mini"
             @click="triggerFileInput"
           >
             사진 변경
           </el-button>
           <el-button
-            v-else
             size="mini"
             type="danger"
             @click="removePhoto"
@@ -59,7 +57,6 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 const defaultAvatar = '/images/default-avatar.png';
 
 const form = reactive({ nickname: '', image: null as File | null });
-const hasProfile = ref(false);
 // 삭제 플래그 (true면 사진 없음/변경 상태, false면 사진 존재/삭제 상태)
 const removeFlag = ref(false);
 const preview = ref<string>(defaultAvatar);
@@ -70,13 +67,11 @@ onMounted(async () => {
     const res = await axios.get('/api/users/me');
     const data = res.data.data;
     form.nickname = data.nickname;
-    if (data.profileFileId) {
-      preview.value = `${API_BASE}/files/preview/${data.profileFileId}`;
-      hasProfile.value = true;
+    if (data.profileImageId) {
+      preview.value = `${API_BASE}/files/preview/${data.profileImageId}`;
       removeFlag.value = false;
     } else {
       preview.value = defaultAvatar;
-      hasProfile.value = false;
       removeFlag.value = true;
     }
   } catch (err) {
@@ -100,11 +95,19 @@ function onFileChange(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0] || null;
   form.image = file;
   if (file) {
-    // 업로드 전 임시 preview
+    // 이전 미리보기 URL 해제
+    if (preview.value && preview.value !== defaultAvatar) {
+      URL.revokeObjectURL(preview.value);
+    }
+    // 새로운 미리보기 URL 생성
     preview.value = URL.createObjectURL(file);
-    hasProfile.value = true;
     removeFlag.value = false;
   }
+  // 파일 입력값 초기화
+  if (fileInput.value) {
+    fileInput.value.value = '';
+  }
+
 }
 
 async function onSubmit() {
