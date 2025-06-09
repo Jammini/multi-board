@@ -51,22 +51,40 @@
       - 회원만 게시글과 댓글 작성이 가능하다.
       - 자신이 등록한 게시글과 댓글만 수정과 삭제가 가능하다.
       - 자신이 등록하지 않은 게시글과 댓글은 읽기만 가능하다.
-11. 스프린트 11 (2025.04.07 ~ 2025.04.20)
-- 비밀글 구현
-  - 비밀글은 작성자 및 관리자만 접근 가능하다.
-- 게시글 공유 구현
-  - 게시글 링크를 단축사용한다.
-  - shortenUrl 을 이용해 게시글 url을 단축하고 redirect한다.
-  - shortenUrl 정보를 반환한다.
-- security를 이용해 xss를 대응한다.
-- seo 관련 적용
-  - robots.txt
-  - 사이트맵(sitemap.xml)
-  - RSS 피드
-  - ATOM 피드
+11. 스프린트 11, 12 (2025.04.07 ~ 2025.05.04)
+    - 비밀글 구현
+      - 비밀글은 작성자 및 관리자만 접근 가능하다.
+    - 게시글 공유 구현
+      - 게시글 링크를 단축사용한다.
+      - shortenUrl 을 이용해 게시글 url을 단축하고 redirect한다.
+      - shortenUrl 정보를 반환한다.
+    - security를 이용해 xss를 대응한다.
+    - seo 관련 적용
+      - robots.txt
+      - 사이트맵(sitemap.xml)
+      - RSS 피드
+      - ATOM 피드
+
+12. 스프린트 13 (2025.05.05 ~ 2025.05.11)
+    - 공유하기 3차
+    - SEO F/E가 하도록 하기
+
+13. 스프린트 14 (2025.05.11 ~ 2025.05.25)
+    - 아이디/비번 찾기(or 비번 찾기만)
+
+14. 스프린트 15 (2025.05.26 ~ 2025.06.01)
+    - 회원정보 수정
+      - 프로필(현재 닉네임) 변경
+      - 사진 변경
+
+15. 스프린트 16 (2025.06.02 ~ 2025.06.08)
+    - 관리자 준비
+      - 서브모듈로 변경
+      - README.md 파일에 로컬에서 실행시키는 가이드
 
 ## 기술적 issue 해결 과정
 
+- [비밀번호 재설정링크로 이메일 전송 기능 구현하기](https://systemdata.tistory.com/119)
 - [단축 URL을 사용하는 이유는 무엇이고 구현해보자](https://systemdata.tistory.com/118)
 - [좋아요 수를 이용해 동시성 처리 비교하기](https://systemdata.tistory.com/117)
 - [댓글 알고리즘으로 무한 depth 구현하기](https://systemdata.tistory.com/116)
@@ -106,3 +124,24 @@ Github-Flow 전략을 사용한다.
 - [google java convention](https://google.github.io/styleguide/javaguide.html) 사용.
 - indent size 2 -> 4 변경.
 - tab width 2 -> 4 변경.
+
+## Quick Start
+
+다음 명령을 통해 프로젝트를 실행할 수 있습니다.
+
+### repository download
+```bash
+git clone https://github.com/Jammini/multi-board.git
+```
+
+### frontend
+
+```bash
+npm run dev --prefix board-client
+```
+
+### backend
+
+```bash
+JWT_SECRET="생성한_랜덤_시크릿" ./gradlew :board-server:bootRun
+```
