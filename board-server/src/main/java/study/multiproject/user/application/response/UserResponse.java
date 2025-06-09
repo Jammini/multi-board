@@ -7,7 +7,7 @@ public record UserResponse(
     String email,
     String name,
     String nickname,
-    Long profileFileId
+    Long profileImageId
 ) {
 
     public UserResponse(User user) {
@@ -16,7 +16,7 @@ public record UserResponse(
             user.getEmail(),
             user.getName(),
             user.getNickname(),
-            user.getProfileImage() != null ? user.getProfileImage().getId(): null
+            user.getProfileImageId()
         );
     }
 }
