@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -46,7 +47,7 @@ public class SecurityConfig {
         return (web) -> web.ignoring()
                             .requestMatchers("/favicon.ico")
                             .requestMatchers("/error")
-                            .requestMatchers(toH2Console());
+                            .requestMatchers("/h2-console/**");
     }
 
     @Bean
