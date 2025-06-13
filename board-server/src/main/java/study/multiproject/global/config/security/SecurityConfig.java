@@ -1,7 +1,5 @@
 package study.multiproject.global.config.security;
 
-import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -46,7 +44,7 @@ public class SecurityConfig {
         return (web) -> web.ignoring()
                             .requestMatchers("/favicon.ico")
                             .requestMatchers("/error")
-                            .requestMatchers(toH2Console());
+                            .requestMatchers("/h2-console/**");
     }
 
     @Bean
