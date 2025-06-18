@@ -85,7 +85,6 @@ public class SecurityConfig {
         filter.setAuthenticationManager(authenticationManager());
         filter.setAuthenticationSuccessHandler(loginSuccessHandler());
         filter.setAuthenticationFailureHandler(loginFailHandler());
-        filter.setSecurityContextRepository(new HttpSessionSecurityContextRepository());
         return filter;
     }
 
