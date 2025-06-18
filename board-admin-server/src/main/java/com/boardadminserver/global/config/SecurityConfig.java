@@ -42,8 +42,6 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        System.out.println("WebSecurityCustomizer called");
-        System.out.println("passwordEncoder: " + passwordEncoder.encode("admin2"));
         return (web) -> web.ignoring()
                             .requestMatchers("/favicon.ico")
                             .requestMatchers("/error")
