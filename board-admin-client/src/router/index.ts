@@ -9,7 +9,26 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
     },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('@/views/LoginView.vue')
+    },
   ],
 })
+
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('jwt_token');
+  const permitAllUrls = [ // 로그인 없이 허용된 URL들 (Spring Security 용어와도 잘 맞음)
+    "login",
+  ];
+  const name = typeof to.name === 'string' ? to.name : '';
+
+  if (!permitAllUrls.includes(name) && !token) { // 로그인 필요
+    return next('/login');
+  }
+  next();
+});
+
 
 export default router
