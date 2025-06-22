@@ -1,6 +1,6 @@
 package com.boardadminserver.global.config.security;
 
-import com.boardadminserver.admin.service.response.AdminResponse;
+import com.boardadminserver.admin.application.response.AdminResponse;
 import java.util.List;
 import lombok.Getter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

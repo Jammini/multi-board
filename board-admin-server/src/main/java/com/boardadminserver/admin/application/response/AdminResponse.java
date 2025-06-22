@@ -1,4 +1,4 @@
-package com.boardadminserver.admin.service.response;
+package com.boardadminserver.admin.application.response;
 
 public record AdminResponse(
     Long id,
