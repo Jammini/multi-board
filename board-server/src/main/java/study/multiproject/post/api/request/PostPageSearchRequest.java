@@ -8,7 +8,8 @@ import org.springframework.data.domain.Sort;
 public record PostPageSearchRequest(
     @Min(value = 1, message = "페이지 번호가 잘못되었습니다.") int page,
     @Min(value = 1, message = "사이즈 번호가 잘못되었습니다.") int size,
-    String keyword
+    String keyword,
+    Long categoryId
 ) {
 
     public Pageable getPageable() {

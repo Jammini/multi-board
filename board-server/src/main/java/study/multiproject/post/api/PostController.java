@@ -60,6 +60,15 @@ public class PostController {
     }
 
     /**
+     * 카테고리별 게시글 목록 조회
+     */
+    @GetMapping("/posts/category")
+    public ApiResponse<PagingResponse> getPageListByCategory(@Valid PostPageSearchRequest request, @AuthenticationPrincipal UserPrincipal principal) {
+        return ApiResponse.success(postService.getPageListByCategory(postPageSearchRequestConverter.toServiceRequest(request, principal.getUserId())));
+    }
+
+
+    /**
      * 게시글 수정
      */
     @PatchMapping("/posts/{postId}")

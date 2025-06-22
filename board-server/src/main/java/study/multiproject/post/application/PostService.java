@@ -85,6 +85,16 @@ public class PostService {
     }
 
     /**
+     * 게시글 카테고리별 목록 조회
+     */
+    @Transactional(readOnly = true)
+    public PagingResponse getPageListByCategory(PostPageSearchServiceRequest request) {
+        Page<Post> postPage = postRepository.findByCategoryIdAndTitleContaining(request.categoryId(),
+            request.keyword(), request.pageable());
+        return new PagingResponse(postPage, request.userId());
+    }
+
+    /**
      * 게시글 수정
      */
     @Transactional
