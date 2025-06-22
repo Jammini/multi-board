@@ -3,7 +3,7 @@
     <div class="header-container">
       <div class="menu-left">
         <RouterLink to="/" class="nav-link">Home</RouterLink>
-        <RouterLink to="/write" class="nav-link">글 작성</RouterLink>
+        <RouterLink to="/category-manage" class="nav-link">카테고리 관리</RouterLink>
         <RouterLink to="/mypage" class="nav-link">MyPage</RouterLink>
       </div>
 
