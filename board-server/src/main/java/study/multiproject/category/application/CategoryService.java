@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import study.multiproject.category.application.response.CategoryResponse;
 import study.multiproject.category.dao.CategoryRepository;
+import study.multiproject.category.exception.CategoryNotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -19,4 +20,10 @@ public class CategoryService {
                    .toList();
     }
 
+    public CategoryResponse getCategoryById(Long id) {
+        return categoryRepository.findById(id)
+                   .map(category -> new CategoryResponse(category.getId(), category.getName(),
+                       category.getDescription(), category.getDisplayOrder()))
+                   .orElseThrow(CategoryNotFoundException::new);
+    }
 }
