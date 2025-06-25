@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import study.multiproject.category.application.CategoryService;
+import study.multiproject.category.application.response.CategoryResponse;
 import study.multiproject.file.application.FileService;
 import study.multiproject.file.domain.UploadFile;
 import study.multiproject.hashtag.application.request.HashtagSearchServiceRequest;
@@ -12,6 +14,7 @@ import study.multiproject.hashtag.dao.HashtagRepository;
 import study.multiproject.hashtag.domain.Hashtag;
 import study.multiproject.post.application.request.PostCreateServiceRequest;
 import study.multiproject.post.application.request.PostEditServiceRequest;
+import study.multiproject.post.application.request.PostPageSearchCategoryServiceRequest;
 import study.multiproject.post.application.request.PostPageSearchServiceRequest;
 import study.multiproject.post.application.response.PagingResponse;
 import study.multiproject.post.application.response.PostResponse;
@@ -31,6 +34,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final HashtagRepository hashtagRepository;
     private final PostHitsService postHitsService;
+    private final CategoryService categoryService;
     private final FileService fileService;
     private final UserService userService;
 
@@ -81,6 +85,17 @@ public class PostService {
     public PagingResponse getPageList(PostPageSearchServiceRequest request) {
         Page<Post> postPage = postRepository.findByTitleContaining(request.keyword(),
             request.pageable());
+        return new PagingResponse(postPage, request.userId());
+    }
+
+    /**
+     * 게시글 카테고리별 목록 조회
+     */
+    @Transactional(readOnly = true)
+    public PagingResponse getPageListByCategory(PostPageSearchCategoryServiceRequest request) {
+        CategoryResponse category = categoryService.getCategoryById(request.categoryId());
+        Page<Post> postPage = postRepository.findByCategoryIdAndTitleContaining(category.id(),
+            request.keyword(), request.pageable());
         return new PagingResponse(postPage, request.userId());
     }
 

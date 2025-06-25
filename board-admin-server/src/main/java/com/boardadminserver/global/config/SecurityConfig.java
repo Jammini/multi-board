@@ -1,6 +1,6 @@
 package com.boardadminserver.global.config;
 
-import com.boardadminserver.admin.service.AdminUserDetailsService;
+import com.boardadminserver.admin.application.AdminUserDetailsService;
 import com.boardadminserver.global.config.security.filter.EmailPasswordAuthFilter;
 import com.boardadminserver.global.config.security.filter.JwtAuthorizationFilter;
 import com.boardadminserver.global.config.security.handler.CustomLogoutSuccessHandler;
@@ -25,7 +25,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter.HeaderValue;
 
 @Configuration

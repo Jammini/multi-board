@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 import study.multiproject.global.common.ApiResponse;
 import study.multiproject.post.api.converter.PostCreateRequestConverter;
 import study.multiproject.post.api.converter.PostEditRequestConverter;
+import study.multiproject.post.api.converter.PostPageSearchCategoryRequestConverter;
 import study.multiproject.post.api.converter.PostPageSearchRequestConverter;
 import study.multiproject.post.api.request.PostCreateRequest;
 import study.multiproject.post.api.request.PostEditRequest;
+import study.multiproject.post.api.request.PostPageSearchCategoryRequest;
 import study.multiproject.post.api.request.PostPageSearchRequest;
 import study.multiproject.post.application.PostService;
 import study.multiproject.post.application.response.PagingResponse;
@@ -33,6 +35,7 @@ public class PostController {
     private final PostCreateRequestConverter postCreateRequestConverter;
     private final PostEditRequestConverter postEditRequestConverter;
     private final PostPageSearchRequestConverter postPageSearchRequestConverter;
+    private final PostPageSearchCategoryRequestConverter postPageSearchCategoryRequestConverter;
 
     /**
      * 게시글 작성
@@ -58,6 +61,15 @@ public class PostController {
     public ApiResponse<PagingResponse> getPageList(@Valid PostPageSearchRequest request, @AuthenticationPrincipal UserPrincipal principal) {
         return ApiResponse.success(postService.getPageList(postPageSearchRequestConverter.toServiceRequest(request, principal.getUserId())));
     }
+
+    /**
+     * 카테고리별 게시글 목록 조회
+     */
+    @GetMapping("/posts/category")
+    public ApiResponse<PagingResponse> getPageListByCategory(@Valid PostPageSearchCategoryRequest request, @AuthenticationPrincipal UserPrincipal principal) {
+        return ApiResponse.success(postService.getPageListByCategory(postPageSearchCategoryRequestConverter.toServiceRequest(request, principal.getUserId())));
+    }
+
 
     /**
      * 게시글 수정

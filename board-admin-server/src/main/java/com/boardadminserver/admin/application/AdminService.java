@@ -1,9 +1,9 @@
-package com.boardadminserver.admin.service;
+package com.boardadminserver.admin.application;
 
 import com.boardadminserver.admin.dao.AdminRepository;
 import com.boardadminserver.admin.domain.Admin;
 import com.boardadminserver.admin.exception.AdminNotFoundException;
-import com.boardadminserver.admin.service.response.AdminResponse;
+import com.boardadminserver.admin.application.response.AdminResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -3,7 +3,7 @@ package com.boardadminserver.global.config.security.filter;
 import static com.boardadminserver.global.util.AuthorizationConstants.BEARER;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
-import com.boardadminserver.admin.service.AdminUserDetailsService;
+import com.boardadminserver.admin.application.AdminUserDetailsService;
 import com.boardadminserver.global.util.JwtTokenUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

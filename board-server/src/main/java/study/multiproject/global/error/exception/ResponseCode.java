@@ -41,6 +41,9 @@ public enum ResponseCode {
 
     // AUTH
     INVALID_TOKEN(401, "A001", "유효하지 않은 토큰입니다."),
+
+    // CATEGORY
+    NOT_FOUND_CATEGORY(404, "C001", "존재하지 않는 카테고리입니다.")
     ;
 
     private final int status;

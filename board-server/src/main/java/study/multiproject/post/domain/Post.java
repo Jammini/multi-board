@@ -79,6 +79,11 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    /**
+     * 카테고리 아이디
+     */
+    private Long categoryId;
+
     @Builder
     protected Post(String title, String content, boolean isSecret, User user) {
         this.title = title;

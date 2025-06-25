@@ -24,6 +24,10 @@ export default defineConfig({
         target: "http://localhost:8080",
         rewrite: (path) => path.replace(/^\/api/, '')
       },
+      "/list/api": {
+        target: "http://localhost:8080",
+        rewrite: (path) => path.replace(/^\/list/, '').replace(/^\/api/, '')
+      },
       "/files": {
         target: "http://localhost:8080",
         changeOrigin: true,

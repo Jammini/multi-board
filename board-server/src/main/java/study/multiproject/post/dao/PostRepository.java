@@ -13,6 +13,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findByTitleContaining(String title, Pageable pageable);
 
+    Page<Post> findByCategoryIdAndTitleContaining(Long categoryId, String title, Pageable pageable);
+
     @Query("SELECT p FROM Post p LEFT JOIN FETCH p.postHashtags ph WHERE ph.hashtag.name = :keyword")
     Page<Post> findByHashtagName(@Param("keyword") String keyword, Pageable pageable);
 

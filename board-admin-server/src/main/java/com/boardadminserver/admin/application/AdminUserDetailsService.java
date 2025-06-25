@@ -1,6 +1,6 @@
-package com.boardadminserver.admin.service;
+package com.boardadminserver.admin.application;
 
-import com.boardadminserver.admin.service.response.AdminResponse;
+import com.boardadminserver.admin.application.response.AdminResponse;
 import com.boardadminserver.global.config.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
