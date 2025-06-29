@@ -18,6 +18,8 @@ public record PostResponse(
     String authorName,
     Set<String> hashtags,
     List<FileResponse> files,
+    Long categoryId,
+    String categoryName,
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime createdAt) {
 
@@ -33,6 +35,8 @@ public record PostResponse(
             post.getUser().getName(),
             post.getPostHashtags().stream().map(c -> c.getHashtag().getName()).collect(Collectors.toSet()),
             post.getUploadFiles().stream().map(FileResponse::new).toList(),
+            post.getCategoryId(),
+            post.getCategoryName(),
             post.getCreatedAt());
     }
 
@@ -48,6 +52,8 @@ public record PostResponse(
             post.getUser().getName(),
             post.getPostHashtags().stream().map(c -> c.getHashtag().getName()).collect(Collectors.toSet()),
             post.getUploadFiles().stream().map(FileResponse::new).toList(),
+            post.getCategoryId(),
+            post.getCategoryName(),
             post.getCreatedAt());
     }
 }

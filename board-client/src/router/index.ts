@@ -19,7 +19,12 @@ const router = createRouter({
       component: ListView,
     },
     {
-      path: "/write",
+      path: '/list',
+      name: 'list-all',
+      component: HomeView,
+    },
+    {
+      path: "/write/:category",
       name: "write",
       component: WriteView,
       beforeEnter: (to, from, next) => {

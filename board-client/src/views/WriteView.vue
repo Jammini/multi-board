@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import {ElButton, ElInput} from "element-plus";
 import axios from '@/axios.js';
-import {useRouter} from "vue-router";
+import {useRouter, useRoute} from "vue-router";
 
 const title = ref("");
 const content = ref("");
@@ -12,7 +12,34 @@ const newHashtag = ref("");
 const files = ref<File[]>([]);
 const uploadFileIds = ref<number[]>([]);
 
+interface CategorySettings {
+  attachmentsEnabled: boolean
+  hashtagsEnabled: boolean
+  secretEnabled: boolean
+}
+const categorySettings = reactive<CategorySettings>({
+  attachmentsEnabled: false,
+  hashtagsEnabled: false,
+  secretEnabled: false,
+})
+
 const router = useRouter();
+const route = useRoute();
+const categoryId = route.params.category ? Number(route.params.category) : null;
+
+async function fetchCategorySettings() {
+  if (categoryId == null) return
+  try {
+    const res = await axios.get(`/api/category/${categoryId}`)
+    // 응답에 attachmentsEnabled, hashtagsEnabled, commentsEnabled(또는 secretEnabled) 필드가 내려온다고 가정
+    categorySettings.attachmentsEnabled = res.data.attachmentsEnabled
+    categorySettings.hashtagsEnabled = res.data.hashtagsEnabled
+    categorySettings.secretEnabled = res.data.secretEnabled ?? res.data.commentsEnabled
+  } catch (err) {
+    console.error('카테고리 설정 조회 실패', err)
+  }
+}
+
 
 // 해시태그 추가
 const addHashtag = () => {
@@ -51,6 +78,7 @@ const write = async () => {
   const postData = {
     title: title.value,
     content: content.value,
+    categoryId: categoryId,
     isSecret: isSecret.value,
     hashtags: hashtags.value,
     fileIds: uploadFileIds.value, // 업로드된 파일 ID 포함
@@ -74,6 +102,10 @@ const handleChange = (uploadFileList) => {
   }
 };
 
+onMounted(() => {
+  fetchCategorySettings()
+})
+
 </script>
 
 <template>
@@ -83,7 +115,7 @@ const handleChange = (uploadFileList) => {
   <div class="mt-2">
     <el-input v-model="content" type="textarea" rows="15" placeholder="내용을 입력해주세요" />
   </div>
-  <div class="mt-2">
+  <div class="mt-2" v-if="categorySettings.attachmentsEnabled" >
     <!-- 첨부파일 업로드 -->
     <el-upload
       drag
@@ -99,7 +131,7 @@ const handleChange = (uploadFileList) => {
     </el-upload>
   </div>
 
-  <div class="mt-2">
+  <div class="mt-2" v-if="categorySettings.hashtagsEnabled">
     <!-- 해시태그 입력 필드 -->
     <el-input
       v-model="newHashtag"
@@ -118,7 +150,7 @@ const handleChange = (uploadFileList) => {
     </div>
   </div>
   <!-- 비밀글 체크박스 추가 -->
-  <div class="mt-2">
+  <div class="mt-2" v-if="categorySettings.secretEnabled">
     <el-checkbox v-model="isSecret">비밀글로 작성</el-checkbox>
   </div>
 
@@ -132,6 +164,11 @@ const handleChange = (uploadFileList) => {
 </template>
 
 <style>
+.write-page {
+  max-width: 800px;
+  margin: 2rem auto;
+}
+
 .mr-1 {
   margin-right: 5px;
 }

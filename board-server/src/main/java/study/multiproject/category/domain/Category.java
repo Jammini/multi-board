@@ -36,6 +36,20 @@ public class Category {
      */
     private Long displayOrder;
 
+    /**
+     * 첨부파일 업로드 가능 여부
+     */
+    private boolean attachmentsEnabled;
+
+    /**
+     * 비밀글 작성 가능 여부
+     */
+    private boolean secretEnabled;
+
+    /**
+     * 해시태그 사용 가능 여부
+     */
+    private boolean hashtagsEnabled;
 
     @Builder
     private Category(String name, String description, Long displayOrder) {

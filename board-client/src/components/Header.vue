@@ -5,9 +5,9 @@
         <RouterLink to="/" class="nav-link">Home</RouterLink>
 
         <el-dropdown class="nav-link" trigger="hover" @command="goCategory">
-          <span class="el-dropdown-link">
+          <router-link to="/list" class="el-dropdown-link">
             게시판<i class="el-icon-arrow-down el-icon--right" />
-          </span>
+          </router-link>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item
