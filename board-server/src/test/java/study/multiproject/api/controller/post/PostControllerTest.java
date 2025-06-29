@@ -68,8 +68,8 @@ class PostControllerTest {
     @Test
     @DisplayName("신규 게시글을 작성한다.")
     void createPost() throws Exception {
-        PostCreateRequest request = new PostCreateRequest("잼미니", "잼미니는 잼잼이다.", false,null, null);
-        PostCreateServiceRequest serviceRequest = new PostCreateServiceRequest("잼미니", "잼미니는 잼잼이다.", false,null, null, 1L);
+        PostCreateRequest request = new PostCreateRequest("잼미니", "잼미니는 잼잼이다.", false,null, null,1L);
+        PostCreateServiceRequest serviceRequest = new PostCreateServiceRequest("잼미니", "잼미니는 잼잼이다.", false,null, null, 1L, 1L);
 
         given(postService.write(any())).willReturn(1L);
 

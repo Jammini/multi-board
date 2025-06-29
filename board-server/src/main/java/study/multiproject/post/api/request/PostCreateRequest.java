@@ -9,7 +9,8 @@ public record PostCreateRequest(
     @NotBlank(message = "내용은 필수입니다.") String content,
     @NotNull(message = "비밀글 여부는 필수입니다.") Boolean isSecret,
     List<String> hashtags,
-    List<Long> fileIds
+    List<Long> fileIds,
+    @NotNull(message = "카테고리는 필수입니다.") Long categoryId
 ) {
 
 }

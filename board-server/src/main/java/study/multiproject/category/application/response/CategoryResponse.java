@@ -4,7 +4,10 @@ public record CategoryResponse(
     Long id,
     String title,
     String description,
-    Long displayOrder
+    Long displayOrder,
+    boolean attachmentsEnabled,
+    boolean secretEnabled,
+    boolean hashtagsEnabled
 ) {
 
 }

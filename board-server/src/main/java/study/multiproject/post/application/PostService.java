@@ -43,8 +43,9 @@ public class PostService {
      */
     @Transactional
     public Long write(PostCreateServiceRequest request) {
+        CategoryResponse category = categoryService.getCategoryById(request.categoryId());
         User user = userService.getUserById(request.userId());
-        Post post = postRepository.save(request.toEntity(user));
+        Post post = postRepository.save(request.toEntity(user, category.id(), category.title()));
         linkFilesToPost(request.fileIds(), post);
         saveHashtag(request.hashtags(), post);
         return post.getId();

@@ -84,8 +84,13 @@ public class Post extends BaseEntity {
      */
     private Long categoryId;
 
+    /**
+     * 카테고리 이름
+     */
+    private String categoryName;
+
     @Builder
-    protected Post(String title, String content, boolean isSecret, User user) {
+    protected Post(String title, String content, boolean isSecret, Long categoryId, String categoryName,User user) {
         this.title = title;
         this.content = content;
         this.viewCount = 0;
@@ -93,6 +98,8 @@ public class Post extends BaseEntity {
         this.isDeleted = false;
         this.postHashtags = new HashSet<>();
         this.uploadFiles = new HashSet<>();
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
         this.user = user;
     }
 
