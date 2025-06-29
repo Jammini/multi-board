@@ -14,6 +14,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
+import study.multiproject.category.dao.CategoryRepository;
+import study.multiproject.category.domain.Category;
 import study.multiproject.post.exception.PostNotFoundException;
 import study.multiproject.post.application.PostService;
 import study.multiproject.post.application.request.PostCreateServiceRequest;
@@ -40,7 +42,11 @@ class PostServiceTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
     private User user;
+    private Category category;
     @BeforeEach
     void beforeEach() {
         user = User.builder()
@@ -49,13 +55,19 @@ class PostServiceTest {
                         .name("잼미니")
                         .build();
         userRepository.save(user);
+
+        category = categoryRepository.save(Category.builder()
+                                    .name("자유게시판")
+                                    .description("자유롭게 글을 작성할 수 있는 게시판입니다.")
+                                    .displayOrder(0L)
+                                    .build());
     }
 
     @Test
     @DisplayName("신규 게시글을 작성하면 아이디를 반환한다.")
     void createPost() {
         // given
-        PostCreateServiceRequest request = new PostCreateServiceRequest("잼미니", "반포자이 살고싶다.", false, List.of("잼미니", "반포자이"), List.of(), 1L, user.getId());
+        PostCreateServiceRequest request = new PostCreateServiceRequest("잼미니", "반포자이 살고싶다.", false, List.of("잼미니", "반포자이"), List.of(), category.getId(), user.getId());
 
         // when
         Long postId = postService.write(request);

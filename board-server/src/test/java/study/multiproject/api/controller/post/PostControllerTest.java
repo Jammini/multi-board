@@ -23,6 +23,7 @@ import study.multiproject.api.config.TestSecurityConfig;
 import study.multiproject.post.api.PostController;
 import study.multiproject.post.api.converter.PostCreateRequestConverter;
 import study.multiproject.post.api.converter.PostEditRequestConverter;
+import study.multiproject.post.api.converter.PostPageSearchCategoryRequestConverter;
 import study.multiproject.post.api.converter.PostPageSearchRequestConverter;
 import study.multiproject.post.api.request.PostCreateRequest;
 import study.multiproject.post.api.request.PostEditRequest;
@@ -55,6 +56,9 @@ class PostControllerTest {
 
     @MockBean
     private PostPageSearchRequestConverter postPageSearchRequestConverter;
+
+    @MockBean
+    private PostPageSearchCategoryRequestConverter postPageSearchCategoryRequestConverter;
 
     @MockBean
     private JwtTokenUtil jwtTokenUtil;
