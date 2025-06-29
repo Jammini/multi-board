@@ -27,9 +27,75 @@
         style="width: 100%"
         border
     >
-      <el-table-column prop="title" label="이름" />
-      <el-table-column prop="description" label="설명" />
+      <!-- 이름 편집 -->
+      <el-table-column label="이름" prop="name" min-width="240">
+        <template #default="{ row }">
+          <el-input
+              v-model="row.title"
+              @input="markEdited(row)"
+          />
+        </template>
+      </el-table-column>
 
+      <!-- 설명 편집 -->
+      <el-table-column label="설명" prop="description" min-width="300">
+        <template #default="{ row }">
+          <el-input
+              type="textarea"
+              :rows="1"
+              v-model="row.description"
+              @input="markEdited(row)"
+          />
+        </template>
+      </el-table-column>
+
+      <!-- 첨부파일 사용 여부 -->
+      <el-table-column label="첨부파일 사용" prop="attachmentsEnabled" min-width="160">
+        <template #default="{ row }">
+          <el-switch
+              v-model="row.attachmentsEnabled"
+              active-text="허용"
+              inactive-text="비허용"
+              @change="markEdited(row)"
+          />
+        </template>
+      </el-table-column>
+
+      <!-- 비밀글 사용 여부 -->
+      <el-table-column label="비밀글 사용" prop="secretEnabled" min-width="160">
+        <template #default="{ row }">
+          <el-switch
+              v-model="row.secretEnabled"
+              active-text="허용"
+              inactive-text="비허용"
+              @change="markEdited(row)"
+          />
+        </template>
+      </el-table-column>
+
+      <!-- 해시태그 사용 여부 -->
+      <el-table-column label="해시태그 사용" prop="hashtagsEnabled" min-width="160">
+        <template #default="{ row }">
+          <el-switch
+              v-model="row.hashtagsEnabled"
+              active-text="허용"
+              inactive-text="비허용"
+              @change="markEdited(row)"
+          />
+        </template>
+      </el-table-column>
+
+      <!-- 저장 버튼 컬럼 -->
+      <el-table-column label="작업" min-width="120">
+        <template #default="{ row }">
+          <el-button
+              size="mini"
+              type="success"
+              :disabled="!edited.has(row.id)"
+              @click="onUpdate(row)"
+          >저장</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <div v-else class="empty-state">등록된 카테고리가 없습니다.</div>
   </div>
@@ -42,10 +108,11 @@ import { useRouter } from 'vue-router';
 
 interface Category {
   id: number;
-  name: string;
+  title: string;
   description: string;
   attachmentsEnabled: boolean;
-  commentsEnabled: boolean;
+  secretEnabled: boolean;
+  hashtagsEnabled: boolean
 }
 
 const router = useRouter();
@@ -57,6 +124,7 @@ const form = reactive({
 
 
 const categories = ref<Category[]>([]);
+const edited = ref<Set<number>>(new Set());
 
 async function fetchCategories() {
   try {
@@ -89,6 +157,28 @@ async function onSubmit() {
   }
 }
 
+function markEdited(row: Category) {
+  edited.value.add(row.id);
+}
+
+async function onUpdate(row: Category) {
+  try {
+    await axios.put('/api/categories', {
+      id: row.id,
+      name: row.title,
+      description: row.description,
+      attachmentsEnabled: row.attachmentsEnabled,
+      secretEnabled: row.secretEnabled,
+      hashtagsEnabled: row.hashtagsEnabled
+    });
+    edited.value.delete(row.id);
+  } catch (err: any) {
+    console.error('업데이트 실패', err);
+    alert('카테고리 업데이트 실패');
+    await fetchCategories();
+  }
+}
+
 function onCancel() {
   router.back();
 }
@@ -113,7 +203,7 @@ onMounted(fetchCategories);
 
 <style scoped>
 .category-create {
-  max-width: 500px;
+  max-width: 1200px;
   margin: 2rem auto;
 }
 
