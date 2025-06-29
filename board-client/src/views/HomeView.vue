@@ -1,13 +1,20 @@
 <script setup lang="ts">
 import axios from "@/axios.js";
 import { onMounted, ref, watch } from "vue";
-import { ElInput, ElPagination, ElSelect, ElOption } from "element-plus";
+import {ElInput, ElPagination, ElSelect, ElOption, ElTag} from "element-plus";
 import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
 const router = useRouter();
 const input = ref((route.query.keyword as string) || "");
 const searchType = ref((route.query.type as string) || "title"); // 검색 타입: title 또는 hashtag
+
+function goCategory(catId: number) {
+  router.push({
+    name: 'list',
+    params: {category: String(catId)}
+  });
+}
 
 const response = ref({
   page: Number(route.query.page) || 1,
@@ -105,6 +112,16 @@ watch(route, (newRoute) => {
       <div class="sub d-flex">
         <div class="author">작성자 : {{ post.authorName }}</div>
       </div>
+      <div class="sub d-flex">
+        <el-tag
+          class="categoryName"
+          type="info"
+          effect="plain"
+          @click="goCategory(post.categoryId)"
+        >
+          {{ post.categoryName }}
+        </el-tag>
+      </div>
     </li>
   </ul>
 
@@ -157,6 +174,14 @@ ul {
     .sub {
       margin-top: 4px;
       font-size: 0.8rem;
+    }
+    .categoryName {
+      display: inline-block;
+      cursor: pointer;
+      background-color: #e0f7fa !important;
+      color: #007c91;
+      border-radius: 12px;
+      padding: 2px 8px;
     }
   }
 }
