@@ -1,8 +1,8 @@
-package com.boardadminserver.category.application.response;
+package com.boardadminserver.category.api.request;
 
-public record CategoryResponse(
+public record CategoryUpdateRequest(
     Long id,
-    String title,
+    String name,
     String description,
     boolean attachmentsEnabled,
     boolean secretEnabled,
