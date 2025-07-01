@@ -3,6 +3,7 @@ package study.multiproject.api.service.post;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 import study.multiproject.category.dao.CategoryRepository;
 import study.multiproject.category.domain.Category;
@@ -47,8 +49,9 @@ class PostServiceTest {
 
     private User user;
     private Category category;
+
     @BeforeEach
-    void beforeEach() {
+    void beforeEach() throws Exception {
         user = User.builder()
                         .email("test@gmail.com")
                         .password("1234")
@@ -56,11 +59,13 @@ class PostServiceTest {
                         .build();
         userRepository.save(user);
 
-        category = categoryRepository.save(Category.builder()
-                                    .name("자유게시판")
-                                    .description("자유롭게 글을 작성할 수 있는 게시판입니다.")
-                                    .displayOrder(0L)
-                                    .build());
+        Constructor<Category> ctor = Category.class.getDeclaredConstructor();
+        ctor.setAccessible(true);
+        Category cat = ctor.newInstance();
+        ReflectionTestUtils.setField(cat, "name", "자유게시판");
+        ReflectionTestUtils.setField(cat, "description", "자유롭게 글을 작성할 수 있는 게시판입니다.");
+        ReflectionTestUtils.setField(cat, "displayOrder", 0L);
+        category = categoryRepository.save(cat);
     }
 
     @Test

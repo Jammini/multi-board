@@ -5,7 +5,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -50,11 +49,4 @@ public class Category {
      * 해시태그 사용 가능 여부
      */
     private boolean hashtagsEnabled;
-
-    @Builder
-    private Category(String name, String description, Long displayOrder) {
-        this.name = name;
-        this.description = description;
-        this.displayOrder = displayOrder;
-    }
 }
