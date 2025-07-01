@@ -3,6 +3,7 @@ package study.multiproject.api.service.post;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +14,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
+import study.multiproject.category.dao.CategoryRepository;
+import study.multiproject.category.domain.Category;
 import study.multiproject.post.exception.PostNotFoundException;
 import study.multiproject.post.application.PostService;
 import study.multiproject.post.application.request.PostCreateServiceRequest;
@@ -40,22 +44,35 @@ class PostServiceTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
     private User user;
+    private Category category;
+
     @BeforeEach
-    void beforeEach() {
+    void beforeEach() throws Exception {
         user = User.builder()
                         .email("test@gmail.com")
                         .password("1234")
                         .name("잼미니")
                         .build();
         userRepository.save(user);
+
+        Constructor<Category> ctor = Category.class.getDeclaredConstructor();
+        ctor.setAccessible(true);
+        Category cat = ctor.newInstance();
+        ReflectionTestUtils.setField(cat, "name", "자유게시판");
+        ReflectionTestUtils.setField(cat, "description", "자유롭게 글을 작성할 수 있는 게시판입니다.");
+        ReflectionTestUtils.setField(cat, "displayOrder", 0L);
+        category = categoryRepository.save(cat);
     }
 
     @Test
     @DisplayName("신규 게시글을 작성하면 아이디를 반환한다.")
     void createPost() {
         // given
-        PostCreateServiceRequest request = new PostCreateServiceRequest("잼미니", "반포자이 살고싶다.", false, List.of("잼미니", "반포자이"), List.of(), user.getId());
+        PostCreateServiceRequest request = new PostCreateServiceRequest("잼미니", "반포자이 살고싶다.", false, List.of("잼미니", "반포자이"), List.of(), category.getId(), user.getId());
 
         // when
         Long postId = postService.write(request);

@@ -5,7 +5,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -36,11 +35,18 @@ public class Category {
      */
     private Long displayOrder;
 
+    /**
+     * 첨부파일 업로드 가능 여부
+     */
+    private boolean attachmentsEnabled;
 
-    @Builder
-    private Category(String name, String description, Long displayOrder) {
-        this.name = name;
-        this.description = description;
-        this.displayOrder = displayOrder;
-    }
+    /**
+     * 비밀글 작성 가능 여부
+     */
+    private boolean secretEnabled;
+
+    /**
+     * 해시태그 사용 가능 여부
+     */
+    private boolean hashtagsEnabled;
 }

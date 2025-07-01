@@ -1,10 +1,9 @@
-package study.multiproject.category.application.response;
+package com.boardadminserver.category.api.request;
 
-public record CategoryResponse(
+public record CategoryUpdateRequest(
     Long id,
-    String title,
+    String name,
     String description,
-    Long displayOrder,
     boolean attachmentsEnabled,
     boolean secretEnabled,
     boolean hashtagsEnabled

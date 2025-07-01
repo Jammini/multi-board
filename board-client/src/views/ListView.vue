@@ -35,6 +35,14 @@ const updateQuery = (keyword: string, type: string) => {
   router.push({ query: { ...route.query, keyword, type } });
 };
 
+// 글쓰기 버튼 클릭
+function goWrite() {
+    router.push({
+        name: 'write',
+        params: { category: categoryId.value?.toString() }
+    });
+}
+
 // 컴포넌트 마운트 시 데이터 로드
 onMounted(() => {
   const page = Number(route.query.page) || 1;
@@ -69,8 +77,12 @@ watch(
 </script>
 
 <template>
+  <h1 v-if="response.items.length > 0">
+    {{ response.items[0].categoryName }}
+  </h1>
   <div>
-    <span class="totalCount">전체 게시글 수: {{ response.totalCount }}</span>
+    <el-button type="primary" @click="goWrite">글쓰기</el-button>
+    <span class="totalCount">  전체 게시글 수: {{ response.totalCount }}</span>
   </div>
   <!-- 검색 결과 목록 -->
   <ul>
