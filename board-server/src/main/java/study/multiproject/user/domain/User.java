@@ -60,6 +60,10 @@ public class User {
      */
     private Long profileImageId;
 
+    /**
+     * 활성화 상태
+     */
+    private boolean isActive;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Post> post;
@@ -75,6 +79,7 @@ public class User {
         this.createdAt = LocalDateTime.now();
         this.post = new HashSet<>();
         this.comment = new HashSet<>();
+        this.isActive = true;
     }
 
     public void updateNickname(String newNickname) {
