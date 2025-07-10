@@ -21,12 +21,22 @@ import study.multiproject.global.util.JwtTokenUtil;
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
+    private static final String INTERNAL_HEADER = "X-Internal-Secret";
+    private static final String INTERNAL_SECRET = "multiproject-secret";
+    private static final String INTERNAL_PREFIX = "/internal/";
     private final CustomUserDetailsService userDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain chain) throws IOException, ServletException {
+        if (isInternalRequest(request)) {
+            if (authenticateInternalRequest(request, response)) {
+                chain.doFilter(request, response);
+            }
+            return;
+        }
+
         String jwtHeader = request.getHeader(AUTHORIZATION);
 
         if (jwtHeader == null || !jwtHeader.startsWith(BEARER)) {
@@ -49,5 +59,21 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             }
         }
         chain.doFilter(request, response);
+    }
+
+    private boolean isInternalRequest(HttpServletRequest request) {
+        return request.getRequestURI().startsWith(INTERNAL_PREFIX);
+    }
+
+    private boolean authenticateInternalRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String internalSecret = request.getHeader(INTERNAL_HEADER);
+
+        if (INTERNAL_SECRET.equals(internalSecret)) {
+            return true;
+        } else {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Invalid internal secret");
+            return false;
+        }
     }
 }

@@ -35,4 +35,14 @@ public class AuthController {
         authService.confirmPasswordReset(token, request.newPassword());
         return ApiResponse.success(null);
     }
+
+    /**
+     * 괸리자가 비밀번호 초기화 요청
+     */
+    @PostMapping("/internal/auth/password-reset/request")
+    public ApiResponse<PasswordResetResponse> internalRequestReset(@RequestBody @Valid PasswordResetRequest request) {
+        PasswordResetResponse response = authService.requestPasswordReset(request.email());
+        return ApiResponse.success(response);
+    }
+
 }
