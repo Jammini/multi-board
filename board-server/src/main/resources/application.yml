@@ -50,4 +50,7 @@ app:
     reset-url: "${app.frontend.base-url}/password-reset/confirm/"
   file:
     dir: "${user.dir}/uploads/files"
+  internal:
+    auth:
+      secret: "${INTERNAL_SECRET}"
 

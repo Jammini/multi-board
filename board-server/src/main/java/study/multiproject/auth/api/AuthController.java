@@ -37,7 +37,7 @@ public class AuthController {
     }
 
     /**
-     * 괸리자가 비밀번호 초기화 요청
+     * 관리자가 비밀번호 초기화 요청
      */
     @PostMapping("/internal/auth/password-reset/request")
     public ApiResponse<PasswordResetResponse> internalRequestReset(@RequestBody @Valid PasswordResetRequest request) {

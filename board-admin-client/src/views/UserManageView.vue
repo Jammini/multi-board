@@ -57,7 +57,7 @@
       </el-table-column>
 
       <!-- 행별 저장 버튼 -->
-      <el-table-column label="비밀번호 초기화" prop="resetPassword"  min-width="120">
+      <el-table-column label="비밀번호 초기화" min-width="120">
         <template #default="{ row }">
           <el-button
               size="mini"

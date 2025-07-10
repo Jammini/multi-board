@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,7 +23,8 @@ import study.multiproject.global.util.JwtTokenUtil;
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private static final String INTERNAL_HEADER = "X-Internal-Secret";
-    private static final String INTERNAL_SECRET = "multiproject-secret";
+    @Value("${app.internal.auth.secret}")
+    private String internalSecret;
     private static final String INTERNAL_PREFIX = "/internal/";
     private final CustomUserDetailsService userDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
@@ -68,7 +70,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private boolean authenticateInternalRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String internalSecret = request.getHeader(INTERNAL_HEADER);
 
-        if (INTERNAL_SECRET.equals(internalSecret)) {
+        if (internalSecret.equals(internalSecret)) {
             return true;
         } else {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
