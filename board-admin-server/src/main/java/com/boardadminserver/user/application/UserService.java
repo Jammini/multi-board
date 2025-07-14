@@ -33,7 +33,11 @@ public class UserService {
     public void updateUserActiveStatus(UserActiveUpdateServiceRequest request) {
         User user = userRepository.findById(request.id()).orElseThrow(
             () -> new UserNotFoundException("User not found with id: " + request.id()));
-        user.updateActive(request.isActive());
+        if (request.isActive()) {
+            user.activate();
+        } else {
+            user.deactivate();
+        }
     }
 
     /**

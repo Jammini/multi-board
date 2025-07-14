@@ -51,12 +51,19 @@ public class User {
     /**
      * 활성화 상태
      */
-    private boolean isActive;
+    private boolean active;
 
     /**
-     * 활성화 상태 업데이트
+     * 활성화 업데이트
      */
-    public void updateActive(boolean active) {
-        this.isActive = active;
+    public void activate() {
+        this.active = true;
+    }
+
+    /**
+     * 비활성화 업데이트
+     */
+    public void deactivate() {
+        this.active = false;
     }
 }

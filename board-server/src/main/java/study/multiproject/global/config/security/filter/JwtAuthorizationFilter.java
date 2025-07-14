@@ -70,11 +70,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private boolean authenticateInternalRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String internalSecret = request.getHeader(INTERNAL_HEADER);
 
-        if (internalSecret.equals(internalSecret)) {
+        if (this.internalSecret.equals(internalSecret)) {
             return true;
         } else {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Invalid internal secret");
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return false;
         }
     }
