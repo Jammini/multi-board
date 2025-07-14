@@ -64,6 +64,8 @@ public class SecurityConfig {
                                                                      .permitAll()
                                                                      .requestMatchers("/auth/**")
                                                                      .permitAll()
+                                                                     .requestMatchers("/internal/**")
+                                                                     .permitAll()
                                                                      .requestMatchers("/files/preview/**")
                                                                      .permitAll()
                                                                      .anyRequest().authenticated()

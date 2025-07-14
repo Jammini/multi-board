@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,12 +22,23 @@ import study.multiproject.global.util.JwtTokenUtil;
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
+    private static final String INTERNAL_HEADER = "X-Internal-Secret";
+    @Value("${app.internal.auth.secret}")
+    private String internalSecret;
+    private static final String INTERNAL_PREFIX = "/internal/";
     private final CustomUserDetailsService userDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain chain) throws IOException, ServletException {
+        if (isInternalRequest(request)) {
+            if (authenticateInternalRequest(request, response)) {
+                chain.doFilter(request, response);
+            }
+            return;
+        }
+
         String jwtHeader = request.getHeader(AUTHORIZATION);
 
         if (jwtHeader == null || !jwtHeader.startsWith(BEARER)) {
@@ -49,5 +61,20 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             }
         }
         chain.doFilter(request, response);
+    }
+
+    private boolean isInternalRequest(HttpServletRequest request) {
+        return request.getRequestURI().startsWith(INTERNAL_PREFIX);
+    }
+
+    private boolean authenticateInternalRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String internalSecret = request.getHeader(INTERNAL_HEADER);
+
+        if (this.internalSecret.equals(internalSecret)) {
+            return true;
+        } else {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return false;
+        }
     }
 }
