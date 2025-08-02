@@ -6,15 +6,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class PostStatsScheduler {
+public class HourlyPostStatsScheduler {
 
-    private final PostStatsService postStatsService;
+    private final HourlyPostStatsService hourlyPostStatsService;
 
     /**
      * 매시간 1분마다 실행되는 스케줄러
      */
     @Scheduled(cron = "0 1 * * * *")
     public void runHourlyPostStatsJob() {
-        postStatsService.generateHourlyStats();
+        hourlyPostStatsService.generateHourlyStats();
     }
 }

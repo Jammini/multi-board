@@ -21,5 +21,8 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * 생성시간
+     */
     private LocalDateTime createdAt;
 }

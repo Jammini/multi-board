@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class PostStatsService {
+public class HourlyPostStatsService {
 
     private final HourlyPostStatsRepository hourlyStatsRepository;
     private final PostRepository postRepository;
