@@ -39,19 +39,23 @@ public class HourlyPostStatsService {
      * 시간대별 통계 저장
      */
     private void saveHourlyStats(LocalDateTime start, LocalDate startDate, int hour) {
-        Long currentMaxId = postRepository.findMaxPostIdBefore(start);
+        // 현재의 마지막 게시글 ID 조회
+        Long lastMaxId = postRepository.findMaxPostIdBefore(start);
+
+        // 전시간의 마지막 게시글 ID 조회
         Long prevMaxId = hourlyStatsRepository
                              .findByDateAndHour(startDate, hour - 1)
                              .map(HourlyPostStats::getBeforePostId)
                              .orElse(0L); // 없으면 0
 
-        long postCount = currentMaxId != null ? currentMaxId - prevMaxId : 0;
+        // 현재 시간대에 생성된 게시글 수 계산
+        long postCount = lastMaxId != null ? lastMaxId - prevMaxId : 0;
 
         hourlyStatsRepository.save(HourlyPostStats.builder()
                                        .date(startDate)
                                        .hour(hour)
                                        .postCount(postCount)
-                                       .beforePostId(prevMaxId)
+                                       .beforePostId(lastMaxId)
                                        .build());
     }
 }
