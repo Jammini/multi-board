@@ -2,3 +2,4 @@ rootProject.name = 'multi-project'
 
 include 'board-server'
 include 'board-admin-server'
+include 'board-batch-server'
