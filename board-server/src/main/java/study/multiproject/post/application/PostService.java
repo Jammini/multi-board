@@ -33,7 +33,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final HashtagRepository hashtagRepository;
-    private final PostHitsService postHitsService;
+    private final PostHitsCircuitService postHitsCircuitService;
     private final CategoryService categoryService;
     private final FileService fileService;
     private final UserService userService;
@@ -62,10 +62,8 @@ public class PostService {
             throw new SecretPostException();
         }
 
-        if (!postHitsService.isExistInSet(visitorId, post.getId())) {
-            postHitsService.increaseData("viewCount_post_" + post.getId());
-            postHitsService.addToSet(visitorId, post.getId());
-        }
+        postHitsCircuitService.visitRedis(visitorId, post.getId());
+
         return new PostResponse(post, userId);
     }
 

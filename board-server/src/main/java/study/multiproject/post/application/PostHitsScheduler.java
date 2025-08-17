@@ -4,6 +4,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import study.multiproject.post.exception.PostNotFoundException;
 import study.multiproject.post.domain.Post;
 import study.multiproject.post.dao.PostRepository;
@@ -18,6 +19,7 @@ public class PostHitsScheduler {
     /**
      * 1분마다 Redis에 저장된 조회수를 데이터베이스에 저장
      */
+    @Transactional
     @Scheduled(fixedRate = 60000)
     public void saveHitsToDatabase() {
         Set<String> keys = postHitsService.getAllKeys();
