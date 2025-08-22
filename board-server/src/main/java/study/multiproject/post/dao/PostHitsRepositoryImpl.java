@@ -1,6 +1,7 @@
 package study.multiproject.post.dao;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -64,6 +65,7 @@ public class PostHitsRepositoryImpl implements PostHitsRepository {
     private Duration expirationDuration() {
         // 현재 시간 부터 00:00:00까지의 시간 계산
         LocalDateTime now = LocalDateTime.now();
-        return Duration.between(now, now.plusDays(1).withHour(0).withMinute(0).withSecond(0));
+        LocalDateTime nextDayStart = LocalDate.now().plusDays(1).atStartOfDay();
+        return Duration.between(now, nextDayStart);
     }
 }

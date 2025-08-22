@@ -6,10 +6,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import study.multiproject.post.dao.PostHitsRepository;
-import study.multiproject.post.dao.PostHitsRepositoryImpl;
-import study.multiproject.post.exception.PostNotFoundException;
-import study.multiproject.post.domain.Post;
 import study.multiproject.post.dao.PostRepository;
+import study.multiproject.post.domain.Post;
+import study.multiproject.post.exception.PostNotFoundException;
 
 @Service
 @RequiredArgsConstructor
