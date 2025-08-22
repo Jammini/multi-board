@@ -1,8 +1,7 @@
 package study.multiproject.post.application;
 
-import static org.springframework.cache.interceptor.SimpleKeyGenerator.generateKey;
-
 import com.github.benmanes.caffeine.cache.Cache;
+import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,7 +24,7 @@ public class LocalVisitorDeduper {
         Cache<Object, Object> caffeineCache = Objects.requireNonNull(cache).getNativeCache();
 
         // 키 생성
-        String key = generateKey(postId, visitorId).toString();
+        String key = postId + ":" + LocalDate.now();
         Set<Long> visitors = (Set<Long>) caffeineCache.getIfPresent(key);
 
         // 오늘 처음 조회한 경우
@@ -33,6 +32,10 @@ public class LocalVisitorDeduper {
             visitors = ConcurrentHashMap.newKeySet();
             caffeineCache.put(key, visitors);
         }
-        return visitors.add(Long.parseLong(visitorId));
+        try {
+            return visitors.add(Long.parseLong(visitorId));
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }
