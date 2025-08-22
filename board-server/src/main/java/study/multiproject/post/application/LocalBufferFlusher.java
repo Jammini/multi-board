@@ -26,7 +26,7 @@ public class LocalBufferFlusher {
         }
 
         deltaMap.forEach((postId, delta) -> {
-            if (delta != null && delta > 0) {
+            if (delta > 0) {
                 postRepository.incrementViewCount(postId, delta); // 게시글 조회수 증가
             }
         });

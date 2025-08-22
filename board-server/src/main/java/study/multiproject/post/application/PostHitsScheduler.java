@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import study.multiproject.post.dao.PostHitsRepositoryImpl;
 import study.multiproject.post.exception.PostNotFoundException;
 import study.multiproject.post.domain.Post;
 import study.multiproject.post.dao.PostRepository;
@@ -13,7 +14,7 @@ import study.multiproject.post.dao.PostRepository;
 @RequiredArgsConstructor
 public class PostHitsScheduler {
 
-    private final PostHitsService postHitsService;
+    private final PostHitsRepositoryImpl postHitsRepositoryImpl;
     private final PostRepository postRepository;
 
     /**
@@ -22,17 +23,17 @@ public class PostHitsScheduler {
     @Transactional
     @Scheduled(fixedRate = 60000)
     public void saveHitsToDatabase() {
-        Set<String> keys = postHitsService.getAllKeys();
+        Set<String> keys = postHitsRepositoryImpl.getAllKeys();
         for (String key : keys) {
             long postId = extractPostIdFromKey(key);
-            Integer hits = postHitsService.getHits(key);
+            Integer hits = postHitsRepositoryImpl.getHits(key);
             if (hits != null) {
                 try {
                     Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
                     post.changeViewCount(hits);
                 } catch (PostNotFoundException e) {
                     // 게시글이 삭제된 경우 redis 값 삭제
-                    postHitsService.deleteKey(key);
+                    postHitsRepositoryImpl.deleteKey(key);
                 }
             }
         }

@@ -33,7 +33,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final HashtagRepository hashtagRepository;
-    private final PostHitsCircuitService postHitsCircuitService;
+    private final PostHitsService postHitsService;
     private final CategoryService categoryService;
     private final FileService fileService;
     private final UserService userService;
@@ -61,8 +61,8 @@ public class PostService {
         if (post.isSecret() && !post.getUser().getId().equals(userId)) {
             throw new SecretPostException();
         }
-
-        postHitsCircuitService.visitRedis(visitorId, post.getId());
+        // 조회수 증가
+        postHitsService.viewCountIncrease(visitorId, post.getId());
 
         return new PostResponse(post, userId);
     }
