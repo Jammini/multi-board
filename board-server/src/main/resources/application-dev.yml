@@ -56,3 +56,12 @@ resilience4j.circuitbreaker:
   instances:
     CircuitBreakerConfig:
       baseConfig: default
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
