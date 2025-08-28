@@ -68,6 +68,8 @@ public class SecurityConfig {
                                                                      .permitAll()
                                                                      .requestMatchers("/files/preview/**")
                                                                      .permitAll()
+                                                                     .requestMatchers("/actuator/**")
+                                                                     .permitAll()
                                                                      .anyRequest().authenticated()
                    )
                    .addFilterBefore(emailPasswordAuthFilter(),
