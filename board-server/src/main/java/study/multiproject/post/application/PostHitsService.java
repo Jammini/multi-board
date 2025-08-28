@@ -1,69 +1,47 @@
 package study.multiproject.post.application;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import study.multiproject.post.dao.PostHitsRepository;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostHitsService {
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final PostHitsRepository postHitsRepository;
+    private final LocalVisitorDeduper localDeduper;
+    private final LocalViewBuffer localViewBuffer;
 
     /**
-     * 조회수 증가
+     * 방문자 중복 체크 후 최초 방문이면 조회수 증가 + 방문자 등록
+     * Redis 장애/지연 시 fallback으로 스킵
      */
-    public void increaseData(String visitorId) {
-        redisTemplate.opsForValue().increment(visitorId);
+    @CircuitBreaker(name = "CircuitBreakerConfig", fallbackMethod = "firstVisitFallback")
+    public void viewCountIncrease(String visitorId, long postId) {
+        visitRedis(visitorId, postId);
     }
 
     /**
-     * 조회수 저장
+     * 주요 서비스에서 Redis 장애/지연 시 호출되는 fallback 메서드
      */
-    public void addToSet(String visitorId, Long postId) {
-        redisTemplate.opsForSet().add(visitorId, String.valueOf(postId));
-        redisTemplate.expire(visitorId, expirationDuration().getSeconds(), TimeUnit.SECONDS);
+    public void firstVisitFallback(String visitorId, long postId, Throwable t) {
+        if (localDeduper.markIfFirstToday(postId, visitorId)) {
+            localViewBuffer.increase(postId);
+        }
+        log.warn("Redis unavailable -> buffered locally. visitorId={}, postId={}, cause={}",
+            visitorId, postId, (t != null ? t.toString() : "n/a"));
     }
 
     /**
-     * 조회수 존재 여부 확인
+     * Redis에 방문자 등록 및 조회수 증가
      */
-    public boolean isExistInSet(String visitorId, Long postId) {
-        return Boolean.TRUE.equals(
-            redisTemplate.opsForSet().isMember(visitorId, String.valueOf(postId)));
-    }
-
-    /**
-     * 모든 조회수 키 조회
-     */
-    public Set<String> getAllKeys() {
-        return redisTemplate.keys("viewCount_post_*");
-    }
-
-    /**
-     * 조회수 조회
-     */
-    public Integer getHits(String key) {
-        return (Integer) redisTemplate.opsForValue().get(key);
-    }
-
-    /**
-     * 만료 시간 계산
-     */
-    private Duration expirationDuration() {
-        // 현재 시간 부터 00:00:00까지의 시간 계산
-        LocalDateTime now = LocalDateTime.now();
-        return Duration.between(now, now.plusDays(1).withHour(0).withMinute(0).withSecond(0));
-    }
-
-    /**
-     * 키 삭제
-     */
-    public void deleteKey(String key) {
-        redisTemplate.delete(key);
+    private void visitRedis(String visitorId, long postId) {
+        if (!postHitsRepository.isExistInSet(visitorId, postId)) {
+            postHitsRepository.increaseData("viewCount_post_" + postId);
+            postHitsRepository.addToSet(visitorId, postId);
+        }
     }
 }
