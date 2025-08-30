@@ -17,7 +17,7 @@ public interface PostViewCountRepository {
     /**
      * 조회수 조회
      */
-    Long getViewCount(String key);
+    long getViewCount(String key);
 
     /**
      * 키 삭제

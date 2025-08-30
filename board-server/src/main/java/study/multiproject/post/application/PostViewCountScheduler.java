@@ -26,7 +26,7 @@ public class PostViewCountScheduler {
         Set<String> keys = postViewCountRepository.getAllKeys();
         for (String key : keys) {
             long postId = extractPostIdFromKey(key);
-            Long viewCount = postViewCountRepository.getViewCount(key);
+            long viewCount = postViewCountRepository.getViewCount(key);
             postRepository.findById(postId).ifPresent(post -> post.addViewCount(viewCount));
             postViewCountRepository.deleteKey(key);
         }

@@ -33,8 +33,9 @@ public class LocalPostViewCountRepository implements PostViewCountRepository {
     }
 
     @Override
-    public Long getViewCount(String key) {
-        return localViewCounterCache.getIfPresent(key);
+    public long getViewCount(String key) {
+        Long viewCount = localViewCounterCache.getIfPresent(key);
+        return viewCount != null ? viewCount : 0L;
     }
 
     @Override

@@ -41,7 +41,7 @@ public class RedisPostViewCountRepository implements PostViewCountRepository {
      * 조회수 조회
      */
     @Override
-    public Long getViewCount(String key) {
+    public long getViewCount(String key) {
         Number value = redisTemplate.opsForValue().get(key);
         return value != null ? value.longValue() : 0L;
     }

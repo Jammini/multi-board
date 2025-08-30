@@ -28,6 +28,6 @@ public class PostViewCountService {
     public void increaseViewCountFallback(long postId, long userId, Throwable t) {
         localRepository.increaseData(postId, userId);
         log.warn("Redis unavailable -> buffered locally. postId={}, userId={}, cause={}",
-            userId, postId, (t != null ? t.toString() : "n/a"));
+            postId, userId, (t != null ? t.toString() : "n/a"));
     }
 }
