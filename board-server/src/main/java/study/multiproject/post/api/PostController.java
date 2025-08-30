@@ -1,6 +1,5 @@
 package study.multiproject.post.api;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import study.multiproject.global.common.ApiResponse;
+import study.multiproject.global.config.security.UserPrincipal;
 import study.multiproject.post.api.converter.PostCreateRequestConverter;
 import study.multiproject.post.api.converter.PostEditRequestConverter;
 import study.multiproject.post.api.converter.PostPageSearchCategoryRequestConverter;
@@ -24,7 +24,6 @@ import study.multiproject.post.api.request.PostPageSearchRequest;
 import study.multiproject.post.application.PostService;
 import study.multiproject.post.application.response.PagingResponse;
 import study.multiproject.post.application.response.PostResponse;
-import study.multiproject.global.config.security.UserPrincipal;
 
 @Slf4j
 @RestController
@@ -49,9 +48,8 @@ public class PostController {
      * 게시글 조회
      */
     @GetMapping("/posts/{postId}")
-    public ApiResponse<PostResponse> get(@PathVariable Long postId, HttpServletRequest request, @AuthenticationPrincipal UserPrincipal principal) {
-        String visitorId = request.getRemoteAddr();
-        return ApiResponse.success(postService.get(postId, visitorId, principal.getUserId()));
+    public ApiResponse<PostResponse> get(@PathVariable Long postId, @AuthenticationPrincipal UserPrincipal principal) {
+        return ApiResponse.success(postService.get(postId, principal.getUserId()));
     }
 
     /**

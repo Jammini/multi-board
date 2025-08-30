@@ -103,8 +103,11 @@ public class Post extends BaseEntity {
         this.user = user;
     }
 
-    public void changeViewCount(Integer viewCount) {
-        this.viewCount = viewCount;
+    public void addViewCount(Long viewCount) {
+        if (viewCount <= 0) {
+            return;
+        }
+        this.viewCount += viewCount;
     }
 
     public PostEditor.PostEditorBuilder toEditor() {
