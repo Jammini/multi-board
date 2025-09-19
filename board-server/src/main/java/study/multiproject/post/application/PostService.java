@@ -33,7 +33,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final HashtagRepository hashtagRepository;
-    private final PostHitsService postHitsService;
+    private final PostViewCountService postViewCountService;
     private final CategoryService categoryService;
     private final FileService fileService;
     private final UserService userService;
@@ -55,14 +55,14 @@ public class PostService {
      * 게시글 조회
      */
     @Transactional(readOnly = true)
-    public PostResponse get(Long id, String visitorId, Long userId) {
+    public PostResponse get(Long id, Long userId) {
         Post post = postRepository.findPostWithHashtags(id).orElseThrow(PostNotFoundException::new);
         // 비밀글이면서 작성자와 방문자가 다를 경우
         if (post.isSecret() && !post.getUser().getId().equals(userId)) {
             throw new SecretPostException();
         }
         // 조회수 증가
-        postHitsService.viewCountIncrease(visitorId, post.getId());
+        postViewCountService.increaseViewCount(post.getId(), userId);
 
         return new PostResponse(post, userId);
     }
