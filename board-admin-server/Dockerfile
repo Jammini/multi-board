@@ -6,7 +6,7 @@ WORKDIR /app
 COPY . /app
 RUN gradle clean build -x test --no-daemon
 
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre-jammy
 
 WORKDIR /app
 
