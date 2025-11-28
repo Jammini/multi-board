@@ -27,7 +27,7 @@ jobs:
       - name: Build and Push
         uses: docker/build-push-action@v4
         with:
-          context: ./board-batch-server
+          context: .
           file: ./board-batch-server/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/board-batch-server:${{ github.sha }}

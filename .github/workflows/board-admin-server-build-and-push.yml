@@ -27,7 +27,7 @@ jobs:
       - name: Build and Push
         uses: docker/build-push-action@v4
         with:
-          context: ./board-admin-server
+          context: .
           file: ./board-admin-server/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/board-admin-server:${{ github.sha }}

@@ -6,11 +6,11 @@ WORKDIR /app
 COPY . /app
 RUN gradle clean build -x test --no-daemon
 
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
-COPY --from=build /app/build/libs/*.jar /app/batch_board.jar
+COPY --from=build /app/board-batch-server/build/libs/*.jar /app/batch_board.jar
 
 # 애플리케이션 실행
 EXPOSE 8080
