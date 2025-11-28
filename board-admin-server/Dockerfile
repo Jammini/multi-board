@@ -10,9 +10,9 @@ FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 
-COPY --from=build /app/build/libs/*.jar /app/board.jar
+COPY --from=build /app/build/libs/*.jar /app/admin_board.jar
 
 # 애플리케이션 실행
 EXPOSE 8080
 ENTRYPOINT ["java"]
-CMD ["-jar", "-Dspring.profiles.active=dev", "/app/board.jar"]
+CMD ["-jar", "-Dspring.profiles.active=dev", "/app/admin_board.jar"]
