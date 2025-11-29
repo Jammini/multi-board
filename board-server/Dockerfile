@@ -15,4 +15,4 @@ COPY --from=build /app/board-server/build/libs/*.jar /app/board.jar
 # 애플리케이션 실행
 EXPOSE 8080
 ENTRYPOINT ["java"]
-CMD ["-jar", "-Dspring.profiles.active=dev", "/app/board.jar"]
+CMD ["-jar", "-Dspring.profiles.active=local", "/app/board.jar"]

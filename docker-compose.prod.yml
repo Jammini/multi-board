@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # Board Server (Main API)
+  board-server:
+    image: ${DOCKERHUB_USERNAME}/board-server:latest
+    container_name: board-server
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+      - JWT_SECRET=${JWT_SECRET}
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # Board Admin Server
+  board-admin-server:
+    image: ${DOCKERHUB_USERNAME}/board-admin-server:latest
+    container_name: board-admin-server
+    ports:
+      - "8081:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+      - JWT_SECRET=${JWT_SECRET}
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # Board Batch Server
+  board-batch-server:
+    image: ${DOCKERHUB_USERNAME}/board-batch-server:latest
+    container_name: board-batch-server
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # Board Client (Frontend)
+  board-client:
+    image: ${DOCKERHUB_USERNAME}/board-client:latest
+    container_name: board-client
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # Board Admin Client (Admin Frontend)
+  board-admin-client:
+    image: ${DOCKERHUB_USERNAME}/board-admin-client:latest
+    container_name: board-admin-client
+    ports:
+      - "81:80"
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

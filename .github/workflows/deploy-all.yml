@@ -1,0 +1,149 @@
+name: Deploy All Services
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'test'
+        type: choice
+        options:
+          - test
+          - staging
+
+jobs:
+  deploy-all:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Create deployment directory
+            mkdir -p ~/multi-board
+            cd ~/multi-board
+
+            # Create docker network if not exists
+            docker network create app-network 2>/dev/null || true
+
+            # Pull all latest images
+            echo "Pulling latest images..."
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/board-server:latest
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/board-admin-server:latest
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/board-batch-server:latest
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/board-client:latest
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/board-admin-client:latest
+
+            # Stop and remove all existing containers
+            echo "Stopping existing containers..."
+            docker stop board-server board-admin-server board-batch-server board-client board-admin-client 2>/dev/null || true
+            docker rm board-server board-admin-server board-batch-server board-client board-admin-client 2>/dev/null || true
+
+            # Run all services
+            echo "Starting all services..."
+
+            # Backend services
+            docker run -d \
+              --name board-server \
+              --network app-network \
+              -p 8080:8080 \
+              -e SPRING_PROFILES_ACTIVE=local \
+              -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+              --restart unless-stopped \
+              ${{ secrets.DOCKERHUB_USERNAME }}/board-server:latest
+
+            docker run -d \
+              --name board-admin-server \
+              --network app-network \
+              -p 8081:8080 \
+              -e SPRING_PROFILES_ACTIVE=local \
+              -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+              --restart unless-stopped \
+              ${{ secrets.DOCKERHUB_USERNAME }}/board-admin-server:latest
+
+            docker run -d \
+              --name board-batch-server \
+              --network app-network \
+              -e SPRING_PROFILES_ACTIVE=local \
+              --restart unless-stopped \
+              ${{ secrets.DOCKERHUB_USERNAME }}/board-batch-server:latest
+
+            # Frontend services
+            docker run -d \
+              --name board-client \
+              --network app-network \
+              -p 80:80 \
+              --restart unless-stopped \
+              ${{ secrets.DOCKERHUB_USERNAME }}/board-client:latest
+
+            docker run -d \
+              --name board-admin-client \
+              --network app-network \
+              -p 81:80 \
+              --restart unless-stopped \
+              ${{ secrets.DOCKERHUB_USERNAME }}/board-admin-client:latest
+
+            # Wait for services to start
+            echo "Waiting for services to start..."
+            sleep 10
+
+            # Show running containers
+            docker ps
+
+            # Clean up old images
+            docker image prune -f
+
+            echo "Deployment completed successfully!"
+
+      - name: Verify Deployment
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            echo "=== Checking service status ==="
+            docker ps --filter "name=board-" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+
+            echo ""
+            echo "=== Checking service health ==="
+
+            # Check board-server
+            if curl -f http://localhost:8080/actuator/health >/dev/null 2>&1; then
+              echo "✓ board-server is healthy"
+            else
+              echo "✗ board-server health check failed"
+              docker logs --tail=20 board-server
+            fi
+
+            # Check board-admin-server
+            if curl -f http://localhost:8081/actuator/health >/dev/null 2>&1; then
+              echo "✓ board-admin-server is healthy"
+            else
+              echo "✗ board-admin-server health check failed"
+              docker logs --tail=20 board-admin-server
+            fi
+
+            # Check board-client
+            if curl -f http://localhost:80 >/dev/null 2>&1; then
+              echo "✓ board-client is running"
+            else
+              echo "✗ board-client is not responding"
+              docker logs --tail=20 board-client
+            fi
+
+            # Check board-admin-client
+            if curl -f http://localhost:81 >/dev/null 2>&1; then
+              echo "✓ board-admin-client is running"
+            else
+              echo "✗ board-admin-client is not responding"
+              docker logs --tail=20 board-admin-client
+            fi

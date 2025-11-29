@@ -15,4 +15,4 @@ COPY --from=build /app/board-batch-server/build/libs/*.jar /app/batch_board.jar
 # 애플리케이션 실행
 EXPOSE 8080
 ENTRYPOINT ["java"]
-CMD ["-jar", "-Dspring.profiles.active=dev", "/app/batch_board.jar"]
+CMD ["-jar", "-Dspring.profiles.active=local", "/app/batch_board.jar"]
