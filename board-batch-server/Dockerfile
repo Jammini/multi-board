@@ -10,9 +10,9 @@ FROM eclipse-temurin:17-jre-jammy
 
 WORKDIR /app
 
-COPY --from=build /app/board-server/build/libs/*.jar /app/board.jar
+COPY --from=build /app/board-batch-server/build/libs/*.jar /app/batch_board.jar
 
 # 애플리케이션 실행
 EXPOSE 8080
 ENTRYPOINT ["java"]
-CMD ["-jar", "-Dspring.profiles.active=local", "/app/board.jar"]
+CMD ["-jar", "-Dspring.profiles.active=local", "/app/batch_board.jar"]
