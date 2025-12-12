@@ -27,7 +27,7 @@ jobs:
       - name: Build and Push
         uses: docker/build-push-action@v4
         with:
-          context: .
+          context: ./board-client
           file: ./board-client/Dockerfile
           push: true
           tags: |
