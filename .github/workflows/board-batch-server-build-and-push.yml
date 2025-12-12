@@ -3,7 +3,7 @@ name: board-batch-server-build-and-push
 on:
   push:
     branches:
-      - multi-board-67
+      - main
     paths:
       - 'board-batch-server/**'
 

@@ -3,7 +3,7 @@ name: board-admin-server-build-and-push
 on:
   push:
     branches:
-      - multi-board-67
+      - main
     paths:
       - 'board-admin-server/**'
 

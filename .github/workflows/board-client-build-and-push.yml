@@ -3,7 +3,7 @@ name: board-client-build-and-push
 on:
   push:
     branches:
-      - multi-board-67
+      - main
     paths:
       - 'board-client/**'
 
