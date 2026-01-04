@@ -46,6 +46,12 @@ public class Post extends BaseEntity {
     private String content;
 
     /**
+     * AI 요약
+     */
+    @Lob
+    private String summary;
+
+    /**
      * 조회수
      */
     private long viewCount;
@@ -121,6 +127,8 @@ public class Post extends BaseEntity {
         this.title = postEditor.getTitle();
         this.content = postEditor.getContent();
         this.isSecret = postEditor.isSecret();
+        // 게시글이 수정되면 기존 요약을 무효화
+        this.summary = null;
     }
 
     public void addPostHashtag(PostHashtag postHashtag) {
@@ -135,5 +143,9 @@ public class Post extends BaseEntity {
 
     public void removeFileById(Long fileId) {
         uploadFiles.removeIf(file -> file.getId().equals(fileId));
+    }
+
+    public void updateSummary(String summary) {
+        this.summary = summary;
     }
 }
