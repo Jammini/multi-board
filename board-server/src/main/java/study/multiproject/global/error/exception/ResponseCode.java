@@ -43,7 +43,11 @@ public enum ResponseCode {
     INVALID_TOKEN(401, "A001", "유효하지 않은 토큰입니다."),
 
     // CATEGORY
-    NOT_FOUND_CATEGORY(404, "C001", "존재하지 않는 카테고리입니다.")
+    NOT_FOUND_CATEGORY(404, "C001", "존재하지 않는 카테고리입니다."),
+
+    // AI
+    AI_SUMMARY_ERROR(500, "AI001", "AI 요약 중 오류가 발생했습니다."),
+    UNSUPPORTED_AI_PROVIDER(400, "AI002", "지원하지 않는 AI 제공자입니다.")
     ;
 
     private final int status;

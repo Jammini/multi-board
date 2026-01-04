@@ -22,6 +22,7 @@ import study.multiproject.post.api.request.PostEditRequest;
 import study.multiproject.post.api.request.PostPageSearchCategoryRequest;
 import study.multiproject.post.api.request.PostPageSearchRequest;
 import study.multiproject.post.application.PostService;
+import study.multiproject.post.application.PostSummaryService;
 import study.multiproject.post.application.response.PagingResponse;
 import study.multiproject.post.application.response.PostResponse;
 
@@ -31,6 +32,7 @@ import study.multiproject.post.application.response.PostResponse;
 public class PostController {
 
     private final PostService postService;
+    private final PostSummaryService postSummaryService;
     private final PostCreateRequestConverter postCreateRequestConverter;
     private final PostEditRequestConverter postEditRequestConverter;
     private final PostPageSearchRequestConverter postPageSearchRequestConverter;
@@ -85,5 +87,13 @@ public class PostController {
     public ApiResponse<Void> delete(@PathVariable Long postId) {
         postService.delete(postId);
         return ApiResponse.success(null);
+    }
+
+    /**
+     * 게시글 AI 요약
+     */
+    @GetMapping("/posts/{postId}/summary")
+    public ApiResponse<String> summarize(@PathVariable Long postId) {
+        return ApiResponse.success(postSummaryService.summarizePost(postId));
     }
 }
