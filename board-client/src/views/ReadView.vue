@@ -34,6 +34,11 @@ const post = ref({
 const likeCount = ref(0);
 const userLiked = ref(false);
 
+// 요약 관련 상태
+const summary = ref("");
+const summaryLoading = ref(false);
+const showSummary = ref(false);
+
 const comments = ref([] as any[]); // 댓글 목록
 const commentCount = ref(0); // 전체 댓글 수
 const newComment = ref(""); // 새 댓글
@@ -272,6 +277,35 @@ const copyShareLink = async () => {
   }
 };
 
+// AI 요약 가져오기
+const fetchSummary = async () => {
+  if (summary.value && showSummary.value) {
+    // 이미 요약이 있고 표시 중이면 토글 (숨김)
+    showSummary.value = false;
+    return;
+  }
+
+  if (summary.value) {
+    // 요약이 있으면 다시 표시
+    showSummary.value = true;
+    return;
+  }
+
+  // 요약이 없으면 API 호출
+  summaryLoading.value = true;
+  try {
+    const response = await axios.get(`/api/posts/${props.postId}/summary`);
+    summary.value = response.data.data;
+    showSummary.value = true;
+    ElMessage.success("게시글 요약이 생성되었습니다!");
+  } catch (error) {
+    console.error("요약 생성 실패:", error);
+    ElMessage.error("요약 생성에 실패했습니다.");
+  } finally {
+    summaryLoading.value = false;
+  }
+};
+
 </script>
 
 <template>
@@ -284,6 +318,26 @@ const copyShareLink = async () => {
     <div class="regDate">{{ post.createdAt }}</div>
   </div>
   <div>{{ post.content }}</div>
+
+  <!-- AI 요약 영역 -->
+  <div class="summary-section mt-3">
+    <el-button
+      type="success"
+      :loading="summaryLoading"
+      @click="fetchSummary"
+    >
+      {{ summaryLoading ? '요약 생성 중...' : (showSummary ? '요약 숨기기' : 'AI 요약 보기') }}
+    </el-button>
+
+    <div v-if="showSummary && summary" class="summary-content mt-2">
+      <div class="summary-header">
+        <strong>AI 요약</strong>
+      </div>
+      <div class="summary-text">
+        {{ summary }}
+      </div>
+    </div>
+  </div>
 
   <!-- 좋아요 영역 -->
   <div class="like-section mt-3">
@@ -428,5 +482,30 @@ const copyShareLink = async () => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
+}
+
+/* AI 요약 스타일 */
+.summary-section {
+  margin-top: 12px;
+}
+
+.summary-content {
+  background-color: #f0f9ff;
+  border-left: 4px solid #3b82f6;
+  padding: 12px 16px;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+.summary-header {
+  color: #1e40af;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.summary-text {
+  color: #1e3a8a;
+  line-height: 1.6;
+  white-space: pre-wrap;
 }
 </style>
